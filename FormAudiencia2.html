@@ -306,19 +306,45 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j
         setFormAction(null);
         validar();
 
-        // Exemplo de lógica para garantir a permissão
-        window.onload = function () {
-            const btnEntrar = document.createElement("button");
-            btnEntrar.innerHTML = "Clique aqui para iniciar sua conexão de áudio";
-            btnEntrar.onclick = function () {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    // Após a permissão ser dada, você pode redirecionar ou carregar o iframe do Zoom
-                    console.log("Microfone autorizado!");
-                    // AQUI VOCÊ CARREGA A REUNIÃO
-                });
-            };
-            document.body.appendChild(btnEntrar);
-        };
+        // Intercepta o envio do formulário para pedir a permissão e embutir o IFrame do Zoom
+        formZoom.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnSubmit");
+            btn.innerHTML = "Solicitando permissões...";
+            btn.disabled = true;
+
+            // Solicita permissão de áudio e vídeo
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(stream => {
+                // Libera o stream do navegador para que o iframe do Zoom consiga usar a câmera/microfone logo após a permissão
+                stream.getTracks().forEach(track => track.stop());
+
+                let embedUrl = formZoom.action;
+                // Ajusta a URL /j/ para o formato de web client do Zoom (/wc/join/) para permitir o embed
+                if (embedUrl.includes("/j/")) {
+                    embedUrl = embedUrl.replace("/j/", "/wc/join/");
+                }
+
+                // Oculta a área do formulário e reajusta o estilo do body
+                document.querySelector(".form-container").style.display = "none";
+                document.body.style.padding = "0";
+                document.body.style.margin = "0";
+                document.body.style.overflow = "hidden";
+
+                // Instancia e incorpora o iframe do Zoom com a permissão delegada ('allow')
+                const iframe = document.createElement("iframe");
+                iframe.src = embedUrl;
+                iframe.allow = "microphone; camera; display-capture";
+                iframe.style.width = "100vw";
+                iframe.style.height = "100vh";
+                iframe.style.border = "none";
+
+                document.body.appendChild(iframe);
+            }).catch(err => {
+                alert("Você precisa permitir o acesso do site ao microfone e câmera antes de entrar na audiência.\nEm navegadores com restrições mais fortes, revise as configurações de privacidade do seu site.");
+                btn.innerHTML = "Entrar na Audiência";
+                btn.disabled = false;
+            });
+        });
     </script>
 </body>
 
