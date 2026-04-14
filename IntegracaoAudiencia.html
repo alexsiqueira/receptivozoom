@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Zoom Audiências - TRT12</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <link rel="shortcut icon" href="https://us02st1.zoom.us/zoom.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --zoom-blue: #2D8CFF;
+            --zoom-hover: #0b5cff;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #2D292A;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        body {
+            background-image: url("https://us02st2.zoom.us/static/94162/image/new/home/DefaultLandingBgImg.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            width: 100%;
+            align-items: start;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logos e Header */
+        .header-section {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .trt12-logo {
+            max-width: 280px;
+            height: auto;
+            margin-bottom: 12px;
+        }
+
+        .zoom-logo {
+            max-width: 100px;
+            height: auto;
+        }
+
+        h1,
+        h2 {
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+        }
+
+        h2 {
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        /* Estilo dos Botões de Ação */
+        .action-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease;
+        }
+
+        .action-row:hover {
+            transform: translateX(8px);
+        }
+
+        .action-button {
+            min-width: 140px;
+            background-color: var(--zoom-blue);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            margin-right: 20px;
+            box-shadow: 0 4px 12px rgba(45, 140, 255, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .action-row:hover .action-button {
+            background-color: var(--zoom-hover);
+        }
+
+        .action-desc {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #444;
+        }
+
+        .separator {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        /* Estilo do Formulário */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--zoom-blue);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--zoom-blue);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background-color: var(--zoom-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 140, 255, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Rodapé */
+        .footer {
+            background: rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .footer a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 13px;
+            margin: 0 20px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        /* Responsividade */
+        @media (max-width: 900px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .header-section {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .glass-panel {
+                padding: 24px;
+            }
+
+            .action-row {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .action-button {
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="content-wrapper">
+
+            <!-- Painel de Ações do Zoom -->
+            <div class="glass-panel">
+                <div class="header-section">
+                    <img src="https://us02web.zoom.us/account/branding/p/651b9302-78c4-442b-8439-43a8624e4e5d.png"
+                        class="trt12-logo" alt="TRT12 Logo">
+                    <br>
+                    <img src="https://us02st1.zoom.us/static/94162/image/new/ZoomLogo.png" class="zoom-logo"
+                        alt="Zoom Logo">
+                    <h1 style="margin-top: 15px;">Videoconferência</h1>
+                </div>
+
+                <a href="/join" class="action-row">
+                    <div class="action-button">Ingressar</div>
+                    <div class="action-desc">Conectar a uma videoconferência em andamento</div>
+                </a>
+
+                <a href="/start/videomeeting" class="action-row">
+                    <div class="action-button">Criar Sala</div>
+                    <div class="action-desc">Criar uma nova sala instantânea (sem agendamento)</div>
+                </a>
+
+                <a href="/signin" class="action-row">
+                    <div class="action-button">Entrar</div>
+                    <div class="action-desc">Acesse sua conta corporativa do Zoom</div>
+                </a>
+
+                <div class="separator"></div>
+
+                <a href="https://www.youtube.com/watch?v=etpSNj_NLC8" class="action-row">
+                    <div class="action-button">Treinamento</div>
+                    <div class="action-desc">Aprendendo o básico - para Iniciantes</div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=uzi-t9USZo8&list=PLP_kgrdSFZGfc6o69WtPqysf7qLdRS9i6"
+                    class="action-row">
+                    <div class="action-button">Youtube</div>
+                    <div class="action-desc">Vídeo-aulas específicas para audiências</div>
+                </a>
+            </div>
+
+            <!-- Painel do Formulário -->
+            <div class="glass-panel">
+                <h2>Acesso à Audiência</h2>
+                <form id="formZoom" method="post">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="papel">Seu papel na audiência</label>
+                        <select id="papel" name="papel" required>
+                            <option value="">Selecione...</option>
+                            <option value="Autor">Autor</option>
+                            <option value="Reu">Réu</option>
+                            <option value="AdvogadoAutor">Advogado do Autor</option>
+                            <option value="AdvogadoReu">Advogado do Réu</option>
+                            <option value="Testemunha">Testemunha</option>
+                        </select>
+                    </div>
+
+                    <div id="campoDocumento" class="form-group hidden">
+                        <label for="documento">CPF</label>
+                        <input type="text" id="documento" name="documento" placeholder="000.000.000-00">
+                    </div>
+
+                    <div id="campoOAB" class="form-group hidden">
+                        <label for="oab">OAB - UF</label>
+                        <input type="text" id="oab" name="oab" placeholder="123456 SC">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unidadeSelect">Unidade Judiciária</label>
+                        <select id="unidadeSelect">
+                            <option value="">-- Escolha uma unidade --</option>
+                        </select>
+                    </div>
+
+                    <div id="audienciaDiv" class="form-group hidden">
+                        <label for="audienciaSelect">Sala/Audiência</label>
+                        <select id="audienciaSelect">
+                            <option value="">-- Escolha uma audiência --</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="btnSubmit" class="btn-submit" disabled>Acessar Sala</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="/download">Baixar Aplicativo</a>
+        <a href="https://support.zoom.us/hc/pt-br" target="_blank">Suporte Zoom</a>
+        <a href="#">Privacidade</a>
+    </div>
+
+    <script>
+        // ===== Lógica de Dados e Integração (Baseada no FormAudiencia.html) =====
+
+        const dados = `
+Itajaí - 01a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/4732411211
+Itajaí - 02a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/86234313077
+Itajaí - 03a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/4732411230
+Itajaí - 04a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/4732411244
+Navegantes - 01a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/84462226868
+Navegantes - 02a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/89772097368
+CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j/4732411294
+        `.trim();
+
+        const linhas = dados.split("\n").map(l => {
+            const [unidade, descricao, url] = l.split(";");
+            return { unidade: unidade.trim(), descricao: descricao.trim(), url: (url || "").trim() };
+        });
+
+        const unidades = [...new Set(linhas.map(l => l.unidade))];
+
+        const formZoom = document.getElementById("formZoom");
+        const unidadeSelect = document.getElementById("unidadeSelect");
+        const audienciaSelect = document.getElementById("audienciaSelect");
+        const audienciaDiv = document.getElementById("audienciaDiv");
+        const btnSubmit = document.getElementById("btnSubmit");
+        const nomeInput = document.getElementById("nome");
+        const papelSelect = document.getElementById("papel");
+        const documentoInput = document.getElementById("documento");
+        const oabInput = document.getElementById("oab");
+        const campoDocumento = document.getElementById("campoDocumento");
+        const campoOAB = document.getElementById("campoOAB");
+
+        // Popular Unidades
+        unidades.forEach(u => {
+            const opt = document.createElement("option");
+            opt.value = u;
+            opt.textContent = u;
+            unidadeSelect.appendChild(opt);
+        });
+
+        function isValidUrl(u) {
+            try {
+                const url = new URL(u);
+                return (url.protocol === "http:" || url.protocol === "https:");
+            } catch { return false; }
+        }
+
+        function montarUname() {
+            const nomeStr = nomeInput.value.trim();
+            const papelStr = papelSelect.value;
+            let uname = `${nomeStr}-${papelStr}`;
+            if (papelStr === "AdvogadoAutor" || papelStr === "AdvogadoReu") {
+                uname += `-${oabInput.value.trim()}`;
+            }
+            if (papelStr === "Testemunha") {
+                uname += `-${documentoInput.value.trim()}`;
+            }
+            return uname;
+        }
+
+        function validar() {
+            let valido = nomeInput.value.trim().length > 2 && papelSelect.value;
+
+            if (papelSelect.value === "Testemunha") {
+                valido = valido && documentoInput.value.trim().length === 14;
+            }
+            if (papelSelect.value === "AdvogadoAutor" || papelSelect.value === "AdvogadoReu") {
+                valido = valido && oabInput.value.trim().length >= 7;
+            }
+
+            const urlBase = audienciaSelect.value;
+            valido = valido && isValidUrl(urlBase);
+
+            if (valido) {
+                const url = new URL(urlBase);
+                url.searchParams.set("uname", montarUname());
+                formZoom.action = url.toString();
+            } else {
+                formZoom.removeAttribute('action');
+            }
+
+            btnSubmit.disabled = !valido;
+        }
+
+        function mostrarCampos() {
+            campoDocumento.classList.add("hidden");
+            campoOAB.classList.add("hidden");
+            documentoInput.required = false;
+            oabInput.required = false;
+
+            if (papelSelect.value === "Testemunha") {
+                campoDocumento.classList.remove("hidden");
+                documentoInput.required = true;
+            }
+            if (papelSelect.value === "AdvogadoAutor" || papelSelect.value === "AdvogadoReu") {
+                campoOAB.classList.remove("hidden");
+                oabInput.required = true;
+            }
+            validar();
+        }
+
+        // Máscaras
+        documentoInput.addEventListener("input", (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            e.target.value = v;
+            validar();
+        });
+
+        oabInput.addEventListener("input", (e) => {
+            let val = e.target.value.replace(/[^\dA-Za-z]/g, '').toUpperCase().slice(0, 9);
+            val = val.replace(/^(\d{1,6})([A-Z]{0,2})/, (match, num, uf) => uf ? `${num} ${uf}` : num);
+            e.target.value = val;
+            validar();
+        });
+
+        unidadeSelect.addEventListener("change", () => {
+            const chosen = unidadeSelect.value;
+            audienciaSelect.innerHTML = '<option value="">-- Escolha uma audiência --</option>';
+            audienciaDiv.classList.add("hidden");
+
+            if (!chosen) {
+                validar();
+                return;
+            }
+
+            const filtered = linhas.filter(l => l.unidade === chosen);
+            filtered.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a.url;
+                opt.textContent = a.descricao;
+                audienciaSelect.appendChild(opt);
+            });
+
+            audienciaDiv.classList.remove("hidden");
+
+            if (audienciaSelect.options.length === 2) {
+                audienciaSelect.selectedIndex = 1;
+                audienciaDiv.classList.add("hidden");
+            }
+            validar();
+        });
+
+        audienciaSelect.addEventListener("change", validar);
+        nomeInput.addEventListener("input", validar);
+        papelSelect.addEventListener("change", mostrarCampos);
+
+        validar();
+    </script>
+</body>
+
+</html>

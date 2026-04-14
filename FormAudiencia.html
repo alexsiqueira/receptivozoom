@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Seleção de Audiências</title>
+    <style>
+        select {
+            margin-top: 5px;
+            padding: 5px;
+            min-width: 320px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            padding: 40px;
+            margin: 0;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.97);
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Entrar na Audiência ZOOM</h2>
+
+        <form method="post" id="formZoom">
+            <label for="nome">Nome completo:</label>
+            <input type="text" name="nome" id="nome" required>
+
+            <label for="papel">Você é:</label>
+            <select name="papel" id="papel" required>
+                <option value="">Selecione</option>
+                <option value="Autor">Autor</option>
+                <option value="Reu">Réu</option>
+                <option value="AdvogadoAutor">Advogado do Autor</option>
+                <option value="AdvogadoReu">Advogado do Réu</option>
+                <option value="Testemunha">Testemunha</option>
+            </select>
+
+            <div id="campoDocumento" class="hidden">
+                <label for="documento">Número do CPF:</label>
+                <input type="text" name="documento" id="documento" placeholder="Ex: 123.456.789-00">
+            </div>
+
+            <div id="campoOAB" class="hidden">
+                <label for="oab">Número da OAB - UF:</label>
+                <input type="text" name="oab" id="oab" placeholder="Ex: 123456 SP">
+            </div>
+
+            <label for="unidadeSelect">Selecione a Unidade:</label>
+            <select id="unidadeSelect">
+                <option value="">-- Escolha uma unidade --</option>
+            </select>
+
+            <div id="audienciaDiv" style="display:none;">
+                <label for="audienciaSelect">Selecione a Audiência:</label>
+                <select id="audienciaSelect">
+                    <option value="">-- Escolha uma audiência --</option>
+                </select>
+            </div>
+
+            <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
+        </form>
+    </div>
+
+    <script>
+        // ===== Utils =====
+        function isValidUrl(u) {
+            try {
+                const url = new URL(u);
+                return (url.protocol === "http:" || url.protocol === "https:");
+            } catch { return false; }
+        }
+
+        function montarUname() {
+            const nomeTrim = nome.value.trim();
+            const papelVal = papel.value;
+            let uname = `${nomeTrim}-${papelVal}`;
+            if (papelVal === "AdvogadoAutor" || papelVal === "AdvogadoReu") {
+                uname += `-${oab.value.trim()}`;
+            }
+            if (papelVal === "Testemunha") {
+                uname += `-${documento.value.trim()}`;
+            }
+            return uname; // URLSearchParams fará o encode
+        }
+
+        function setFormAction(urlBase) {
+            if (isValidUrl(urlBase)) {
+                const url = new URL(urlBase);
+                url.searchParams.set("uname", montarUname());
+                formZoom.action = url.toString();
+            } else {
+                formZoom.removeAttribute('action'); // zera a action
+            }
+        }
+
+        // ===== Dados (CSV com ;) =====
+        const dados = `
+Itajaí - 01a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/4732411211
+Itajaí - 02a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/86234313077
+Itajaí - 03a Vara;Sala de audiências;https://trt12-jus-br.zoom.us/j/4732411230
+Navegantes - 01a Vara;Audiências entre 8h e 8h29min; https://trt12-jus-br.zoom.us/j/82827253075
+Navegantes - 01a Vara;Audiência das 8h30min;https://trt12-jus-br.zoom.us/s/4732411280
+Navegantes - 01a Vara;Audiência das 9h00min;https://trt12-jus-br.zoom.us/j/86126311393
+Navegantes - 01a Vara;Audiência das 9h30min;https://trt12-jus-br.zoom.us/j/89485341412
+Navegantes - 01a Vara;Audiência das 10h00min;https://trt12-jus-br.zoom.us/j/84062567431 
+Navegantes - 01a Vara;Audiência das 10h30min;https://trt12-jus-br.zoom.us/j/81338106875 
+Navegantes - 01a Vara;Audiência das 11h00min;https://trt12-jus-br.zoom.us/j/82355134488 
+CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j/4732411294
+    `.trim();
+
+        // Parse simples
+        const linhas = dados.split("\n").map(l => {
+            const [unidade, descricao, url] = l.split(";");
+            return { unidade: unidade.trim(), descricao: descricao.trim(), url: (url || "").trim() };
+        });
+
+        const unidades = [...new Set(linhas.map(l => l.unidade))];
+
+        // ===== DOM =====
+        const formZoom = document.getElementById("formZoom");
+        const unidadeSelect = document.getElementById("unidadeSelect");
+        const audienciaSelect = document.getElementById("audienciaSelect");
+        const audienciaDiv = document.getElementById("audienciaDiv");
+        const btnSubmit = document.getElementById("btnSubmit");
+
+        const nome = document.getElementById("nome");
+        const papel = document.getElementById("papel");
+        const documento = document.getElementById("documento");
+        const oab = document.getElementById("oab");
+        const campoDocumento = document.getElementById("campoDocumento");
+        const campoOAB = document.getElementById("campoOAB");
+
+        // Popular unidades
+        unidades.forEach(u => {
+            const opt = document.createElement("option");
+            opt.value = u;
+            opt.textContent = u;
+            unidadeSelect.appendChild(opt);
+        });
+
+        // ===== Regras de exibição/validação existentes + URL obrigatória =====
+        function validar() {
+            let valido = nome.value.trim() && papel.value;
+
+            if (papel.value === "Testemunha") {
+                valido = valido && documento.value.trim().length === 14; // CPF com máscara
+            }
+            if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
+                valido = valido && oab.value.trim().length >= 7;
+            }
+
+            const urlBase = audienciaSelect.value;
+            const urlOk = isValidUrl(urlBase);
+
+            // Atualiza action (com uname) e decide botão
+            setFormAction(urlBase);
+            valido = valido && urlOk;
+
+            btnSubmit.disabled = !valido;
+        }
+
+        function mostrarCampos() {
+            campoDocumento.classList.add("hidden");
+            campoOAB.classList.add("hidden");
+            documento.required = false;
+            oab.required = false;
+
+            if (papel.value === "Testemunha") {
+                campoDocumento.classList.remove("hidden");
+                documento.required = true;
+            }
+            if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
+                campoOAB.classList.remove("hidden");
+                oab.required = true;
+            }
+            validar();
+        }
+
+        function aplicarMascaras() {
+            // CPF
+            documento.addEventListener("input", function (e) {
+                let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                e.target.value = v;
+                validar();
+            });
+
+            // OAB
+            oab.addEventListener("input", function (e) {
+                let val = e.target.value.replace(/[^\dA-Za-z]/g, '').toUpperCase().slice(0, 9);
+                val = val.replace(/^(\d{1,6})([A-Z]{0,2})/, (match, num, uf) => {
+                    return uf ? `${num} ${uf}` : num;
+                });
+                e.target.value = val;
+                validar();
+            });
+        }
+
+        // ===== Eventos =====
+        unidadeSelect.addEventListener("change", () => {
+            const unidadeEscolhida = unidadeSelect.value;
+
+            // Reset audiência e form.action ao trocar de unidade
+            audienciaSelect.innerHTML = '<option value="">-- Escolha uma audiência --</option>';
+            setFormAction(null);
+            audienciaDiv.style.display = "none";
+
+            if (!unidadeEscolhida) {
+                validar();
+                return;
+            }
+
+            // Preenche audiências da unidade
+            const auds = linhas.filter(l => l.unidade === unidadeEscolhida);
+            auds.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a.url;
+                opt.textContent = a.descricao;
+                audienciaSelect.appendChild(opt);
+            });
+
+            audienciaDiv.style.display = "block";
+
+            // >>> NOVO: se houver exatamente 1 opção real, já seleciona automaticamente
+            // (options.length === 2 porque temos o placeholder + 1 opção real)
+            if (audienciaSelect.options.length === 2) {
+                audienciaSelect.selectedIndex = 1; // seleciona a única audiência disponível
+                audienciaDiv.style.display = "none";
+            } else {
+                audienciaSelect.selectedIndex = 0; // mantém placeholder
+            }
+
+            validar();
+        });
+
+        audienciaSelect.addEventListener("change", validar);
+        nome.addEventListener("input", validar);
+        papel.addEventListener("change", mostrarCampos);
+        documento.addEventListener("input", validar);
+        oab.addEventListener("input", validar);
+        document.addEventListener("DOMContentLoaded", aplicarMascaras);
+
+        // Estado inicial consistente
+        setFormAction(null);
+        validar();
+    </script>
+</body>
+
+</html>
