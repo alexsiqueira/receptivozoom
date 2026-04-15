@@ -330,10 +330,12 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j
                 document.body.style.margin = "0";
                 document.body.style.overflow = "hidden";
 
-                // Instancia e incorpora o iframe do Zoom com a permissão delegada ('allow')
+                // Instancia e incorpora o iframe do Zoom com as permissões necessárias
                 const iframe = document.createElement("iframe");
                 iframe.src = embedUrl;
-                iframe.allow = "microphone; camera; display-capture";
+                // 'allow' expandido para garantir suporte a câmera, microfone, tela cheia e outros recursos do Zoom
+                iframe.setAttribute("allow", "microphone; camera; fullscreen; display-capture; autoplay; clipboard-read; clipboard-write; speaker-selection");
+                iframe.setAttribute("allowfullscreen", "");
                 iframe.style.width = "100vw";
                 iframe.style.height = "100vh";
                 iframe.style.border = "none";
