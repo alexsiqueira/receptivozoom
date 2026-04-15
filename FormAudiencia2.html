@@ -313,27 +313,47 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j
             btn.innerHTML = "Conectando...";
             btn.disabled = true;
 
-            let zoomUrl = formZoom.action;
-            
-            // Estéticamente, limpamos o formulário e mostramos um estado de carregamento
+            // Estéticamente, limpamos o formulário e mostramos um estado de carregamento institucional
             const container = document.querySelector(".form-container");
+            container.style.minHeight = "300px";
+            container.style.display = "flex";
+            container.style.flexDirection = "column";
+            container.style.justifyContent = "center";
+            container.style.alignItems = "center";
+            
             container.innerHTML = `
-                <div style="text-align:center; padding: 40px 0;">
-                    <div style="margin-bottom: 20px;">
-                        <img src="https://us02st1.zoom.us/static/94162/image/new/ZoomLogo.png" style="width: 120px;" alt="Zoom">
+                <div style="text-align:center;">
+                    <div style="margin-bottom: 25px;">
+                        <img src="https://us02web.zoom.us/account/branding/p/651b9302-78c4-442b-8439-43a8624e4e5d.png" style="max-width: 200px;" alt="TRT12">
                     </div>
-                    <h3 style="margin-bottom: 10px; color: #1a1a1a;">Iniciando videoconferência...</h3>
-                    <p style="color: #666; font-size: 14px;">Você será redirecionado para a sala em instantes.</p>
-                    <div style="margin-top: 30px; color: #007bff; font-weight: bold;">
-                        Solicite as permissões de câmera e microfone <br> quando o navegador perguntar.
+                    
+                    <!-- Spinner Animado -->
+                    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #003366; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    </div>
+                    
+                    <h3 style="margin: 0 0 8px 0; color: #003366; font-family: Arial, sans-serif;">Conectando à Audiência</h3>
+                    <p style="color: #666; font-size: 14px; font-family: Arial, sans-serif;">Aguarde, estamos preparando seu acesso seguro.</p>
+                    
+                    <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-left: 4px solid #003366; border-radius: 4px; text-align: left; max-width: 320px;">
+                        <p style="color: #333; font-size: 13px; line-height: 1.4; margin: 0;">
+                            <strong>Aviso:</strong> O Zoom será aberto nesta aba. Caso o navegador peça, clique em <strong>"Permitir"</strong> para ativar áudio e vídeo.
+                        </p>
                     </div>
                 </div>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                    body { transition: background-color 1s ease; }
+                </style>
             `;
 
-            // Aguarda um pequeno delay para a experiência ser suave e redireciona
+            // Muda o fundo para um tom mais institucional antes da transição
+            document.body.style.backgroundColor = "#f0f2f5";
+
+            // Redireciona
             setTimeout(() => {
                 window.location.href = zoomUrl;
-            }, 1200);
+            }, 1800);
         });
     </script>
 </body>
