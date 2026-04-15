@@ -306,49 +306,34 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j
         setFormAction(null);
         validar();
 
-        // Intercepta o envio do formulário para embutir o IFrame do Zoom
+        // Intercepta o envio do formulário para preparar a transição para o Zoom
         formZoom.addEventListener("submit", function (e) {
             e.preventDefault();
             const btn = document.getElementById("btnSubmit");
-            btn.innerHTML = "Iniciando Zoom...";
+            btn.innerHTML = "Conectando...";
             btn.disabled = true;
 
-            let embedUrl = formZoom.action;
-            // Ajusta a URL /j/ para o formato de web client do Zoom (/wc/join/) para permitir o embed
-            if (embedUrl.includes("/j/")) {
-                embedUrl = embedUrl.replace("/j/", "/wc/join/");
-            }
-
-            // Oculta a área do formulário e reajusta o estilo do body
-            document.querySelector(".form-container").style.display = "none";
-            document.body.style.padding = "0";
-            document.body.style.margin = "0";
-            document.body.style.overflow = "hidden";
-            document.body.style.backgroundColor = "#000"; // Fundo preto para o Zoom
-
-            // Instancia e incorpora o iframe do Zoom com a política de permissões expandida
-            const iframe = document.createElement("iframe");
-            iframe.src = embedUrl;
+            let zoomUrl = formZoom.action;
             
-            // O uso de '*' garante que as permissões sejam delegadas mesmo se o Zoom redirecionar entre domínios
-            const permissions = [
-                "camera *",
-                "microphone *",
-                "fullscreen *",
-                "display-capture *",
-                "autoplay *",
-                "clipboard-read *",
-                "clipboard-write *",
-                "speaker-selection *"
-            ];
-            
-            iframe.setAttribute("allow", permissions.join("; "));
-            iframe.setAttribute("allowfullscreen", "");
-            iframe.style.width = "100vw";
-            iframe.style.height = "100vh";
-            iframe.style.border = "none";
+            // Estéticamente, limpamos o formulário e mostramos um estado de carregamento
+            const container = document.querySelector(".form-container");
+            container.innerHTML = `
+                <div style="text-align:center; padding: 40px 0;">
+                    <div style="margin-bottom: 20px;">
+                        <img src="https://us02st1.zoom.us/static/94162/image/new/ZoomLogo.png" style="width: 120px;" alt="Zoom">
+                    </div>
+                    <h3 style="margin-bottom: 10px; color: #1a1a1a;">Iniciando videoconferência...</h3>
+                    <p style="color: #666; font-size: 14px;">Você será redirecionado para a sala em instantes.</p>
+                    <div style="margin-top: 30px; color: #007bff; font-weight: bold;">
+                        Solicite as permissões de câmera e microfone <br> quando o navegador perguntar.
+                    </div>
+                </div>
+            `;
 
-            document.body.appendChild(iframe);
+            // Aguarda um pequeno delay para a experiência ser suave e redireciona
+            setTimeout(() => {
+                window.location.href = zoomUrl;
+            }, 1200);
         });
     </script>
 </body>

@@ -505,11 +505,37 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;https://trt12-jus-br.zoom.us/j
             validar();
         });
 
-        audienciaSelect.addEventListener("change", validar);
-        nomeInput.addEventListener("input", validar);
-        papelSelect.addEventListener("change", mostrarCampos);
+        formZoom.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("btnSubmit");
+            btn.innerHTML = "Iniciando...";
+            btn.disabled = true;
 
-        validar();
+            const zoomUrl = formZoom.action;
+            
+            // Transição suave dentro do painel de vidro
+            const formPanel = document.querySelector(".glass-panel:last-child");
+            formPanel.style.transition = "opacity 0.3s";
+            formPanel.style.opacity = "0";
+            
+            setTimeout(() => {
+                formPanel.innerHTML = `
+                    <div style="text-align:center; padding: 40px 0;">
+                        <img src="https://us02st1.zoom.us/static/94162/image/new/ZoomLogo.png" style="width: 140px; margin-bottom: 30px;" alt="Zoom">
+                        <h2 style="margin-bottom: 12px; font-size: 24px;">Conectando à Audiência</h2>
+                        <p style="color: #555; font-size: 16px; margin-bottom: 40px;">Você será redirecionado para a sala segura em alguns segundos.</p>
+                        <div style="border: 2px solid var(--zoom-blue); padding: 20px; border-radius: 16px; background: rgba(45, 140, 255, 0.1);">
+                            <p style="color: var(--zoom-blue); font-weight: 700;">Lembre-se de clicar em "Permitir" quando o navegador solicitar acesso à câmera.</p>
+                        </div>
+                    </div>
+                `;
+                formPanel.style.opacity = "1";
+                
+                setTimeout(() => {
+                    window.location.href = zoomUrl;
+                }, 1500);
+            }, 300);
+        });
     </script>
 </body>
 
