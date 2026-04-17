@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal TRT12 - Simulação</title>
+    <style>
+        :root {
+            --trt-blue: #003366;
+            --trt-light-blue: #005a9c;
+            --trt-grey: #f4f4f4;
+            --trt-dark-grey: #333;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: var(--trt-grey);
+        }
+
+        /* Cabeçalho do Portal */
+        header {
+            background-color: white;
+            border-bottom: 4px solid var(--trt-blue);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-area img {
+            height: 60px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--trt-blue);
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        nav ul li a:hover {
+            color: var(--trt-light-blue);
+        }
+
+        /* Barra de Título da Página */
+        .page-banner {
+            background-color: var(--trt-blue);
+            color: white;
+            padding: 10px 50px;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        /* Container do Iframe */
+        .portal-content {
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--trt-blue);
+        }
+
+        /* O Iframe que simula o seu ambiente de trabalho */
+        .iframe-container {
+            width: 100%;
+            height: 750px; /* Altura suficiente para o formulário */
+            border: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: var(--trt-dark-grey);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Alerta de Simulação */
+        .simulation-alert {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            border-bottom: 1px solid #ffeeba;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            nav ul {
+                margin-top: 15px;
+            }
+            .portal-content {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="simulation-alert">
+        <strong>Modo de Simulação:</strong> Esta página simula o comportamento do Portal do TRT12 para testar a integração do Iframe.
+    </div>
+
+    <header>
+        <div class="logo-area">
+            <img src="https://us02web.zoom.us/account/branding/p/651b9302-78c4-442b-8439-43a8624e4e5d.png" alt="TRT12 Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Início</a></li>
+                <li><a href="#">Institucional</a></li>
+                <li><a href="#">Processos</a></li>
+                <li><a href="#" style="border-bottom: 2px solid var(--trt-blue);">Audiências</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-banner">
+        Jurisdição > Audiências por Videoconferência
+    </div>
+
+    <main class="portal-content">
+        <div class="content-header">
+            <h1>Acesso às Salas de Audiência</h1>
+            <p style="color: #666; font-size: 14px; margin-top: 5px;">
+                Utilize o formulário abaixo para identificar-se e ingressar na sala de audiência designada.
+            </p>
+        </div>
+
+        <div class="iframe-container">
+            <!-- NOTA: Aqui inserimos o FormAudiencia2.html ou IntegracaoAudiencia.html -->
+            <iframe src="IntegracaoAudiencia.html" title="Formulário de Audiência"></iframe>
+        </div>
+    </main>
+
+    <footer>
+         Tribunal Regional do Trabalho da 12ª Região - Santa Catarina <br>
+        Rua Esteves Júnior, 395 - Centro - Florianópolis/SC - CEP: 88015-905 <br>
+        © 2024 TRT12 - Todos os direitos reservados.
+    </footer>
+</body>
+
+</html>
