@@ -13,7 +13,8 @@
             --trt-dark-grey: #333;
         }
 
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -29,7 +30,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .logo-area img {
@@ -74,7 +75,7 @@
             margin: 30px auto;
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -94,7 +95,8 @@
         /* O Iframe que simula o seu ambiente de trabalho */
         .iframe-container {
             width: 100%;
-            height: 750px; /* Altura suficiente para o formulário */
+            height: 750px;
+            /* Altura suficiente para o formulário */
             border: none;
         }
 
@@ -131,9 +133,11 @@
                 flex-direction: column;
                 padding: 15px;
             }
+
             nav ul {
                 margin-top: 15px;
             }
+
             .portal-content {
                 margin: 10px;
             }
@@ -143,12 +147,14 @@
 
 <body>
     <div class="simulation-alert">
-        <strong>Modo de Simulação:</strong> Esta página simula o comportamento do Portal do TRT12 para testar a integração do Iframe.
+        <strong>Modo de Simulação:</strong> Esta página simula o comportamento do Portal do TRT12 para testar a
+        integração do Iframe.
     </div>
 
     <header>
         <div class="logo-area">
-            <img src="https://us02web.zoom.us/account/branding/p/651b9302-78c4-442b-8439-43a8624e4e5d.png" alt="TRT12 Logo">
+            <img src="https://us02web.zoom.us/account/branding/p/651b9302-78c4-442b-8439-43a8624e4e5d.png"
+                alt="TRT12 Logo">
         </div>
         <nav>
             <ul>
@@ -175,12 +181,12 @@
 
         <div class="iframe-container">
             <!-- NOTA: Aqui inserimos o FormAudiencia2.html ou IntegracaoAudiencia.html -->
-            <iframe src="IntegracaoAudiencia.html" title="Formulário de Audiência"></iframe>
+            <iframe src="FormAudienciaAutorizado.html" title="Formulário de Audiência"></iframe>
         </div>
     </main>
 
     <footer>
-         Tribunal Regional do Trabalho da 12ª Região - Santa Catarina <br>
+        Tribunal Regional do Trabalho da 12ª Região - Santa Catarina <br>
         Rua Esteves Júnior, 395 - Centro - Florianópolis/SC - CEP: 88015-905 <br>
         © 2024 TRT12 - Todos os direitos reservados.
     </footer>
