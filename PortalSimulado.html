@@ -180,8 +180,11 @@
         </div>
 
         <div class="iframe-container">
-            <!-- NOTA: Aqui inserimos o FormAudiencia2.html ou IntegracaoAudiencia.html -->
-            <iframe src="FormAudienciaAutorizado.html" title="Formulário de Audiência"></iframe>
+            <!-- Camada 1: O Portal delega permissões para o Iframe do Formulário -->
+            <iframe src="FormAudienciaAutorizado.html" title="Formulário de Audiência" 
+                allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-read; clipboard-write; speaker-selection" 
+                allowfullscreen>
+            </iframe>
         </div>
     </main>
 
