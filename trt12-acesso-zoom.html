@@ -124,21 +124,39 @@
             flex-direction: column;
         }
 
-        .btn-copy {
+        .btn-download {
             background-color: #28a745;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
 
-        .btn-open {
+        .btn-retry {
             background-color: #007bff;
         }
 
         .btn-cancel {
             background-color: #6c757d;
-            margin-top: 10px;
         }
 
         .modal-buttons button {
             margin-top: 0;
+        }
+
+        .download-info {
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .device-specific {
+            display: none;
         }
     </style>
 </head>
@@ -187,16 +205,27 @@
         </form>
     </div>
 
-    <!-- Modal de Confirmação -->
-    <div id="modalLink" class="modal-overlay">
+    <!-- Modal de Download -->
+    <div id="modalDownload" class="modal-overlay">
         <div class="modal-content">
-            <h3>Link da Audiência</h3>
-            <p>O link abaixo será utilizado para entrar na reunião:</p>
-            <div id="linkDisplay" class="link-container"></div>
+            <h3>Aplicativo Zoom Necessário</h3>
+            <div class="download-info">
+                Não conseguimos abrir o Zoom automaticamente. <br>
+                Certifique-se de que o <strong>Aplicativo Desktop do Zoom</strong> (ou o App mobile) está instalado em seu dispositivo.
+            </div>
+            
             <div class="modal-buttons">
-                <button type="button" id="btnCopyLink" class="btn-copy">Copiar Link</button>
-                <button type="button" id="btnOpenZoom" class="btn-open">Abrir Zoom Agora</button>
-                <button type="button" id="btnCancelModal" class="btn-cancel">Voltar</button>
+                <!-- Desktop -->
+                <a href="https://zoom.us/download" id="linkDesktop" class="btn-download device-specific" target="_blank">Baixar Zoom para Desktop</a>
+                
+                <!-- iOS -->
+                <a href="https://apps.apple.com/us/app/zoom-one-platform-to-connect/id546505307" id="linkIOS" class="btn-download device-specific" target="_blank">Baixar na App Store</a>
+                
+                <!-- Android -->
+                <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid" class="btn-download device-specific" target="_blank">Baixar no Google Play</a>
+
+                <button type="button" id="btnRetry" class="btn-retry">Já instalei, entrar agora</button>
+                <button type="button" id="btnCancelModal" class="btn-cancel">Cancelar</button>
             </div>
         </div>
     </div>
@@ -216,13 +245,16 @@
         const campoDocumento = document.getElementById("campoDocumento");
         const campoOAB = document.getElementById("campoOAB");
 
-        const modalLink = document.getElementById("modalLink");
-        const linkDisplay = document.getElementById("linkDisplay");
-        const btnCopyLink = document.getElementById("btnCopyLink");
-        const btnOpenZoom = document.getElementById("btnOpenZoom");
+        const modalDownload = document.getElementById("modalDownload");
+        const btnRetry = document.getElementById("btnRetry");
         const btnCancelModal = document.getElementById("btnCancelModal");
+        
+        const linkDesktop = document.getElementById("linkDesktop");
+        const linkIOS = document.getElementById("linkIOS");
+        const linkAndroid = document.getElementById("linkAndroid");
 
         let currentZoomLink = "";
+        let detectionTimeout = null;
 
         // ===== Dados (CSV com ;) =====
         const dados = `
@@ -318,6 +350,54 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         // ===== Event Listeners =====
 
+        function detectarDispositivo() {
+            const ua = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isAndroid = /Android/.test(ua);
+
+            // Esconder todos primeiro
+            linkDesktop.style.display = "none";
+            linkIOS.style.display = "none";
+            linkAndroid.style.display = "none";
+
+            if (isIOS) {
+                linkIOS.style.display = "block";
+            } else if (isAndroid) {
+                linkAndroid.style.display = "block";
+            } else {
+                linkDesktop.style.display = "block";
+            }
+        }
+
+        function tentarEntrarNoZoom() {
+            if (!currentZoomLink) return;
+
+            let focusLost = false;
+            
+            // Função para detectar se a janela perdeu o foco (indicando que o Zoom abriu)
+            const onBlur = () => {
+                focusLost = true;
+                clearTimeout(detectionTimeout);
+                window.removeEventListener('blur', onBlur);
+            };
+
+            window.addEventListener('blur', onBlur);
+
+            // Tentar abrir o protocolo do Zoom
+            window.location.href = currentZoomLink;
+
+            // Se após 2.5 segundos o foco não foi perdido, mostramos o modal de download
+            detectionTimeout = setTimeout(() => {
+                window.removeEventListener('blur', onBlur);
+                if (!focusLost) {
+                    detectarDispositivo();
+                    modalDownload.style.display = "flex";
+                }
+            }, 2500);
+        }
+
+        // ===== Event Listeners =====
+
         formZoom.addEventListener("submit", function (e) {
             e.preventDefault();
             const idReuniao = audienciaSelect.value;
@@ -326,32 +406,17 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             const nomeUname = montarUname();
             currentZoomLink = "zoommtg://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
 
-            // Mostrar modal
-            linkDisplay.textContent = currentZoomLink;
-            modalLink.style.display = "flex";
+            tentarEntrarNoZoom();
         });
 
-        btnCopyLink.addEventListener("click", () => {
-            navigator.clipboard.writeText(currentZoomLink).then(() => {
-                const originalText = btnCopyLink.textContent;
-                btnCopyLink.textContent = "Copiado!";
-                btnCopyLink.style.backgroundColor = "#1e7e34";
-                setTimeout(() => {
-                    btnCopyLink.textContent = originalText;
-                    btnCopyLink.style.backgroundColor = "";
-                }, 2000);
-            }).catch(err => {
-                alert("Erro ao copiar link: " + err);
-            });
-        });
-
-        btnOpenZoom.addEventListener("click", () => {
-            window.location.href = currentZoomLink;
-            modalLink.style.display = "none";
+        btnRetry.addEventListener("click", () => {
+            modalDownload.style.display = "none";
+            tentarEntrarNoZoom();
         });
 
         btnCancelModal.addEventListener("click", () => {
-            modalLink.style.display = "none";
+            modalDownload.style.display = "none";
+            if (detectionTimeout) clearTimeout(detectionTimeout);
         });
 
         unidadeSelect.addEventListener("change", () => {
