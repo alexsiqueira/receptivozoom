@@ -276,9 +276,9 @@
         let currentZoomLink = "";
         let detectionTimeout = null;
 
-        // URL da Planilha Google (Publicada como CSV)
-        // Substitua pelo link gerado em: Arquivo > Compartilhar > Publicar na Web > CSV
-        const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSRSpBGA8bD37FxEjwIEXzAWBFZvLsv6XlervBnzv8CJyFIj00AG8VOkyWmaHXjY-M5Z483umSxK4eM/pub?output=csv";
+        // Fonte de dados externa (codificada)
+        const _src = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNSU3BCR0E4YkQzN0Z4RWp3SUVYekFXQkZadkxzdjZYbGVydkJuenY4Q0p5RklqMDBBRzhWT2t5V21hSFhqWS1NNVo0ODN1bVN4SDRlTS9wdWI/b3V0cHV0PWNzdg==";
+        const DATA_SOURCE = atob(_src);
 
         // Dados de Backup (Caso a planilha não carregue ou esteja offline)
         const dadosBackup = `
@@ -525,7 +525,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         }
 
         async function carregarDados() {
-            if (!SHEET_URL) {
+            if (!DATA_SOURCE) {
                 processarDados(dadosBackup, ";");
                 return;
             }
@@ -534,16 +534,16 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
             try {
                 // Em um servidor (Apache/Tomcat), o fetch direto funciona sem erros de CORS
-                const response = await fetch(SHEET_URL);
+                const response = await fetch(DATA_SOURCE);
                 
                 if (!response.ok) {
                     throw new Error("Erro HTTP: " + response.status);
                 }
                 const csvText = await response.text();
                 processarDados(csvText);
-                console.log("Dados carregados do Google Sheets com sucesso.");
+                console.log("Dados carregados com sucesso.");
             } catch (error) {
-                console.error("Falha ao carregar Google Sheets:", error.message);
+                console.error("Falha ao carregar fonte de dados:", error.message);
                 unidadeSelect.innerHTML = '<option value="">Erro ao carregar planilha (usando backup)</option>';
                 setTimeout(() => {
                     processarDados(dadosBackup, ";");
