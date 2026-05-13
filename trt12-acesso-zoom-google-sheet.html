@@ -531,6 +531,47 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = u;
                 unidadeSelect.appendChild(opt);
             });
+            
+            // Após popular, processamos os parâmetros da URL
+            processarParametrosURL();
+        }
+
+        function processarParametrosURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Preencher campos básicos se informados
+            if (urlParams.has('nome')) nome.value = urlParams.get('nome');
+            if (urlParams.has('papel')) {
+                papel.value = urlParams.get('papel');
+                mostrarCampos(); // Garante que campos de CPF/OAB apareçam se necessário
+            }
+            if (urlParams.has('documento')) documento.value = urlParams.get('documento');
+            if (urlParams.has('oab')) oab.value = urlParams.get('oab');
+
+            // Processar a Unidade (o parâmetro solicitado pelo usuário)
+            const paramUnidade = urlParams.get('unidade');
+            if (paramUnidade) {
+                console.log("Tentando selecionar unidade via URL:", paramUnidade);
+                
+                // Tenta selecionar pelo valor (value)
+                unidadeSelect.value = paramUnidade;
+                
+                // Se não encontrou pelo value, tenta buscar pelo texto exibido (mais comum)
+                if (unidadeSelect.selectedIndex <= 0) {
+                    for (let i = 0; i < unidadeSelect.options.length; i++) {
+                        if (unidadeSelect.options[i].textContent.trim() === paramUnidade.trim()) {
+                            unidadeSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Se conseguimos selecionar algo, disparar o evento de mudança
+                if (unidadeSelect.selectedIndex > 0) {
+                    unidadeSelect.dispatchEvent(new Event('change'));
+                }
+            }
+            
             validar();
         }
 
