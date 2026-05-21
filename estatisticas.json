@@ -1,0 +1,110 @@
+[
+  {
+    "timestamp": "2026-05-18T09:15:30.000Z",
+    "unidade": "Itajaí - 01a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "Autor"
+  },
+  {
+    "timestamp": "2026-05-18T09:20:15.000Z",
+    "unidade": "Itajaí - 01a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "AdvogadoAutor"
+  },
+  {
+    "timestamp": "2026-05-18T09:22:45.000Z",
+    "unidade": "Itajaí - 01a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "AdvogadoReu"
+  },
+  {
+    "timestamp": "2026-05-18T10:05:00.000Z",
+    "unidade": "Itajaí - 02a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "Reu"
+  },
+  {
+    "timestamp": "2026-05-18T14:30:00.000Z",
+    "unidade": "CEJUSC - Itajaí e Navegantes",
+    "audiencia": "Sala de Audiências",
+    "papel": "Autor"
+  },
+  {
+    "timestamp": "2026-05-19T08:35:10.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiência das 8h30min",
+    "papel": "Testemunha"
+  },
+  {
+    "timestamp": "2026-05-19T08:40:22.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiência das 8h30min",
+    "papel": "AdvogadoAutor"
+  },
+  {
+    "timestamp": "2026-05-19T09:05:00.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiência das 9h00min",
+    "papel": "Reu"
+  },
+  {
+    "timestamp": "2026-05-19T09:12:18.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiência das 9h00min",
+    "papel": "AdvogadoReu"
+  },
+  {
+    "timestamp": "2026-05-19T10:45:00.000Z",
+    "unidade": "Itajaí - 03a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "Autor"
+  },
+  {
+    "timestamp": "2026-05-19T10:48:30.000Z",
+    "unidade": "Itajaí - 03a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "AdvogadoAutor"
+  },
+  {
+    "timestamp": "2026-05-20T08:10:00.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiências entre 8h e 8h29min",
+    "papel": "Autor"
+  },
+  {
+    "timestamp": "2026-05-20T08:12:00.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiências entre 8h e 8h29min",
+    "papel": "Reu"
+  },
+  {
+    "timestamp": "2026-05-20T09:35:00.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiência das 9h30min",
+    "papel": "AdvogadoAutor"
+  },
+  {
+    "timestamp": "2026-05-20T09:40:00.000Z",
+    "unidade": "Navegantes - 01a Vara",
+    "audiencia": "Audiência das 9h30min",
+    "papel": "AdvogadoReu"
+  },
+  {
+    "timestamp": "2026-05-20T10:02:15.000Z",
+    "unidade": "Itajaí - 02a Vara",
+    "audiencia": "Sala de audiências",
+    "papel": "Testemunha"
+  },
+  {
+    "timestamp": "2026-05-20T14:15:00.000Z",
+    "unidade": "CEJUSC - Itajaí e Navegantes",
+    "audiencia": "Sala de Audiências",
+    "papel": "AdvogadoAutor"
+  },
+  {
+    "timestamp": "2026-05-20T14:20:00.000Z",
+    "unidade": "CEJUSC - Itajaí e Navegantes",
+    "audiencia": "Sala de Audiências",
+    "papel": "AdvogadoReu"
+  }
+]
