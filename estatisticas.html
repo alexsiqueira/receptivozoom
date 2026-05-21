@@ -817,7 +817,7 @@ function doPost(e) {
     sheet.getRange("A1:D1").setFontWeight("bold").setBackground("#d9e1f2");
   }
   
-  // Converte data ISO ou usa hora local do servidor do Apps Script
+  /* Converte data ISO ou usa hora local do servidor do Apps Script */
   var dateStr = data.timestamp ? new Date(data.timestamp) : new Date();
   
   sheet.appendRow([
@@ -859,7 +859,7 @@ function doGet() {
       var key = headers[j].toLowerCase();
       var val = values[i][j];
       
-      // Se for objeto de data, formata para string ISO
+      /* Se for objeto de data, formata para string ISO */
       if (val instanceof Date) {
         val = val.toISOString();
       }
@@ -1052,13 +1052,24 @@ function doOptions(e) {
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error("Erro HTTP ao carregar CSV: " + response.status);
+                    throw new Error("Planilha inacessível ou aba '" + SHEET_NAME + "' não encontrada.");
                 }
                 const csvText = await response.text();
+                
+                // Se a planilha for privada, o Google retorna a página HTML de login
+                if (csvText.trim().startsWith("<!DOCTYPE") || csvText.includes("google-signin") || csvText.includes("Sign in")) {
+                    throw new Error("A planilha está privada. Mude o compartilhamento para 'Qualquer pessoa com o link pode ler'.");
+                }
+                
                 processCsvData(csvText, "Google Sheets (Aba Estatísticas)");
             } catch (err) {
-                console.warn("Falha ao carregar do Google Sheets diretamente, tentando local:", err.message);
-                loadLocalJson();
+                console.error("Falha ao carregar do Google Sheets diretamente:", err.message);
+                setSourceStatus("Erro Planilha: " + err.message + " (Carregando JSON local...)", "danger");
+                
+                // Dá tempo para o usuário ver o erro na tela antes de ir para o backup local
+                setTimeout(() => {
+                    loadLocalJson();
+                }, 4000);
             }
         }
 
