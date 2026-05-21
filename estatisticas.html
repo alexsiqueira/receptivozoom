@@ -803,12 +803,11 @@ function doPost(e) {
     data = JSON.parse(rawData);
   } catch(err) {
     return ContentService.createTextOutput(JSON.stringify({status: "error", message: "Invalid JSON"}))
-      .setMimeType(ContentService.MimeType.JSON)
-      .addHeader("Access-Control-Allow-Origin", "*");
+      .setMimeType(ContentService.MimeType.JSON);
   }
   
   var sheetName = "Estatísticas";
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = obterPlanilha();
   var sheet = ss.getSheetByName(sheetName);
   
   if (!sheet) {
@@ -817,68 +816,117 @@ function doPost(e) {
     sheet.getRange("A1:D1").setFontWeight("bold").setBackground("#d9e1f2");
   }
   
-  /* Converte data ISO ou usa hora local do servidor do Apps Script */
-  var dateStr = data.timestamp ? new Date(data.timestamp) : new Date();
-  
   sheet.appendRow([
-    dateStr,
+    data.timestamp ? new Date(data.timestamp) : new Date(),
     data.unidade || "",
     data.audiencia || "",
     data.papel || ""
   ]);
   
   return ContentService.createTextOutput(JSON.stringify({status: "success"}))
-    .setMimeType(ContentService.MimeType.JSON)
-    .addHeader("Access-Control-Allow-Origin", "*");
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet() {
   var sheetName = "Estatísticas";
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = obterPlanilha();
   var sheet = ss.getSheetByName(sheetName);
   
   if (!sheet) {
     return ContentService.createTextOutput(JSON.stringify([]))
-      .setMimeType(ContentService.MimeType.JSON)
-      .addHeader("Access-Control-Allow-Origin", "*");
+      .setMimeType(ContentService.MimeType.JSON);
   }
   
   var values = sheet.getDataRange().getValues();
-  if (values.length <= 1) {
+  if (values.length === 0) {
     return ContentService.createTextOutput(JSON.stringify([]))
-      .setMimeType(ContentService.MimeType.JSON)
-      .addHeader("Access-Control-Allow-Origin", "*");
+      .setMimeType(ContentService.MimeType.JSON);
   }
   
-  var headers = values[0];
+  // Detecta se a primeira linha é cabeçalho ou já é um dado de acesso
+  var firstRow = values[0];
+  var temCabecalho = false;
+  
+  for (var k = 0; k < firstRow.length; k++) {
+    var cellStr = String(firstRow[k]).toLowerCase();
+    if (cellStr === "timestamp" || cellStr === "unidade" || cellStr === "audiência" || cellStr === "audiencia" || cellStr === "papel" || cellStr === "data") {
+      temCabecalho = true;
+      break;
+    }
+  }
+  
+  // Se o primeiro campo parecer com uma data, com certeza é um registro e não cabeçalho
+  if (temCabecalho && firstRow[0]) {
+    var str0 = String(firstRow[0]).trim();
+    if (str0.indexOf("GMT") !== -1 || /^\d{4}-\d{2}-\d{2}/.test(str0) || /^\d{2}\/\d{2}\/\d{4}/.test(str0)) {
+      temCabecalho = false;
+    }
+  }
+  
+  var headers = [];
+  var startIndex = 1;
+  
+  if (temCabecalho) {
+    for (var j = 0; j < firstRow.length; j++) {
+      var cabecalho = firstRow[j];
+      headers.push(cabecalho ? String(cabecalho).trim().toLowerCase() : "coluna_" + j);
+    }
+  } else {
+    // Caso a planilha não possua cabeçalhos, define a ordem padrão e lê desde a linha 0
+    headers = ["timestamp", "unidade", "audiencia", "papel"];
+    startIndex = 0;
+  }
+  
   var list = [];
   
-  for (var i = 1; i < values.length; i++) {
+  for (var i = startIndex; i < values.length; i++) {
     var item = {};
+    var temDados = false;
     for (var j = 0; j < headers.length; j++) {
-      var key = headers[j].toLowerCase();
+      if (j >= values[i].length) {
+        item[headers[j]] = "";
+        continue;
+      }
       var val = values[i][j];
       
       /* Se for objeto de data, formata para string ISO */
       if (val instanceof Date) {
         val = val.toISOString();
       }
+      var key = headers[j] || "coluna_" + j;
       item[key] = val;
+      if (val !== "") {
+        temDados = true;
+      }
     }
-    list.push(item);
+    if (temDados) {
+      list.push(item);
+    }
   }
   
   return ContentService.createTextOutput(JSON.stringify(list))
-    .setMimeType(ContentService.MimeType.JSON)
-    .addHeader("Access-Control-Allow-Origin", "*");
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .addHeader("Access-Control-Allow-Origin", "*")
-    .addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-    .addHeader("Access-Control-Allow-Headers", "Content-Type");
+  return ContentService.createTextOutput("");
 }
+
+/* CONFIGURAÇÃO DE PLANILHA AUTÔNOMA/VINCULADA */
+var PLANILHA_ID = ""; // Deixe vazio se o script for criado em Extensões > Apps Script dentro da planilha
+
+function obterPlanilha() {
+  if (PLANILHA_ID && PLANILHA_ID !== "") {
+    return SpreadsheetApp.openById(PLANILHA_ID);
+  }
+  var ativa = SpreadsheetApp.getActiveSpreadsheet();
+  if (ativa) {
+    return ativa;
+  }
+  // Fallback amigável caso seja script autônomo e não configurado
+  return SpreadsheetApp.openById("1U5o86dJitHM8pqF2fqZKLtTRfVvuidPPjuJs7ESJgso");
+}
+
                 </div>
                 <ol start="4" style="margin-top: 10px;">
                     <li>No canto superior direito, clique em <strong>Implantar</strong> &gt; <strong>Nova implantação</strong>.</li>
@@ -1288,15 +1336,40 @@ function doOptions(e) {
             }
         }
 
-        // 3. Data Processing & State Update
         function processIncomingData(data, sourceName) {
-            // Se vier formato com chaves maiúsculas do Sheets/AppsScript, normaliza
+            // Normalização inteligente de chaves (suporta cabeçalhos corrompidos, chaves maiúsculas e planilhas sem linha de cabeçalho)
             rawData = data.map(item => {
+                const keys = Object.keys(item);
+                let timestamp = "";
+                let unidade = "";
+                let audiencia = "";
+                let papel = "";
+
+                // 1. Tenta mapear procurando palavras-chave nas chaves
+                keys.forEach(k => {
+                    const kl = k.toLowerCase();
+                    if (kl.includes("timestamp") || kl.includes("data") || kl.includes("hora")) {
+                        timestamp = item[k];
+                    } else if (kl.includes("unidade") || kl.includes("vara") || kl.includes("sala")) {
+                        unidade = item[k];
+                    } else if (kl.includes("audiencia") || kl.includes("audiência") || kl.includes("desc")) {
+                        audiencia = item[k];
+                    } else if (kl.includes("papel") || kl.includes("voce") || kl.includes("você")) {
+                        papel = item[k];
+                    }
+                });
+
+                // 2. Fallback posicional se o mapeamento falhar (útil se a planilha não tiver cabeçalho e os dados viraram chaves)
+                if (!timestamp && keys.length > 0) timestamp = item[keys[0]];
+                if (!unidade && keys.length > 1) unidade = item[keys[1]];
+                if (!audiencia && keys.length > 2) audiencia = item[keys[2]];
+                if (!papel && keys.length > 3) papel = item[keys[3]];
+
                 return {
-                    timestamp: item.timestamp || item.Timestamp || "",
-                    unidade: item.unidade || item.Unidade || "",
-                    audiencia: item.audiencia || item.Audiência || item.Audiencia || "",
-                    papel: item.papel || item.Papel || ""
+                    timestamp: timestamp || "",
+                    unidade: unidade || "",
+                    audiencia: audiencia || "",
+                    papel: papel || ""
                 };
             }).filter(item => item.timestamp && item.unidade);
 
