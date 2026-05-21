@@ -771,9 +771,9 @@
                     const kl = k.toLowerCase();
                     if (kl.includes("timestamp") || kl.includes("data") || kl.includes("hora")) {
                         timestamp = item[k];
-                    } else if (kl.includes("unidade") || kl.includes("vara") || kl.includes("sala")) {
+                    } else if (kl.includes("unidade") || kl.includes("vara")) {
                         unidade = item[k];
-                    } else if (kl.includes("audiencia") || kl.includes("audiência") || kl.includes("desc")) {
+                    } else if (kl.includes("audiencia") || kl.includes("audiência") || kl.includes("sala") || kl.includes("desc")) {
                         audiencia = item[k];
                     } else if (kl.includes("papel") || kl.includes("voce") || kl.includes("você")) {
                         papel = item[k];
@@ -797,8 +797,8 @@
             // Ordena decrescente por data
             rawData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            // Extrair unidades únicas para filtros
-            uniqueUnits = [...new Set(rawData.map(r => r.unidade))].sort();
+            // Extrair unidades únicas para filtros (concatenando Vara e Sala)
+            uniqueUnits = [...new Set(rawData.map(r => r.unidade && r.audiencia ? `${r.unidade} - ${r.audiencia}` : (r.unidade || r.audiencia || "")))].filter(Boolean).sort();
             
             // Popular select de unidades
             populateUnidadeFilter();
@@ -835,9 +835,12 @@
             const endTime = endVal ? new Date(endVal + 'T23:59:59').getTime() : null;
 
             filteredData = rawData.filter(item => {
-                // 1. Filtro de Unidade
-                if (selectedUnidade && item.unidade !== selectedUnidade) {
-                    return false;
+                // 1. Filtro de Unidade (com a concatenação de Vara e Sala)
+                if (selectedUnidade) {
+                    const itemCombined = item.unidade && item.audiencia ? `${item.unidade} - ${item.audiencia}` : (item.unidade || item.audiencia || "");
+                    if (itemCombined !== selectedUnidade) {
+                        return false;
+                    }
                 }
                 
                 // 2. Filtro de Datas
@@ -878,9 +881,10 @@
                 const dateStr = formatDate(item.timestamp).toLowerCase();
                 const u = item.unidade.toLowerCase();
                 const a = item.audiencia.toLowerCase();
+                const combined = (item.unidade && item.audiencia ? `${item.unidade} - ${item.audiencia}` : (item.unidade || item.audiencia || "")).toLowerCase();
                 const p = (roleLabels[item.papel] || item.papel || '').toLowerCase();
                 
-                return dateStr.includes(query) || u.includes(query) || a.includes(query) || p.includes(query);
+                return dateStr.includes(query) || u.includes(query) || a.includes(query) || combined.includes(query) || p.includes(query);
             });
 
             currentPage = 1;
@@ -1146,9 +1150,11 @@
                 const badgeClass = `badge-${(item.papel || '').toLowerCase()}`;
                 const roleLabel = roleLabels[item.papel] || item.papel || 'Não Especificado';
 
+                const displayUnidade = item.unidade && item.audiencia ? `${item.unidade} - ${item.audiencia}` : (item.unidade || item.audiencia || "-");
+
                 tr.innerHTML = `
                     <td>${formatDate(item.timestamp)}</td>
-                    <td style="font-weight: 500;">${item.unidade}</td>
+                    <td style="font-weight: 500;">${displayUnidade}</td>
                     <td style="color: var(--text-muted);">${item.audiencia}</td>
                     <td>
                         <span class="role-badge ${badgeClass}">${roleLabel}</span>
