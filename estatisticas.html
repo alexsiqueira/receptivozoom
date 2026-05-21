@@ -1150,7 +1150,7 @@
                 const badgeClass = `badge-${(item.papel || '').toLowerCase()}`;
                 const roleLabel = roleLabels[item.papel] || item.papel || 'Não Especificado';
 
-                const displayUnidade = item.unidade && item.audiencia ? `${item.unidade} - ${item.audiencia}` : (item.unidade || item.audiencia || "-");
+                const displayUnidade = ${item.unidade};
 
                 tr.innerHTML = `
                     <td>${formatDate(item.timestamp)}</td>
