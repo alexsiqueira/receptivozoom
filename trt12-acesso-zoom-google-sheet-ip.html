@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Audiências - Google Sheets (com IP)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        select {
+            margin-top: 5px;
+            padding: 5px;
+            width: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            padding: 40px;
+            margin: 0;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.97);
+            max-width: 500px;
+            width: 100%;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .form-instruction {
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .link-container {
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            text-align: left;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn-download {
+            background-color: #28a745;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .btn-retry {
+            background-color: #007bff;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+        }
+
+        .modal-buttons button {
+            margin-top: 0;
+        }
+
+        .download-info {
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .device-specific {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Entrar na Audiência ZOOM</h2>
+        <p class="form-instruction">Por favor, preencha todos os campos para habilitar o acesso.</p>
+
+        <form method="post" id="formZoom">
+            <label for="nome">Nome completo:</label>
+            <input type="text" name="nome" id="nome" required>
+
+            <label for="papel">Você é:</label>
+            <select name="papel" id="papel" required>
+                <option value="">Selecione</option>
+                <option value="Autor">Autor</option>
+                <option value="Reu">Réu</option>
+                <option value="AdvogadoAutor">Advogado do Autor</option>
+                <option value="AdvogadoReu">Advogado do Réu</option>
+                <option value="Testemunha">Testemunha</option>
+            </select>
+
+            <div id="campoDocumento" class="hidden">
+                <label for="documento">Número do CPF:</label>
+                <input type="text" name="documento" id="documento" placeholder="Ex: 123.456.789-00">
+            </div>
+
+            <div id="campoOAB" class="hidden">
+                <label for="oab">Número da OAB - UF:</label>
+                <input type="text" name="oab" id="oab" placeholder="Ex: 123456 SP">
+            </div>
+
+            <label for="unidadeSelect">Selecione a Unidade:</label>
+            <select id="unidadeSelect">
+                <option value="">-- Escolha uma unidade --</option>
+            </select>
+
+            <div id="audienciaDiv" style="display:none;">
+                <label for="audienciaSelect">Selecione a Audiência:</label>
+                <select id="audienciaSelect">
+                    <option value="">-- Escolha uma audiência --</option>
+                </select>
+            </div>
+
+            <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
+        </form>
+    </div>
+
+    <!-- Modal de Download -->
+    <div id="modalDownload" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Aplicativo Zoom Necessário</h3>
+            <div class="download-info">
+                Não conseguimos abrir o Zoom automaticamente. <br>
+                Certifique-se de que o <strong>Aplicativo Desktop do Zoom</strong> (ou o App mobile) está instalado em
+                seu dispositivo.
+            </div>
+
+            <div class="modal-buttons">
+                <!-- Desktop -->
+                <a href="https://zoom.us/download" id="linkDesktop" class="btn-download device-specific"
+                    target="_blank">Baixar Zoom para Desktop</a>
+
+                <!-- iOS -->
+                <a href="https://apps.apple.com/us/app/zoom-one-platform-to-connect/id546505307" id="linkIOS"
+                    class="btn-download device-specific" target="_blank">Baixar na App Store</a>
+
+                <!-- Android -->
+                <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid"
+                    class="btn-download device-specific" target="_blank">Baixar no Google Play</a>
+
+                <button type="button" id="btnRetry" class="btn-retry">Já instalei, entrar agora</button>
+                <button type="button" id="btnCancelModal" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DOM Elements =====
+        const formZoom = document.getElementById("formZoom");
+        const unidadeSelect = document.getElementById("unidadeSelect");
+        const audienciaSelect = document.getElementById("audienciaSelect");
+        const audienciaDiv = document.getElementById("audienciaDiv");
+        const btnSubmit = document.getElementById("btnSubmit");
+
+        const nome = document.getElementById("nome");
+        const papel = document.getElementById("papel");
+        const documento = document.getElementById("documento");
+        const oab = document.getElementById("oab");
+        const campoDocumento = document.getElementById("campoDocumento");
+        const campoOAB = document.getElementById("campoOAB");
+
+        const modalDownload = document.getElementById("modalDownload");
+        const btnRetry = document.getElementById("btnRetry");
+        const btnCancelModal = document.getElementById("btnCancelModal");
+
+        const linkDesktop = document.getElementById("linkDesktop");
+        const linkIOS = document.getElementById("linkIOS");
+        const linkAndroid = document.getElementById("linkAndroid");
+
+        let currentZoomLink = "";
+        let detectionTimeout = null;
+
+        // Fonte de dados externa (codificada)
+        const _src = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvMVU1bzg2ZUppdEhNOHBxRjJmcVpKTGRUUmZWdnVpZFBQanVKczdFU0pnc28vZXhwb3J0P2Zvcm1hdD1jc3Y=";
+        const DATA_SOURCE = atob(_src);
+
+        // URL do Google Apps Script Web App para salvar estatísticas
+        // Configure esta URL após implantar o script no Google Sheets.
+        // Ex: const STATS_SCRIPT_URL = "";
+        const STATS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGjeiaWd2LbjAQef10pvgonM00kVIQA8wt3q7rrQTkMyyU7Zs4-6_fapfN4xCUKxNI/exec";
+
+        // Dados de Backup (Caso a planilha não carregue ou esteja offline)
+        const dadosBackup = `
+Itajaí - 01a Vara;Sala de audiências;4732411211
+Itajaí - 02a Vara;Sala de audiências;86234313077
+Itajaí - 03a Vara;Sala de audiências;4732411230
+Navegantes - 01a Vara;Audiências entre 8h e 8h29min;82827253075
+Navegantes - 01a Vara;Audiência das 8h30min;4732411280
+Navegantes - 01a Vara;Audiência das 9h00min;86126311393
+Navegantes - 01a Vara;Audiência das 9h30min;89485341412
+Navegantes - 01a Vara;Audiência das 10h00min;84062567431
+Navegantes - 01a Vara;Audiência das 10h30min;81338106875
+Navegantes - 01a Vara;Audiência das 11h00min;82355134488
+CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
+    `.trim();
+
+        let linhas = [];
+        let unidades = [];
+        let userIp = "Não detectado";
+
+        // ===== Utils & Logic =====
+
+        async function obterIP() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
+                const response = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    userIp = data.ip || "Não detectado";
+                }
+            } catch (err) {
+                console.error("Erro ao obter IP via ipify:", err);
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    const response = await fetch("https://ipapi.co/json/", { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    if (response.ok) {
+                        const data = await response.json();
+                        userIp = data.ip || "Não detectado";
+                    }
+                } catch (e2) {
+                    console.error("Erro no fallback do IP via ipapi:", e2);
+                }
+            }
+        }
+
+        function registrarAcesso() {
+            const dataAcesso = {
+                timestamp: new Date().toISOString(),
+                unidade: unidadeSelect.value,
+                audiencia: audienciaSelect.options[audienciaSelect.selectedIndex] ? audienciaSelect.options[audienciaSelect.selectedIndex].textContent : "",
+                papel: papel.value,
+                ip: userIp
+            };
+
+            // 1. Salvar no LocalStorage (como backup/histórico local)
+            try {
+                const historico = JSON.parse(localStorage.getItem("trt12_zoom_stats") || "[]");
+                historico.push(dataAcesso);
+                localStorage.setItem("trt12_zoom_stats", JSON.stringify(historico));
+            } catch (err) {
+                console.error("Erro ao salvar no LocalStorage:", err);
+            }
+
+            // 2. Enviar para o Google Apps Script se configurado
+            if (STATS_SCRIPT_URL) {
+                fetch(STATS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataAcesso)
+                }).catch(err => console.error("Erro ao enviar estatísticas para o servidor:", err));
+            }
+        }
+
+        function montarUname() {
+            const nomeTrim = nome.value.trim();
+            const papelVal = papel.value;
+            let uname = `${nomeTrim}-${papelVal}`;
+            if (papelVal === "AdvogadoAutor" || papelVal === "AdvogadoReu") {
+                uname += `-${oab.value.trim()}`;
+            }
+            if (papelVal === "Testemunha") {
+                uname += `-${documento.value.trim()}`;
+            }
+            return uname;
+        }
+
+        function validar() {
+            let valido = nome.value.trim() && papel.value;
+
+            if (papel.value === "Testemunha") {
+                valido = valido && documento.value.trim().length === 14; // CPF com máscara
+            }
+            if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
+                valido = valido && oab.value.trim().length >= 7;
+            }
+
+            const idReuniao = audienciaSelect.value;
+            const idOk = idReuniao && idReuniao.length >= 9;
+
+            valido = valido && idOk;
+
+            btnSubmit.disabled = !valido;
+        }
+
+        function mostrarCampos() {
+            campoDocumento.classList.add("hidden");
+            campoOAB.classList.add("hidden");
+            documento.required = false;
+            oab.required = false;
+
+            if (papel.value === "Testemunha") {
+                campoDocumento.classList.remove("hidden");
+                documento.required = true;
+            }
+            if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
+                campoOAB.classList.remove("hidden");
+                oab.required = true;
+            }
+            validar();
+        }
+
+        function aplicarMascaras() {
+            documento.addEventListener("input", function (e) {
+                let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                e.target.value = v;
+                validar();
+            });
+
+            oab.addEventListener("input", function (e) {
+                let val = e.target.value.replace(/[^\dA-Za-z]/g, '').toUpperCase().slice(0, 9);
+                val = val.replace(/^(\d{1,6})([A-Z]{0,2})/, (match, num, uf) => {
+                    return uf ? `${num} ${uf}` : num;
+                });
+                e.target.value = val;
+                validar();
+            });
+        }
+
+        // ===== Event Listeners =====
+
+        function detectarDispositivo() {
+            const ua = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isAndroid = /Android/.test(ua);
+
+            // Esconder todos primeiro
+            linkDesktop.style.display = "none";
+            linkIOS.style.display = "none";
+            linkAndroid.style.display = "none";
+
+            if (isIOS) {
+                linkIOS.style.display = "block";
+            } else if (isAndroid) {
+                linkAndroid.style.display = "block";
+            } else {
+                linkDesktop.style.display = "block";
+            }
+        }
+
+        function tentarEntrarNoZoom() {
+            if (!currentZoomLink) return;
+
+            let focusLost = false;
+
+            // Função para detectar se a janela perdeu o foco (indicando que o Zoom abriu)
+            const onBlur = () => {
+                focusLost = true;
+                clearTimeout(detectionTimeout);
+                window.removeEventListener('blur', onBlur);
+            };
+
+            window.addEventListener('blur', onBlur);
+
+            // Tentar abrir o protocolo do Zoom
+            window.location.href = currentZoomLink;
+
+            // Se após 2.5 segundos o foco não foi perdido, mostramos o modal de download
+            detectionTimeout = setTimeout(() => {
+                window.removeEventListener('blur', onBlur);
+                if (!focusLost) {
+                    detectarDispositivo();
+                    modalDownload.style.display = "flex";
+                }
+            }, 2500);
+        }
+
+        // ===== Event Listeners =====
+
+        formZoom.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const idReuniao = audienciaSelect.value;
+            if (!idReuniao) return;
+
+            // Registrar estatísticas do acesso
+            registrarAcesso();
+
+            const nomeUname = montarUname();
+            currentZoomLink = "zoommtg://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+
+            tentarEntrarNoZoom();
+        });
+
+        btnRetry.addEventListener("click", () => {
+            modalDownload.style.display = "none";
+            tentarEntrarNoZoom();
+        });
+
+        btnCancelModal.addEventListener("click", () => {
+            modalDownload.style.display = "none";
+            if (detectionTimeout) clearTimeout(detectionTimeout);
+        });
+
+        unidadeSelect.addEventListener("change", () => {
+            const unidadeEscolhida = unidadeSelect.value;
+            audienciaSelect.innerHTML = '<option value="">-- Escolha uma audiência --</option>';
+            audienciaDiv.style.display = "none";
+
+            if (!unidadeEscolhida) {
+                validar();
+                return;
+            }
+
+            const auds = linhas.filter(l => l.unidade === unidadeEscolhida);
+            auds.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a.id;
+                opt.textContent = a.descricao;
+                audienciaSelect.appendChild(opt);
+            });
+
+            audienciaDiv.style.display = "block";
+
+            if (audienciaSelect.options.length === 2) {
+                audienciaSelect.selectedIndex = 1;
+                audienciaDiv.style.display = "none";
+            } else {
+                audienciaSelect.selectedIndex = 0;
+            }
+
+            validar();
+        });
+
+        audienciaSelect.addEventListener("change", validar);
+        nome.addEventListener("input", validar);
+        papel.addEventListener("change", mostrarCampos);
+        documento.addEventListener("input", validar);
+        oab.addEventListener("input", validar);
+
+        // ===== Initialization & Data Loading =====
+
+        function processarDados(csvText, separador = ";") {
+            console.log("Processando dados recebidos...");
+            let lines = csvText.split(/\r?\n/).filter(l => l.trim() !== "");
+            
+            // Detecção robusta de separador: conta qual caractere aparece mais na primeira linha
+            if (lines.length > 0) {
+                const virgulas = (lines[0].match(/,/g) || []).length;
+                const pontosVirgula = (lines[0].match(/;/g) || []).length;
+                separador = (virgulas > pontosVirgula) ? "," : ";";
+                console.log("Separador detectado:", separador);
+            }
+
+            // Se a primeira linha parecer um cabeçalho (não tem números no ID), nós a removemos
+            if (lines.length > 0) {
+                const primeiraLinha = lines[0].split(separador);
+                const idExemplo = (primeiraLinha[2] || "").replace(/\D/g, '');
+                if (idExemplo.length < 4) { // Cabeçalhos geralmente não têm IDs longos
+                    console.log("Removendo cabeçalho:", lines[0]);
+                    lines.shift();
+                }
+            }
+
+            linhas = lines.map(l => {
+                const parts = l.split(separador);
+                return {
+                    unidade: (parts[0] || "").trim().replace(/^["']|["']$/g, ''),
+                    descricao: (parts[1] || "").trim().replace(/^["']|["']$/g, ''),
+                    id: (parts[2] || "").trim().replace(/^["']|["']$/g, '')
+                };
+            }).filter(item => item.id && item.unidade);
+
+            console.log("Total de registros carregados:", linhas.length);
+            unidades = [...new Set(linhas.map(l => l.unidade))];
+            popularUnidades();
+        }
+
+        function popularUnidades() {
+            unidadeSelect.innerHTML = '<option value="">-- Escolha uma unidade --</option>';
+            unidades.forEach(u => {
+                const opt = document.createElement("option");
+                opt.value = u;
+                opt.textContent = u;
+                unidadeSelect.appendChild(opt);
+            });
+            
+            // Após popular, processamos os parâmetros da URL
+            processarParametrosURL();
+        }
+
+        function processarParametrosURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Preencher campos básicos se informados
+            if (urlParams.has('nome')) nome.value = urlParams.get('nome');
+            if (urlParams.has('papel')) {
+                papel.value = urlParams.get('papel');
+                mostrarCampos(); // Garante que campos de CPF/OAB apareçam se necessário
+            }
+            if (urlParams.has('documento')) documento.value = urlParams.get('documento');
+            if (urlParams.has('oab')) oab.value = urlParams.get('oab');
+
+            // Processar a Unidade (o parâmetro solicitado pelo usuário)
+            const paramUnidade = urlParams.get('unidade');
+            if (paramUnidade) {
+                console.log("Tentando selecionar unidade via URL:", paramUnidade);
+                
+                // Tenta selecionar pelo valor (value)
+                unidadeSelect.value = paramUnidade;
+                
+                // Se não encontrou pelo value, tenta buscar pelo texto exibido (mais comum)
+                if (unidadeSelect.selectedIndex <= 0) {
+                    for (let i = 0; i < unidadeSelect.options.length; i++) {
+                        if (unidadeSelect.options[i].textContent.trim() === paramUnidade.trim()) {
+                            unidadeSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Se conseguimos selecionar algo, disparar o evento de mudança
+                if (unidadeSelect.selectedIndex > 0) {
+                    unidadeSelect.dispatchEvent(new Event('change'));
+                }
+            }
+            
+            validar();
+        }
+
+        async function carregarDados() {
+            if (!DATA_SOURCE) {
+                processarDados(dadosBackup, ";");
+                return;
+            }
+
+            unidadeSelect.innerHTML = '<option value="">Carregando dados...</option>';
+
+            try {
+                // Em um servidor (Apache/Tomcat), o fetch direto funciona sem erros de CORS
+                const response = await fetch(DATA_SOURCE);
+                
+                if (!response.ok) {
+                    throw new Error("Erro HTTP: " + response.status);
+                }
+                const csvText = await response.text();
+                processarDados(csvText);
+                console.log("Dados carregados com sucesso.");
+            } catch (error) {
+                console.error("Falha ao carregar fonte de dados:", error.message);
+                unidadeSelect.innerHTML = '<option value="">Erro ao carregar planilha (usando backup)</option>';
+                setTimeout(() => {
+                    processarDados(dadosBackup, ";");
+                }, 1000);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            aplicarMascaras();
+            carregarDados();
+            obterIP();
+        });
+    </script>
+</body>
+
+</html>

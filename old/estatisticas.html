@@ -550,10 +550,6 @@
             </select>
         </div>
         <div class="filter-group">
-            <label for="filterIp">Pesquisar IP</label>
-            <input type="text" id="filterIp" class="filter-input" placeholder="Filtrar por IP...">
-        </div>
-        <div class="filter-group">
             <label for="filterDataInicio">Data Inicial</label>
             <input type="date" id="filterDataInicio" class="filter-input">
         </div>
@@ -615,11 +611,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 15%">Data / Hora</th>
-                        <th style="width: 25%">Unidade / Vara</th>
-                        <th style="width: 25%">Audiência</th>
+                        <th style="width: 20%">Data / Hora</th>
+                        <th style="width: 30%">Unidade / Vara</th>
+                        <th style="width: 30%">Audiência</th>
                         <th style="width: 20%">Participante</th>
-                        <th style="width: 15%">IP</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -697,10 +692,6 @@
 
             // Bind filters
             filterUnidade.addEventListener('change', handleFilterChange);
-            const filterIp = document.getElementById('filterIp');
-            if (filterIp) {
-                filterIp.addEventListener('input', handleFilterChange);
-            }
             filterDataInicio.addEventListener('change', handleFilterChange);
             filterDataFim.addEventListener('change', handleFilterChange);
             btnResetFilters.addEventListener('click', resetFilters);
@@ -774,7 +765,6 @@
                 let unidade = "";
                 let audiencia = "";
                 let papel = "";
-                let ip = "";
 
                 // 1. Tenta mapear procurando palavras-chave nas chaves
                 keys.forEach(k => {
@@ -787,8 +777,6 @@
                         audiencia = item[k];
                     } else if (kl.includes("papel") || kl.includes("voce") || kl.includes("você")) {
                         papel = item[k];
-                    } else if (kl.includes("ip")) {
-                        ip = item[k];
                     }
                 });
 
@@ -797,14 +785,12 @@
                 if (!unidade && keys.length > 1) unidade = item[keys[1]];
                 if (!audiencia && keys.length > 2) audiencia = item[keys[2]];
                 if (!papel && keys.length > 3) papel = item[keys[3]];
-                if (!ip && keys.length > 4) ip = item[keys[4]];
 
                 return {
                     timestamp: timestamp || "",
                     unidade: unidade || "",
                     audiencia: audiencia || "",
-                    papel: papel || "",
-                    ip: ip || "Não detectado"
+                    papel: papel || ""
                 };
             }).filter(item => item.timestamp && item.unidade);
 
@@ -844,8 +830,6 @@
             const selectedUnidade = filterUnidade.value;
             const startVal = filterDataInicio.value;
             const endVal = filterDataFim.value;
-            const filterIp = document.getElementById('filterIp');
-            const selectedIp = filterIp ? filterIp.value.trim().toLowerCase() : "";
 
             const startTime = startVal ? new Date(startVal + 'T00:00:00').getTime() : null;
             const endTime = endVal ? new Date(endVal + 'T23:59:59').getTime() : null;
@@ -859,15 +843,7 @@
                     }
                 }
                 
-                // 2. Filtro de IP
-                if (selectedIp) {
-                    const itemIp = (item.ip || "").toLowerCase();
-                    if (!itemIp.includes(selectedIp)) {
-                        return false;
-                    }
-                }
-                
-                // 3. Filtro de Datas
+                // 2. Filtro de Datas
                 const itemTime = new Date(item.timestamp).getTime();
                 if (startTime && itemTime < startTime) return false;
                 if (endTime && itemTime > endTime) return false;
@@ -885,8 +861,6 @@
 
         function resetFilters() {
             filterUnidade.value = "";
-            const filterIp = document.getElementById('filterIp');
-            if (filterIp) filterIp.value = "";
             filterDataInicio.value = "";
             filterDataFim.value = "";
             searchInput.value = "";
@@ -909,9 +883,8 @@
                 const a = item.audiencia.toLowerCase();
                 const combined = (item.unidade && item.audiencia ? `${item.unidade} - ${item.audiencia}` : (item.unidade || item.audiencia || "")).toLowerCase();
                 const p = (roleLabels[item.papel] || item.papel || '').toLowerCase();
-                const ip = (item.ip || '').toLowerCase();
                 
-                return dateStr.includes(query) || u.includes(query) || a.includes(query) || combined.includes(query) || p.includes(query) || ip.includes(query);
+                return dateStr.includes(query) || u.includes(query) || a.includes(query) || combined.includes(query) || p.includes(query);
             });
 
             currentPage = 1;
@@ -1156,7 +1129,7 @@
             const totalPages = Math.ceil(totalItems / itemsPerPage);
 
             if (totalPages === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum registro encontrado.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum registro encontrado.</td></tr>`;
                 paginationInfo.textContent = "Mostrando 0 a 0 de 0 acessos";
                 btnPrevPage.disabled = true;
                 btnNextPage.disabled = true;
@@ -1187,7 +1160,6 @@
                     <td>
                         <span class="role-badge ${badgeClass}">${roleLabel}</span>
                     </td>
-                    <td style="font-family: monospace; color: var(--text-muted); font-size: 13px;">${item.ip || 'Não detectado'}</td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -1236,7 +1208,6 @@
                 xml += `    <unidade>${escapeXml(d.unidade)}</unidade>\n`;
                 xml += `    <audiencia>${escapeXml(d.audiencia)}</audiencia>\n`;
                 xml += `    <papel>${escapeXml(d.papel)}</papel>\n`;
-                xml += `    <ip>${escapeXml(d.ip || 'Não detectado')}</ip>\n`;
                 xml += '  </acesso>\n';
             });
             xml += '</estatisticas>';
@@ -1247,16 +1218,15 @@
             if (filteredData.length === 0) return alert("Não há dados para exportar.");
             
             // Cabeçalhos UTF-8 BOM para garantir acentos corretos no Excel
-            let csv = '\ufeffTimestamp;Unidade;Audiencia;Papel;IP\n';
+            let csv = '\ufeffTimestamp;Unidade;Audiencia;Papel\n';
             
             filteredData.forEach(d => {
                 const t = formatDate(d.timestamp);
                 const u = d.unidade.replace(/;/g, ',');
                 const a = d.audiencia.replace(/;/g, ',');
                 const p = roleLabels[d.papel] || d.papel || '';
-                const ip = d.ip || 'Não detectado';
                 
-                csv += `"${t}";"${u}";"${a}";"${p}";"${ip}"\n`;
+                csv += `"${t}";"${u}";"${a}";"${p}"\n`;
             });
             
             downloadFile(csv, "estatisticas.csv", "text/csv;charset=utf-8;");
