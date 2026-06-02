@@ -228,6 +228,9 @@
             </div>
 
             <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
+            <div id="ipDisplay" style="text-align: center; margin-top: 15px; font-size: 13px; color: #7f8c8d; font-family: monospace;">
+                IP Detectado: Carregando...
+            </div>
         </form>
     </div>
 
@@ -342,6 +345,10 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 } catch (e2) {
                     console.error("Erro no fallback do IP via ipapi:", e2);
                 }
+            }
+            const ipDisplay = document.getElementById("ipDisplay");
+            if (ipDisplay) {
+                ipDisplay.textContent = "Seu IP: " + userIp;
             }
         }
 
