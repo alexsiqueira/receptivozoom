@@ -228,9 +228,6 @@
             </div>
 
             <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
-            <div id="ipDisplay" style="text-align: center; margin-top: 15px; font-size: 13px; color: #7f8c8d; font-family: monospace;">
-                IP Detectado: Carregando...
-            </div>
         </form>
     </div>
 
@@ -391,15 +388,6 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
             
             userIp = anonimizarIP(ipReal);
-            
-            const ipDisplay = document.getElementById("ipDisplay");
-            if (ipDisplay) {
-                if (userIp !== "Não detectado") {
-                    ipDisplay.textContent = "Seu IP (Mascarado): " + userIp;
-                } else {
-                    ipDisplay.textContent = "Seu IP: Não detectado";
-                }
-            }
         }
 
         function registrarAcesso() {
