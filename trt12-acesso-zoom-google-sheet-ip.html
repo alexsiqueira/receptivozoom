@@ -319,7 +319,50 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         // ===== Utils & Logic =====
 
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = (hash << 5) - hash + char;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return Math.abs(hash);
+        }
+
+        function obterCodigoIP(ip) {
+            const hash = hashString(ip);
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const c1 = chars[hash % 26];
+            const c2 = chars[Math.floor(hash / 26) % 26];
+            const c3 = chars[Math.floor(hash / (26 * 26)) % 26];
+            return c1 + c2 + c3;
+        }
+
+        function anonimizarIP(ip) {
+            if (!ip || ip === "Não detectado") return ip;
+            
+            // Caso seja IPv4 (ex: 189.123.45.67)
+            if (ip.includes('.')) {
+                const parts = ip.split('.');
+                if (parts.length === 4) {
+                    const codigo = obterCodigoIP(ip);
+                    return `${parts[0]}.${parts[1]}.${parts[2]}.${codigo}`;
+                }
+            } 
+            // Caso seja IPv6 (ex: 2001:db8::1)
+            else if (ip.includes(':')) {
+                const parts = ip.split(':');
+                if (parts.length > 1) {
+                    const codigo = obterCodigoIP(ip);
+                    parts[parts.length - 1] = codigo;
+                    return parts.join(':');
+                }
+            }
+            return ip;
+        }
+
         async function obterIP() {
+            let ipReal = "Não detectado";
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -329,7 +372,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 
                 if (response.ok) {
                     const data = await response.json();
-                    userIp = data.ip || "Não detectado";
+                    ipReal = data.ip || "Não detectado";
                 }
             } catch (err) {
                 console.error("Erro ao obter IP via ipify:", err);
@@ -340,15 +383,22 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                     clearTimeout(timeoutId);
                     if (response.ok) {
                         const data = await response.json();
-                        userIp = data.ip || "Não detectado";
+                        ipReal = data.ip || "Não detectado";
                     }
                 } catch (e2) {
                     console.error("Erro no fallback do IP via ipapi:", e2);
                 }
             }
+            
+            userIp = anonimizarIP(ipReal);
+            
             const ipDisplay = document.getElementById("ipDisplay");
             if (ipDisplay) {
-                ipDisplay.textContent = "Seu IP: " + userIp;
+                if (userIp !== "Não detectado") {
+                    ipDisplay.textContent = "Seu IP (Mascarado): " + userIp;
+                } else {
+                    ipDisplay.textContent = "Seu IP: Não detectado";
+                }
             }
         }
 
