@@ -471,8 +471,12 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             // Registrar estatísticas do acesso
             registrarAcesso();
 
+            const ua = navigator.userAgent;
+            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const scheme = isMobile ? "zoomus" : "zoommtg";
+
             const nomeUname = montarUname();
-            currentZoomLink = "zoommtg://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
 
             tentarEntrarNoZoom();
         });
