@@ -264,7 +264,7 @@
 
             <div class="modal-buttons">
                 <!-- Manual Open -->
-                <a href="#" id="btnAbrirDireto" class="btn-open">Abrir Zoom Manualmente</a>
+                <a href="#" id="btnAbrirDireto" class="btn-open" target="_top">Abrir Zoom Manualmente</a>
 
                 <!-- Desktop -->
                 <a href="https://zoom.us/download" id="linkDesktop" class="btn-download device-specific"
@@ -479,7 +479,20 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             if (btnAbrirDireto) btnAbrirDireto.href = currentZoomLink;
 
             // Tentar abrir o protocolo do Zoom
-            window.location.href = currentZoomLink;
+            if (window.self !== window.top) {
+                try {
+                    const a = document.createElement('a');
+                    a.href = currentZoomLink;
+                    a.target = '_top';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (err) {
+                    window.location.href = currentZoomLink;
+                }
+            } else {
+                window.location.href = currentZoomLink;
+            }
 
             // Se após 2.5 segundos o foco não foi perdido, mostramos o modal de download
             detectionTimeout = setTimeout(() => {
