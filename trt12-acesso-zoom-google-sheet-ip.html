@@ -246,26 +246,14 @@
     <!-- Modal de Download -->
     <div id="modalDownload" class="modal-overlay">
         <div class="modal-content">
-            <h3>Conexão com o Zoom</h3>
+            <h3>Aplicativo Zoom Necessário</h3>
             
-            <div class="download-info" style="text-align: left; font-size: 14px;">
-                <p>Não conseguimos abrir o aplicativo do Zoom automaticamente.</p>
-                <p><strong>Possíveis motivos:</strong></p>
-                <ul style="padding-left: 20px; margin: 10px 0;">
-                    <li>O aplicativo do Zoom não está instalado neste dispositivo.</li>
-                    <li>O navegador (como o Safari no iPhone) bloqueou o redirecionamento automático por motivos de segurança.</li>
-                </ul>
-            </div>
-
-            <div class="link-container">
-                <strong>Link gerado:</strong><br>
-                <span id="zoomLinkDisplay" style="color: #007bff; font-weight: bold;"></span>
+            <div class="download-info">
+                Não conseguimos abrir o Zoom automaticamente. <br>
+                Certifique-se de que o <strong>Aplicativo do Zoom</strong> está instalado em seu dispositivo.
             </div>
 
             <div class="modal-buttons">
-                <!-- Manual Open -->
-                <a href="#" id="btnAbrirDireto" class="btn-open" target="_top">Abrir Zoom Manualmente</a>
-
                 <!-- Desktop -->
                 <a href="https://zoom.us/download" id="linkDesktop" class="btn-download device-specific"
                     target="_blank">Baixar Zoom para Desktop</a>
@@ -278,7 +266,7 @@
                 <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid"
                     class="btn-download device-specific" target="_blank">Baixar no Google Play</a>
 
-                <button type="button" id="btnRetry" class="btn-retry">Tentar abrir novamente</button>
+                <button type="button" id="btnRetry" class="btn-retry">Já instalei, tentar novamente</button>
                 <button type="button" id="btnCancelModal" class="btn-cancel">Cancelar</button>
             </div>
         </div>
@@ -302,8 +290,6 @@
         const modalDownload = document.getElementById("modalDownload");
         const btnRetry = document.getElementById("btnRetry");
         const btnCancelModal = document.getElementById("btnCancelModal");
-        const btnAbrirDireto = document.getElementById("btnAbrirDireto");
-        const zoomLinkDisplay = document.getElementById("zoomLinkDisplay");
 
         const linkDesktop = document.getElementById("linkDesktop");
         const linkIOS = document.getElementById("linkIOS");
@@ -550,10 +536,6 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
             window.addEventListener('blur', onBlur);
 
-            // Atualiza os elementos do modal com o link gerado
-            if (zoomLinkDisplay) zoomLinkDisplay.textContent = currentZoomLink;
-            if (btnAbrirDireto) btnAbrirDireto.href = currentZoomLink;
-
             // Tentar abrir o protocolo do Zoom
             if (window.self !== window.top) {
                 try {
@@ -605,11 +587,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             tentarEntrarNoZoom();
         });
 
-        btnAbrirDireto.addEventListener("click", () => {
-            setTimeout(() => {
-                modalDownload.style.display = "none";
-            }, 1000);
-        });
+
 
         btnCancelModal.addEventListener("click", () => {
             modalDownload.style.display = "none";
