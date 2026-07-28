@@ -383,6 +383,26 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             return uname;
         }
 
+        function obterLinkZoom(idReuniao) {
+            const ua = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+            const isMobile = isIOS || /Android/.test(ua);
+            
+            // Detecta especificamente se é o Safari rodando no iOS
+            const isIOSSafari = isIOS && /Safari/.test(ua) && !/CriOS/.test(ua) && !/FxiOS/.test(ua) && !/EdgiOS/.test(ua);
+
+            const nomeUname = montarUname();
+
+            if (isIOSSafari) {
+                // Para o Safari no iOS, usamos o link HTTPS Universal para evitar o alerta de "Endereço Inválido"
+                return "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
+            } else {
+                // Para outros navegadores, usamos os protocolos diretos para pular a tela do navegador
+                const scheme = isMobile ? "zoomus" : "zoommtg";
+                return scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+            }
+        }
+
         function validar() {
             let valido = nome.value.trim() && papel.value;
 
@@ -493,8 +513,10 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             document.addEventListener('visibilitychange', onVisibilityChange);
             window.addEventListener('pagehide', onPageHide);
 
-            // Tentar abrir o protocolo do Zoom
-            if (window.self !== window.top) {
+            // Tentar abrir o protocolo do Zoom ou link universal
+            if (currentZoomLink.startsWith("https://")) {
+                window.open(currentZoomLink, '_blank');
+            } else if (window.self !== window.top) {
                 try {
                     const a = document.createElement('a');
                     a.href = currentZoomLink;
@@ -529,12 +551,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             // Registrar estatísticas do acesso
             registrarAcesso();
 
-            const ua = navigator.userAgent;
-            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
-            const scheme = isMobile ? "zoomus" : "zoommtg";
-
-            const nomeUname = montarUname();
-            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+            currentZoomLink = obterLinkZoom(idReuniao);
 
             tentarEntrarNoZoom();
         });
@@ -553,11 +570,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         btnCopyLink.addEventListener("click", (e) => {
             e.preventDefault();
-            const ua = navigator.userAgent;
-            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
-            const scheme = isMobile ? "zoomus" : "zoommtg";
-            const nomeUname = montarUname();
-            const zoomLink = scheme + "://zoom.us/join?confno=" + audienciaSelect.value + "&uname=" + encodeURIComponent(nomeUname);
+            const zoomLink = obterLinkZoom(audienciaSelect.value);
 
             navigator.clipboard.writeText(zoomLink).then(() => {
                 const originalText = btnCopyLink.textContent;
