@@ -43,18 +43,35 @@
             }
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-
         .form-instruction {
             text-align: center;
-            font-size: 14px;
-            color: #7f8c8d;
+            font-size: 16px;
+            color: #2c3e50;
             margin-bottom: 25px;
-            font-style: italic;
+        }
+
+        .lgpd-container {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #2c3e50;
+        }
+
+        .lgpd-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .lgpd-checkbox input[type="checkbox"] {
+            margin-top: 2px;
+            width: auto;
+            flex-shrink: 0;
         }
 
         label {
@@ -112,6 +129,10 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+        }
+
+        .modal-overlay.modal-open {
+            display: flex;
         }
 
         .modal-content {
@@ -195,23 +216,30 @@
         .device-specific {
             display: none;
         }
+
+        #btnCopyLink:not(.hidden) {
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            color: #0056b3;
+        }
     </style>
 </head>
 
 <body>
     <div class="form-container">
-        <h2>Entrar na Audiência ZOOM</h2>
-        <p class="form-instruction">Por favor, preencha todos os campos para habilitar o acesso.</p>
+        <p class="form-instruction">ℹ️ Para entrar na audiência, por favor, preencha todos os campos para habilitar o acesso.</p>
 
         <form method="post" id="formZoom">
             <label for="nome">Nome completo:</label>
-            <input type="text" name="nome" id="nome" required>
+            <input type="text" name="nome" id="nome" placeholder="Ex: João Silva" required>
 
             <label for="papel">Você é:</label>
             <select name="papel" id="papel" required>
                 <option value="">Selecione</option>
                 <option value="Autor">Autor</option>
                 <option value="Reu">Réu</option>
+                <option value="Preposto">Representante do Réu (preposto)</option>
                 <option value="AdvogadoAutor">Advogado do Autor</option>
                 <option value="AdvogadoReu">Advogado do Réu</option>
                 <option value="Testemunha">Testemunha</option>
@@ -239,7 +267,15 @@
                 </select>
             </div>
 
+            <div class="lgpd-container">
+                <label class="lgpd-checkbox">
+                    <input type="checkbox" id="lgpdConsent">
+                    <span>Declaro estar ciente de que meus dados pessoais serão tratados pelo TRT12 apenas para fins de identificação e acesso à sala de audiência, conforme a LGPD (Lei nº 13.709/2018), e concordo com o uso descrito.</span>
+                </label>
+            </div>
+
             <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
+            <a href="#" id="btnCopyLink" class="hidden">Em caso de problemas: clique aqui para copiar o link da reunião e cole-o no navegador</a>
         </form>
     </div>
 
@@ -279,6 +315,7 @@
         const audienciaSelect = document.getElementById("audienciaSelect");
         const audienciaDiv = document.getElementById("audienciaDiv");
         const btnSubmit = document.getElementById("btnSubmit");
+        const btnCopyLink = document.getElementById("btnCopyLink");
 
         const nome = document.getElementById("nome");
         const papel = document.getElementById("papel");
@@ -364,7 +401,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             if (papelVal === "AdvogadoAutor" || papelVal === "AdvogadoReu") {
                 uname += `-${oab.value.trim()}`;
             }
-            if (papelVal === "Testemunha") {
+            if (papelVal === "Testemunha" || papelVal === "Preposto") {
                 uname += `-${documento.value.trim()}`;
             }
             return uname;
@@ -373,7 +410,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         function validar() {
             let valido = nome.value.trim() && papel.value;
 
-            if (papel.value === "Testemunha") {
+            if (papel.value === "Testemunha" || papel.value === "Preposto") {
                 valido = valido && documento.value.trim().length === 14; // CPF com máscara
             }
             if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
@@ -384,8 +421,10 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             const idOk = idReuniao && idReuniao.length >= 9;
 
             valido = valido && idOk;
+            valido = valido && document.getElementById("lgpdConsent").checked;
 
             btnSubmit.disabled = !valido;
+            // btnCopyLink.classList.toggle("hidden", !valido); // Preservado para uso futuro
         }
 
         function mostrarCampos() {
@@ -394,7 +433,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             documento.required = false;
             oab.required = false;
 
-            if (papel.value === "Testemunha") {
+            if (papel.value === "Testemunha" || papel.value === "Preposto") {
                 campoDocumento.classList.remove("hidden");
                 documento.required = true;
             }
@@ -429,7 +468,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         function detectarDispositivo() {
             const ua = navigator.userAgent;
-            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
             const isAndroid = /Android/.test(ua);
 
             // Esconder todos primeiro
@@ -451,34 +490,44 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
             let focusLost = false;
 
-            // Função para detectar se a janela perdeu o foco (indicando que o Zoom abriu)
-            const onBlur = () => {
-                focusLost = true;
-                clearTimeout(detectionTimeout);
+            const limparListeners = () => {
                 window.removeEventListener('blur', onBlur);
+                document.removeEventListener('visibilitychange', onVisibilityChange);
+                if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+            };
+
+            const marcarComoDetectado = () => {
+                if (focusLost) return;
+                focusLost = true;
+                limparListeners();
+            };
+
+            const onBlur = () => {
+                // Ignorado: no Windows HTTP, o diálogo "Como abrir?" rouba o foco
+                // mesmo quando o Zoom não está instalado
+            };
+
+            const onVisibilityChange = () => {
+                if (document.hidden) marcarComoDetectado();
             };
 
             window.addEventListener('blur', onBlur);
+            document.addEventListener('visibilitychange', onVisibilityChange);
 
-            // Tentar abrir o protocolo do Zoom
-            if (window.self !== window.top) {
-                try {
-                    const a = document.createElement('a');
-                    a.href = currentZoomLink;
-                    a.target = '_top';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } catch (err) {
-                    window.location.href = currentZoomLink;
-                }
-            } else {
-                window.location.href = currentZoomLink;
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                iframe.src = currentZoomLink;
+
+                setTimeout(() => {
+                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                }, 2000);
+            } catch (err) {
             }
 
-            // Se após 2.5 segundos o foco não foi perdido, mostramos o modal de download
             detectionTimeout = setTimeout(() => {
-                window.removeEventListener('blur', onBlur);
+                limparListeners();
                 if (!focusLost) {
                     detectarDispositivo();
                     modalDownload.style.display = "flex";
@@ -497,7 +546,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             registrarAcesso();
 
             const ua = navigator.userAgent;
-            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
             const scheme = isMobile ? "zoomus" : "zoommtg";
 
             const nomeUname = montarUname();
@@ -516,6 +565,27 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         btnCancelModal.addEventListener("click", () => {
             modalDownload.style.display = "none";
             if (detectionTimeout) clearTimeout(detectionTimeout);
+        });
+
+        btnCopyLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const zoomLink = "https://zoom.us/j/" + audienciaSelect.value;
+
+            navigator.clipboard.writeText(zoomLink).then(() => {
+                const originalText = btnCopyLink.textContent;
+                btnCopyLink.textContent = "Link Copiado!";
+                setTimeout(() => { btnCopyLink.textContent = originalText; }, 2000);
+            }).catch(() => {
+                const tempInput = document.createElement("input");
+                tempInput.value = zoomLink;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                const originalText = btnCopyLink.textContent;
+                btnCopyLink.textContent = "Link Copiado!";
+                setTimeout(() => { btnCopyLink.textContent = originalText; }, 2000);
+            });
         });
 
         unidadeSelect.addEventListener("change", () => {
@@ -553,6 +623,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         papel.addEventListener("change", mostrarCampos);
         documento.addEventListener("input", validar);
         oab.addEventListener("input", validar);
+        document.getElementById("lgpdConsent").addEventListener("change", validar);
 
         // ===== Initialization & Data Loading =====
 

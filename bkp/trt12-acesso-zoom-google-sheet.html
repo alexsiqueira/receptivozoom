@@ -165,6 +165,18 @@
             background-color: #007bff;
         }
 
+        .btn-open {
+            background-color: #007bff;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
         .btn-cancel {
             background-color: #6c757d;
         }
@@ -235,10 +247,10 @@
     <div id="modalDownload" class="modal-overlay">
         <div class="modal-content">
             <h3>Aplicativo Zoom Necessário</h3>
+            
             <div class="download-info">
                 Não conseguimos abrir o Zoom automaticamente. <br>
-                Certifique-se de que o <strong>Aplicativo Desktop do Zoom</strong> (ou o App mobile) está instalado em
-                seu dispositivo.
+                Certifique-se de que o <strong>Aplicativo do Zoom</strong> está instalado em seu dispositivo.
             </div>
 
             <div class="modal-buttons">
@@ -254,7 +266,7 @@
                 <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid"
                     class="btn-download device-specific" target="_blank">Baixar no Google Play</a>
 
-                <button type="button" id="btnRetry" class="btn-retry">Já instalei, entrar agora</button>
+                <button type="button" id="btnRetry" class="btn-retry">Já instalei, tentar novamente</button>
                 <button type="button" id="btnCancelModal" class="btn-cancel">Cancelar</button>
             </div>
         </div>
@@ -290,6 +302,11 @@
         const _src = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvMVU1bzg2ZUppdEhNOHBxRjJmcVpKTGRUUmZWdnVpZFBQanVKczdFU0pnc28vZXhwb3J0P2Zvcm1hdD1jc3Y=";
         const DATA_SOURCE = atob(_src);
 
+        // URL do Google Apps Script Web App para salvar estatísticas
+        // Configure esta URL após implantar o script no Google Sheets.
+        // Ex: const STATS_SCRIPT_URL = "";
+        const STATS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGjeiaWd2LbjAQef10pvgonM00kVIQA8wt3q7rrQTkMyyU7Zs4-6_fapfN4xCUKxNI/exec";
+
         // Dados de Backup (Caso a planilha não carregue ou esteja offline)
         const dadosBackup = `
 Itajaí - 01a Vara;Sala de audiências;4732411211
@@ -309,6 +326,36 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         let unidades = [];
 
         // ===== Utils & Logic =====
+
+        function registrarAcesso() {
+            const dataAcesso = {
+                timestamp: new Date().toISOString(),
+                unidade: unidadeSelect.value,
+                audiencia: audienciaSelect.options[audienciaSelect.selectedIndex] ? audienciaSelect.options[audienciaSelect.selectedIndex].textContent : "",
+                papel: papel.value
+            };
+
+            // 1. Salvar no LocalStorage (como backup/histórico local)
+            try {
+                const historico = JSON.parse(localStorage.getItem("trt12_zoom_stats") || "[]");
+                historico.push(dataAcesso);
+                localStorage.setItem("trt12_zoom_stats", JSON.stringify(historico));
+            } catch (err) {
+                console.error("Erro ao salvar no LocalStorage:", err);
+            }
+
+            // 2. Enviar para o Google Apps Script se configurado
+            if (STATS_SCRIPT_URL) {
+                fetch(STATS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataAcesso)
+                }).catch(err => console.error("Erro ao enviar estatísticas para o servidor:", err));
+            }
+        }
 
         function montarUname() {
             const nomeTrim = nome.value.trim();
@@ -414,7 +461,20 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             window.addEventListener('blur', onBlur);
 
             // Tentar abrir o protocolo do Zoom
-            window.location.href = currentZoomLink;
+            if (window.self !== window.top) {
+                try {
+                    const a = document.createElement('a');
+                    a.href = currentZoomLink;
+                    a.target = '_top';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (err) {
+                    window.location.href = currentZoomLink;
+                }
+            } else {
+                window.location.href = currentZoomLink;
+            }
 
             // Se após 2.5 segundos o foco não foi perdido, mostramos o modal de download
             detectionTimeout = setTimeout(() => {
@@ -433,8 +493,15 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             const idReuniao = audienciaSelect.value;
             if (!idReuniao) return;
 
+            // Registrar estatísticas do acesso
+            registrarAcesso();
+
+            const ua = navigator.userAgent;
+            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const scheme = isMobile ? "zoomus" : "zoommtg";
+
             const nomeUname = montarUname();
-            currentZoomLink = "zoommtg://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
 
             tentarEntrarNoZoom();
         });
@@ -443,6 +510,8 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             modalDownload.style.display = "none";
             tentarEntrarNoZoom();
         });
+
+
 
         btnCancelModal.addEventListener("click", () => {
             modalDownload.style.display = "none";
@@ -531,6 +600,47 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = u;
                 unidadeSelect.appendChild(opt);
             });
+            
+            // Após popular, processamos os parâmetros da URL
+            processarParametrosURL();
+        }
+
+        function processarParametrosURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Preencher campos básicos se informados
+            if (urlParams.has('nome')) nome.value = urlParams.get('nome');
+            if (urlParams.has('papel')) {
+                papel.value = urlParams.get('papel');
+                mostrarCampos(); // Garante que campos de CPF/OAB apareçam se necessário
+            }
+            if (urlParams.has('documento')) documento.value = urlParams.get('documento');
+            if (urlParams.has('oab')) oab.value = urlParams.get('oab');
+
+            // Processar a Unidade (o parâmetro solicitado pelo usuário)
+            const paramUnidade = urlParams.get('unidade');
+            if (paramUnidade) {
+                console.log("Tentando selecionar unidade via URL:", paramUnidade);
+                
+                // Tenta selecionar pelo valor (value)
+                unidadeSelect.value = paramUnidade;
+                
+                // Se não encontrou pelo value, tenta buscar pelo texto exibido (mais comum)
+                if (unidadeSelect.selectedIndex <= 0) {
+                    for (let i = 0; i < unidadeSelect.options.length; i++) {
+                        if (unidadeSelect.options[i].textContent.trim() === paramUnidade.trim()) {
+                            unidadeSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Se conseguimos selecionar algo, disparar o evento de mudança
+                if (unidadeSelect.selectedIndex > 0) {
+                    unidadeSelect.dispatchEvent(new Event('change'));
+                }
+            }
+            
             validar();
         }
 

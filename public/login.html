@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Restrito - Login Zoom TRT12</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(51, 65, 85, 0.5);
+            --font-family: 'Outfit', sans-serif;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
+                        radial-gradient(circle at bottom left, rgba(30, 41, 59, 0.8), var(--bg-color));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 440px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 25px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .description {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .alert {
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            margin-bottom: 25px;
+            display: none;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        /* Google Sign-in Custom styling */
+        .google-btn-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Dev login Fallback section */
+        .dev-login-section {
+            border-top: 1px solid var(--border);
+            margin-top: 25px;
+            padding-top: 25px;
+            display: none;
+        }
+
+        .dev-login-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 25px;
+        }
+    </style>
+    <!-- Google Identity Services (GIS) Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo-container">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+        </div>
+
+        <h1>Painel Administrativo</h1>
+        <p class="description">Acesso restrito a administradores cadastrados com e-mail institucional do TRT12 (@trt12.jus.br).</p>
+
+        <div class="alert" id="alertBox">
+            Ocorreu um erro ao fazer login.
+        </div>
+
+        <!-- Google Login Button Container -->
+        <div id="googleLoginWrapper" class="google-btn-wrapper">
+            <div id="g_id_onload"
+                 data-client_id=""
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+
+        <!-- Local Dev Mock Login Fallback -->
+        <div class="dev-login-section" id="devLoginSection">
+            <h3>Login de Desenvolvedor (Mock)</h3>
+            <form id="devLoginForm">
+                <div class="form-group">
+                    <label for="devEmail">E-mail @trt12.jus.br</label>
+                    <input type="email" id="devEmail" placeholder="csi@trt12.jus.br" required>
+                </div>
+                <button type="submit" class="btn-submit">Entrar no Painel</button>
+            </form>
+        </div>
+
+        <p class="footer-note">Segurança da Informação - TRT12</p>
+    </div>
+
+    <script>
+        const alertBox = document.getElementById('alertBox');
+        const devLoginSection = document.getElementById('devLoginSection');
+        const googleLoginWrapper = document.getElementById('googleLoginWrapper');
+        const devLoginForm = document.getElementById('devLoginForm');
+        const devEmailInput = document.getElementById('devEmail');
+
+        // Check query parameters for system status redirects
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === 'session_expired') {
+            showAlert('Sua sessão expirou. Por favor, conecte-se novamente.');
+        } else if (urlParams.get('error') === 'no_permission') {
+            showAlert('Sua conta não tem permissão para acessar o painel.');
+        }
+
+        // Initialize Authentication Modes
+        async function checkAuthConfig() {
+            try {
+                const res = await fetch('/api/auth/config');
+                const config = await res.json();
+                
+                if (config.googleEnabled && config.googleClientId) {
+                    // Update client ID in HTML
+                    const gIdOnload = document.getElementById('g_id_onload');
+                    gIdOnload.setAttribute('data-client_id', config.googleClientId);
+                    googleLoginWrapper.style.display = 'flex';
+                    devLoginSection.style.display = 'none';
+                } else {
+                    // Google NOT configured, show Dev Mock
+                    googleLoginWrapper.style.display = 'none';
+                    devLoginSection.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error loading auth configurations. Defaulting to local dev.", err);
+                googleLoginWrapper.style.display = 'none';
+                devLoginSection.style.display = 'block';
+            }
+        }
+
+        // Initialize on Load
+        document.addEventListener('DOMContentLoaded', checkAuthConfig);
+
+        // Google Authentication Callback
+        async function handleCredentialResponse(response) {
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken: response.credential })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Erro na autenticação.');
+                
+                // Login Success
+                window.location.href = '/admin.html';
+            } catch (err) {
+                showAlert(err.message);
+            }
+        }
+
+        // Dev Mock Form Submit Handler
+        devLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const devEmail = devEmailInput.value.trim();
+            
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ devEmail })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Erro na autenticação.');
+                
+                // Login Success
+                window.location.href = '/admin.html';
+            } catch (err) {
+                showAlert(err.message);
+            }
+        });
+
+        // Show error/alert messages
+        function showAlert(message) {
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

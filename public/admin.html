@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Cadastro de IDs do Zoom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --font-family: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: none; /* Hidden until auth check passes */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* Tabs Interface */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 14.5px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: white;
+            background-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Table Card */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.5);
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        .zoom-id-badge {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+
+        .modal.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background-color: rgba(15, 23, 42, 0.2);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #1e293b;
+            border-left: 4px solid var(--success);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2000;
+        }
+
+        .toast.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Gestão de Audiências Zoom</h1>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Painel Administrativo para Cadastro e Configurações</p>
+            </div>
+            <div class="nav-links">
+                <span class="user-info">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span id="currentUserEmail">carregando...</span>
+                </span>
+                <a href="/">Formulário Principal</a>
+                <a href="/estatisticas.html">Estatísticas</a>
+                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" id="btnLogout">Sair</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('meetings-tab')">Salas de Audiência</button>
+            <button class="tab-btn" onclick="switchTab('admins-tab')">Administradores</button>
+        </div>
+
+        <!-- ================= SALAS DE AUDIÊNCIA TAB ================= -->
+        <div id="meetings-tab" class="tab-content active">
+            <div class="controls">
+                <div class="search-box">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Buscar por Unidade ou Descrição...">
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="btnOpenAddModal">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="stroke-width: 2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                        </svg>
+                        Cadastrar Unidade
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <table id="meetingsTable">
+                    <thead>
+                        <tr>
+                            <th>Unidade</th>
+                            <th>Descrição da Audiência</th>
+                            <th>ID da Reunião Zoom</th>
+                            <th style="width: 150px; text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meetingsTableBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">Carregando reuniões...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= ADMINISTRADORES TAB ================= -->
+        <div id="admins-tab" class="tab-content">
+            <div class="controls">
+                <div style="flex: 1;">
+                    <p style="color: var(--text-muted); font-size: 14px;">Administradores com permissão de acesso ao sistema (exclusivo para e-mails @trt12.jus.br).</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="btnOpenAddUserModal">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="stroke-width: 2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                        </svg>
+                        Adicionar Administrador
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <table id="adminsTable">
+                    <thead>
+                        <tr>
+                            <th>E-mail</th>
+                            <th>Data de Cadastro</th>
+                            <th style="width: 150px; text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminsTableBody">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">Carregando administradores...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Meeting Modal -->
+    <div class="modal" id="meetingModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">Cadastrar Unidade</h3>
+                <button class="close-btn" id="btnCloseModal">&times;</button>
+            </div>
+            <form id="meetingForm">
+                <input type="hidden" id="meetingId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="unidade">Unidade / Vara</label>
+                        <input type="text" id="unidade" placeholder="Ex: Itajaí - 01a Vara" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descricao">Descrição</label>
+                        <input type="text" id="descricao" placeholder="Ex: Sala de audiências ou Audiência das 09h00min" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zoom_id">ID da Reunião Zoom</label>
+                        <input type="text" id="zoom_id" placeholder="Ex: 86126311393" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveMeeting">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Admin User Modal -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Adicionar Administrador</h3>
+                <button class="close-btn" id="btnCloseUserModal">&times;</button>
+            </div>
+            <form id="addUserForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="adminEmail">E-mail Corporativo (@trt12.jus.br)</label>
+                        <input type="email" id="adminEmail" placeholder="usuario@trt12.jus.br" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelAddUser">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Confirmar Exclusão</h3>
+                <button class="close-btn" id="btnCloseDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
+                <p style="margin-top: 10px; font-weight: 500;" id="deleteTargetText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelDeleteModal">Cancelar</button>
+                <button type="button" class="btn id-danger-confirm-btn btn-danger" id="btnConfirmDelete">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg id="toastIcon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span id="toastMessage">Operação realizada com sucesso!</span>
+    </div>
+
+    <script>
+        // State
+        let meetings = [];
+        let filteredMeetings = [];
+        let admins = [];
+        let selectedMeetingId = null;
+        let selectedAdminId = null;
+        let deleteType = ''; // 'meeting' or 'admin'
+        let currentUserEmail = '';
+
+        // DOM elements
+        const meetingsTableBody = document.getElementById('meetingsTableBody');
+        const adminsTableBody = document.getElementById('adminsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        
+        const meetingModal = document.getElementById('meetingModal');
+        const meetingForm = document.getElementById('meetingForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const meetingIdInput = document.getElementById('meetingId');
+        const unidadeInput = document.getElementById('unidade');
+        const descricaoInput = document.getElementById('descricao');
+        const zoomIdInput = document.getElementById('zoom_id');
+
+        const addUserModal = document.getElementById('addUserModal');
+        const addUserForm = document.getElementById('addUserForm');
+        const adminEmailInput = document.getElementById('adminEmail');
+        
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteTargetText = document.getElementById('deleteTargetText');
+        const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        // Security check on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            loadMeetings();
+            loadAdmins();
+        });
+
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) {
+                    throw new Error('Não autenticado');
+                }
+                const data = await res.json();
+                currentUserEmail = data.email;
+                document.getElementById('currentUserEmail').textContent = currentUserEmail;
+                document.body.style.display = 'block'; // Show page once verified
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Logout
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login.html';
+            } catch (err) {
+                showToast('Erro ao sair do sistema.', true);
+            }
+        });
+
+        // Tab Switching
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight button
+            const clickedBtn = Array.from(document.querySelectorAll('.tab-btn'))
+                .find(b => b.getAttribute('onclick').includes(tabId));
+            if (clickedBtn) clickedBtn.classList.add('active');
+        };
+
+        // Search Filter
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            filteredMeetings = meetings.filter(m => 
+                m.unidade.toLowerCase().includes(query) || 
+                m.descricao.toLowerCase().includes(query) || 
+                m.zoom_id.toLowerCase().includes(query)
+            );
+            renderTable();
+        });
+
+        // Fetch meetings
+        async function loadMeetings() {
+            try {
+                const res = await fetch('/api/admin/meetings');
+                if (res.status === 401 || res.status === 403) return window.location.href = '/login.html';
+                if (!res.ok) throw new Error('Falha ao buscar reuniões.');
+                meetings = await res.json();
+                filteredMeetings = [...meetings];
+                renderTable();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        // Fetch admins list
+        async function loadAdmins() {
+            try {
+                const res = await fetch('/api/admin/users');
+                if (res.status === 401 || res.status === 403) return window.location.href = '/login.html';
+                if (!res.ok) throw new Error('Falha ao buscar administradores.');
+                admins = await res.json();
+                renderAdminsTable();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        // Render meetings table rows
+        function renderTable() {
+            if (filteredMeetings.length === 0) {
+                meetingsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            Nenhuma unidade encontrada.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            meetingsTableBody.innerHTML = filteredMeetings.map(m => `
+                <tr>
+                    <td style="font-weight: 500; color: white;">${escapeHtml(m.unidade)}</td>
+                    <td>${escapeHtml(m.descricao)}</td>
+                    <td><span class="zoom-id-badge">${escapeHtml(m.zoom_id)}</span></td>
+                    <td style="text-align: right;">
+                        <div class="actions-cell" style="justify-content: flex-end;">
+                            <button class="btn btn-secondary btn-icon" onclick="openEditModal(${m.id})" title="Editar">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button class="btn btn-danger btn-icon" onclick="openDeleteModal(${m.id}, 'meeting')" title="Excluir">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render admins table rows
+        function renderAdminsTable() {
+            if (admins.length === 0) {
+                adminsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            Nenhum administrador cadastrado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            adminsTableBody.innerHTML = admins.map(a => {
+                // Determine if this user is deletable
+                const isDeletable = a.email !== 'csi@trt12.jus.br' && a.email !== currentUserEmail;
+                
+                return `
+                <tr>
+                    <td style="font-weight: 500; color: white;">${escapeHtml(a.email)}</td>
+                    <td>${new Date(a.created_at).toLocaleString('pt-BR')}</td>
+                    <td style="text-align: right;">
+                        <div class="actions-cell" style="justify-content: flex-end;">
+                            ${isDeletable ? `
+                                <button class="btn btn-danger btn-icon" onclick="openDeleteModal(${a.id}, 'admin')" title="Excluir Administrador">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            ` : `<span style="font-size: 11px; color: var(--text-muted); font-style: italic;">Protegido</span>`}
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        // Add/Edit Zoom Room Modal handlers
+        document.getElementById('btnOpenAddModal').addEventListener('click', () => {
+            modalTitle.textContent = "Cadastrar Unidade";
+            meetingForm.reset();
+            meetingIdInput.value = "";
+            meetingModal.classList.add('active');
+        });
+
+        document.getElementById('btnCloseModal').addEventListener('click', closeMeetingModal);
+        document.getElementById('btnCancelModal').addEventListener('click', closeMeetingModal);
+
+        function closeMeetingModal() {
+            meetingModal.classList.remove('active');
+        }
+
+        meetingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = meetingIdInput.value;
+            const payload = {
+                unidade: unidadeInput.value.trim(),
+                descricao: descricaoInput.value.trim(),
+                zoom_id: zoomIdInput.value.trim()
+            };
+
+            const url = id ? `/api/admin/meetings/${id}` : '/api/admin/meetings';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.error || 'Erro ao salvar unidade.');
+                }
+
+                showToast(id ? 'Unidade atualizada com sucesso!' : 'Unidade cadastrada com sucesso!');
+                closeMeetingModal();
+                loadMeetings();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        });
+
+        window.openEditModal = function(id) {
+            const meeting = meetings.find(m => m.id === id);
+            if (!meeting) return;
+
+            modalTitle.textContent = "Editar Unidade";
+            meetingIdInput.value = meeting.id;
+            unidadeInput.value = meeting.unidade;
+            descricaoInput.value = meeting.descricao;
+            zoomIdInput.value = meeting.zoom_id;
+            
+            meetingModal.classList.add('active');
+        };
+
+        // Add Admin User Modal handlers
+        document.getElementById('btnOpenAddUserModal').addEventListener('click', () => {
+            addUserForm.reset();
+            addUserModal.classList.add('active');
+        });
+
+        document.getElementById('btnCloseUserModal').addEventListener('click', closeUserModal);
+        document.getElementById('btnCancelAddUser').addEventListener('click', closeUserModal);
+
+        function closeUserModal() {
+            addUserModal.classList.remove('active');
+        }
+
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = adminEmailInput.value.trim().toLowerCase();
+            
+            if (!email.endsWith('@trt12.jus.br')) {
+                showToast('Apenas e-mails institucionais @trt12.jus.br são permitidos.', true);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.error || 'Erro ao adicionar administrador.');
+                }
+
+                showToast('Administrador adicionado com sucesso!');
+                closeUserModal();
+                loadAdmins();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        });
+
+        // Universal Delete Handler
+        document.getElementById('btnCloseDeleteModal').addEventListener('click', closeDeleteModal);
+        document.getElementById('btnCancelDeleteModal').addEventListener('click', closeDeleteModal);
+
+        function closeDeleteModal() {
+            deleteModal.classList.remove('active');
+            selectedMeetingId = null;
+            selectedAdminId = null;
+            deleteType = '';
+        }
+
+        window.openDeleteModal = function(id, type) {
+            deleteType = type;
+            
+            if (type === 'meeting') {
+                selectedMeetingId = id;
+                const meeting = meetings.find(m => m.id === id);
+                if (!meeting) return;
+                deleteTargetText.textContent = `Unidade: ${meeting.unidade} - ${meeting.descricao}`;
+            } else if (type === 'admin') {
+                selectedAdminId = id;
+                const admin = admins.find(a => a.id === id);
+                if (!admin) return;
+                deleteTargetText.textContent = `Administrador: ${admin.email}`;
+            }
+
+            deleteModal.classList.add('active');
+        };
+
+        btnConfirmDelete.addEventListener('click', async () => {
+            try {
+                let url = '';
+                if (deleteType === 'meeting') {
+                    url = `/api/admin/meetings/${selectedMeetingId}`;
+                } else if (deleteType === 'admin') {
+                    url = `/api/admin/users/${selectedAdminId}`;
+                }
+
+                const res = await fetch(url, { method: 'DELETE' });
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error || 'Erro na exclusão.');
+
+                showToast(deleteType === 'meeting' ? 'Unidade excluída com sucesso!' : 'Administrador removido com sucesso!');
+                closeDeleteModal();
+                
+                if (deleteType === 'meeting') loadMeetings();
+                if (deleteType === 'admin') loadAdmins();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        });
+
+        // Toast Helper
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            if (isError) {
+                toast.classList.add('error');
+                toastIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                `;
+            } else {
+                toast.classList.remove('error');
+                toastIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                `;
+            }
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // HTML escaping helper
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
