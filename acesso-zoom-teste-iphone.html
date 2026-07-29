@@ -216,7 +216,7 @@
 
         <form method="post" id="formZoom">
             <label for="nome">Nome completo:</label>
-            <input type="text" name="nome" id="nome" required>
+            <input type="text" name="nome" id="nome" placeholder="Ex: João Silva" required>
 
             <label for="papel">Você é:</label>
             <select name="papel" id="papel" required>
@@ -383,26 +383,6 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             return uname;
         }
 
-        function obterLinkZoom(idReuniao) {
-            const ua = navigator.userAgent;
-            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
-            const isMobile = isIOS || /Android/.test(ua);
-            
-            // Detecta especificamente se é o Safari rodando no iOS
-            const isIOSSafari = isIOS && /Safari/.test(ua) && !/CriOS/.test(ua) && !/FxiOS/.test(ua) && !/EdgiOS/.test(ua);
-
-            const nomeUname = montarUname();
-
-            if (isIOSSafari) {
-                // Para o Safari no iOS, usamos o link HTTPS Universal para evitar o alerta de "Endereço Inválido"
-                return "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
-            } else {
-                // Para outros navegadores, usamos os protocolos diretos para pular a tela do navegador
-                const scheme = isMobile ? "zoomus" : "zoommtg";
-                return scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
-            }
-        }
-
         function validar() {
             let valido = nome.value.trim() && papel.value;
 
@@ -485,58 +465,47 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
             let focusLost = false;
 
-            const cleanup = () => {
-                clearTimeout(detectionTimeout);
+            const limparListeners = () => {
                 window.removeEventListener('blur', onBlur);
                 document.removeEventListener('visibilitychange', onVisibilityChange);
-                window.removeEventListener('pagehide', onPageHide);
+                if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+            };
+
+            const marcarComoDetectado = () => {
+                if (focusLost) return;
+                focusLost = true;
+                limparListeners();
             };
 
             const onBlur = () => {
-                focusLost = true;
-                cleanup();
+                // Ignorado: no Windows HTTP, o diálogo "Como abrir?" rouba o foco
+                // mesmo quando o Zoom não está instalado
             };
 
             const onVisibilityChange = () => {
-                if (document.hidden || document.visibilityState === 'hidden') {
-                    focusLost = true;
-                    cleanup();
-                }
-            };
-
-            const onPageHide = () => {
-                focusLost = true;
-                cleanup();
+                if (document.hidden) marcarComoDetectado();
             };
 
             window.addEventListener('blur', onBlur);
             document.addEventListener('visibilitychange', onVisibilityChange);
-            window.addEventListener('pagehide', onPageHide);
 
-            // Tentar abrir o protocolo do Zoom ou link universal
-            if (currentZoomLink.startsWith("https://")) {
-                window.open(currentZoomLink, '_blank');
-            } else if (window.self !== window.top) {
-                try {
-                    const a = document.createElement('a');
-                    a.href = currentZoomLink;
-                    a.target = '_top';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } catch (err) {
-                    window.location.href = currentZoomLink;
-                }
-            } else {
-                window.location.href = currentZoomLink;
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                iframe.src = currentZoomLink;
+
+                setTimeout(() => {
+                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                }, 2000);
+            } catch (err) {
             }
 
-            // Se após 2.5 segundos o foco não foi perdido, mostramos o modal de download
             detectionTimeout = setTimeout(() => {
-                cleanup();
+                limparListeners();
                 if (!focusLost) {
                     detectarDispositivo();
-                    modalDownload.classList.add("modal-open");
+                    modalDownload.style.display = "flex";
                 }
             }, 2500);
         }
@@ -551,26 +520,31 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             // Registrar estatísticas do acesso
             registrarAcesso();
 
-            currentZoomLink = obterLinkZoom(idReuniao);
+            const ua = navigator.userAgent;
+            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+            const scheme = isMobile ? "zoomus" : "zoommtg";
+
+            const nomeUname = montarUname();
+            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
 
             tentarEntrarNoZoom();
         });
 
         btnRetry.addEventListener("click", () => {
-            modalDownload.classList.remove("modal-open");
+            modalDownload.style.display = "none";
             tentarEntrarNoZoom();
         });
 
 
 
         btnCancelModal.addEventListener("click", () => {
-            modalDownload.classList.remove("modal-open");
+            modalDownload.style.display = "none";
             if (detectionTimeout) clearTimeout(detectionTimeout);
         });
 
         btnCopyLink.addEventListener("click", (e) => {
             e.preventDefault();
-            const zoomLink = obterLinkZoom(audienciaSelect.value);
+            const zoomLink = "https://zoom.us/j/" + audienciaSelect.value;
 
             navigator.clipboard.writeText(zoomLink).then(() => {
                 const originalText = btnCopyLink.textContent;
