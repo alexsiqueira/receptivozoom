@@ -498,6 +498,15 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
 
+            if (isIOS()) {
+                // Universal Link: navegação direta e simples. O próprio iOS/Safari
+                // decide se abre o app (sem diálogo) ou carrega a página web de
+                // fallback do Zoom — não precisamos (nem conseguimos de forma
+                // confiável) detectar sucesso/falha por conta própria aqui.
+                window.location.href = currentZoomLink;
+                return;
+            }
+
             // Não sabemos, só pelo tempo, se o Zoom está demorando para abrir
             // (inicialização "fria" do aplicativo) ou se ele simplesmente não
             // vai abrir (não instalado). Por isso, em vez de um único timeout
@@ -508,7 +517,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             // nada acontece (app não instalado). O feedback visual mantém o
             // usuário informado durante essa espera.
             const INTERVALO_VERIFICACAO_MS = 200;
-            const TEMPO_MAXIMO_MS = 6500;
+            const TEMPO_MAXIMO_MS = 4500;
 
             let concluido = false;
             statusAbertura.classList.remove("hidden");
@@ -537,30 +546,19 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 }
             }, INTERVALO_VERIFICACAO_MS);
 
-            if (isIOS()) {
-                // No iOS/Safari, o WebKit BLOQUEIA a navegação de esquemas de URL
-                // customizados (zoomus://) quando disparada de dentro de um iframe —
-                // isso funciona apenas com navegação direta do frame principal,
-                // originada de um gesto do usuário (clique). Como esta função só é
-                // chamada a partir de um clique (submit do form ou botão "tentar
-                // novamente"), ainda estamos dentro desse gesto, então a navegação
-                // direta funciona para abrir o app quando ele está instalado.
-                window.location.href = currentZoomLink;
-            } else {
-                // Em outras plataformas (Android, Windows, macOS sem touch), o
-                // iframe oculto continua funcionando bem e evita qualquer
-                // interrupção visual.
-                try {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-                    iframe.src = currentZoomLink;
+            // Em plataformas não-iOS (Android, Windows, macOS sem touch), o
+            // iframe oculto continua funcionando bem e evita qualquer
+            // interrupção visual.
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                iframe.src = currentZoomLink;
 
-                    setTimeout(() => {
-                        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-                    }, 2000);
-                } catch (err) {
-                }
+                setTimeout(() => {
+                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                }, 2000);
+            } catch (err) {
             }
 
             detectionTimeout = setTimeout(() => {
@@ -583,7 +581,19 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             const scheme = isMobile ? "zoomus" : "zoommtg";
 
             const nomeUname = montarUname();
-            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+
+            if (isIOS()) {
+                // No iOS, usamos o Universal Link do Zoom em vez do esquema
+                // customizado (zoomus://). O sistema operacional trata esse
+                // link de forma nativa: se o app estiver instalado, ele abre
+                // diretamente, sem nenhum diálogo de confirmação; se não
+                // estiver, o Safari carrega a página normal do zoom.us/j/,
+                // que já oferece opções de baixar o app ou entrar pelo
+                // navegador — dispensando nosso modal customizado neste caso.
+                currentZoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
+            } else {
+                currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+            }
 
             tentarEntrarNoZoom();
         });
