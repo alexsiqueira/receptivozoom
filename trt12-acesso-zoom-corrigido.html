@@ -275,6 +275,7 @@
             </div>
 
             <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
+            <p id="statusAbertura" class="hidden" style="text-align:center; color:#555; font-size:14px; margin-top:10px;">⏳ Abrindo o aplicativo do Zoom...</p>
             <a href="#" id="btnCopyLink" class="hidden">Em caso de problemas: clique aqui para copiar o link da reunião e cole-o no navegador</a>
         </form>
     </div>
@@ -316,6 +317,7 @@
         const audienciaDiv = document.getElementById("audienciaDiv");
         const btnSubmit = document.getElementById("btnSubmit");
         const btnCopyLink = document.getElementById("btnCopyLink");
+        const statusAbertura = document.getElementById("statusAbertura");
 
         const nome = document.getElementById("nome");
         const papel = document.getElementById("papel");
@@ -334,6 +336,7 @@
 
         let currentZoomLink = "";
         let detectionTimeout = null;
+        let detectionPoll = null;
 
         // Fonte de dados externa (codificada)
         const _src = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvMVU1bzg2ZUppdEhNOHBxRjJmcVpKTGRUUmZWdnVpZFBQanVKczdFU0pnc28vZXhwb3J0P2Zvcm1hdD1jc3Y=";
@@ -495,29 +498,44 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
 
-            const TEMPO_ESPERA_MS = 2500;
-            // Margem de tolerância: se o tempo decorrido até o callback rodar
-            // ultrapassar TEMPO_ESPERA_MS por mais que essa margem, é sinal de
-            // que a aba/navegador ficou em segundo plano por um tempo (o app
-            // abriu e o usuário voltou depois) — os timers do navegador ficam
-            // pausados enquanto isso, então o atraso "extra" é a evidência.
-            const MARGEM_BACKGROUND_MS = 800;
+            // Não sabemos, só pelo tempo, se o Zoom está demorando para abrir
+            // (inicialização "fria" do aplicativo) ou se ele simplesmente não
+            // vai abrir (não instalado). Por isso, em vez de um único timeout
+            // fixo, verificamos continuamente (a cada 200ms) se o navegador
+            // perdeu o foco/visibilidade — assim que isso acontece, tratamos
+            // como sucesso IMEDIATAMENTE, não importa se levou 300ms ou 4s.
+            // Um tempo máximo maior serve só de rede de segurança para quando
+            // nada acontece (app não instalado). O feedback visual mantém o
+            // usuário informado durante essa espera.
+            const INTERVALO_VERIFICACAO_MS = 200;
+            const TEMPO_MAXIMO_MS = 4500;
 
             let concluido = false;
-            const inicio = Date.now();
+            statusAbertura.classList.remove("hidden");
 
-            const marcarComoDetectado = () => {
+            const finalizar = (sucesso) => {
                 if (concluido) return;
                 concluido = true;
-                document.removeEventListener('visibilitychange', onVisibilityChange);
+                if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
+                if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+                statusAbertura.classList.add("hidden");
+
+                if (!sucesso) {
+                    detectarDispositivo();
+                    modalDownload.style.display = "flex";
+                }
             };
 
-            // Sinal "rápido": se a aba ficar oculta antes do timeout, já sabemos
-            // que algo tirou o navegador de primeiro plano.
-            const onVisibilityChange = () => {
-                if (document.hidden) marcarComoDetectado();
-            };
-            document.addEventListener('visibilitychange', onVisibilityChange);
+            detectionPoll = setInterval(() => {
+                // Sinal mobile: a aba ficou oculta (o app abriu em primeiro plano).
+                // Sinal desktop: a janela do navegador perdeu o foco do SO
+                // (o Zoom, como janela separada, tomou o foco) — mesmo que a
+                // aba continue tecnicamente visível atrás dele.
+                const semFoco = (typeof document.hasFocus === 'function') && !document.hasFocus();
+                if (document.hidden || semFoco) {
+                    finalizar(true);
+                }
+            }, INTERVALO_VERIFICACAO_MS);
 
             if (isIOS()) {
                 // No iOS/Safari, o WebKit BLOQUEIA a navegação de esquemas de URL
@@ -546,30 +564,8 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
 
             detectionTimeout = setTimeout(() => {
-                document.removeEventListener('visibilitychange', onVisibilityChange);
-
-                // Sinal "lento" (o mais confiável): se o callback demorou bem
-                // mais que TEMPO_ESPERA_MS para executar, é porque o navegador
-                // esteve em segundo plano nesse meio tempo — geralmente enquanto
-                // o diálogo de confirmação do SO/navegador estava aberto ou
-                // enquanto o app do Zoom já estava em primeiro plano. Nesses
-                // casos, tratamos como sucesso e NÃO mostramos o modal, mesmo
-                // que o usuário já tenha voltado para a aba.
-                // Sinal específico de desktop: quando o Zoom abre como uma
-                // janela separada (Windows/macOS), a aba do navegador não fica
-                // necessariamente "hidden" (ela pode continuar visível atrás da
-                // janela do Zoom) — mas perde o FOCO do sistema operacional.
-                // document.hasFocus() retorna false nesse caso.
-                const semFocoAgora = (typeof document.hasFocus === 'function') && !document.hasFocus();
-
-                const decorrido = Date.now() - inicio;
-                const provavelSucesso = concluido || semFocoAgora || decorrido > TEMPO_ESPERA_MS + MARGEM_BACKGROUND_MS;
-
-                if (!provavelSucesso) {
-                    detectarDispositivo();
-                    modalDownload.style.display = "flex";
-                }
-            }, TEMPO_ESPERA_MS);
+                finalizar(false);
+            }, TEMPO_MAXIMO_MS);
         }
 
         // ===== Event Listeners =====
@@ -601,7 +597,9 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         btnCancelModal.addEventListener("click", () => {
             modalDownload.style.display = "none";
-            if (detectionTimeout) clearTimeout(detectionTimeout);
+            if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+            if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
+            statusAbertura.classList.add("hidden");
         });
 
         btnCopyLink.addEventListener("click", (e) => {
