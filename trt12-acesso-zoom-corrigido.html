@@ -555,8 +555,15 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 // enquanto o app do Zoom já estava em primeiro plano. Nesses
                 // casos, tratamos como sucesso e NÃO mostramos o modal, mesmo
                 // que o usuário já tenha voltado para a aba.
+                // Sinal específico de desktop: quando o Zoom abre como uma
+                // janela separada (Windows/macOS), a aba do navegador não fica
+                // necessariamente "hidden" (ela pode continuar visível atrás da
+                // janela do Zoom) — mas perde o FOCO do sistema operacional.
+                // document.hasFocus() retorna false nesse caso.
+                const semFocoAgora = (typeof document.hasFocus === 'function') && !document.hasFocus();
+
                 const decorrido = Date.now() - inicio;
-                const provavelSucesso = concluido || decorrido > TEMPO_ESPERA_MS + MARGEM_BACKGROUND_MS;
+                const provavelSucesso = concluido || semFocoAgora || decorrido > TEMPO_ESPERA_MS + MARGEM_BACKGROUND_MS;
 
                 if (!provavelSucesso) {
                     detectarDispositivo();
