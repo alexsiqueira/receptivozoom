@@ -495,30 +495,28 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
 
-            let focusLost = false;
+            const TEMPO_ESPERA_MS = 2500;
+            // Margem de tolerância: se o tempo decorrido até o callback rodar
+            // ultrapassar TEMPO_ESPERA_MS por mais que essa margem, é sinal de
+            // que a aba/navegador ficou em segundo plano por um tempo (o app
+            // abriu e o usuário voltou depois) — os timers do navegador ficam
+            // pausados enquanto isso, então o atraso "extra" é a evidência.
+            const MARGEM_BACKGROUND_MS = 800;
 
-            const limparListeners = () => {
-                window.removeEventListener('blur', onBlur);
-                document.removeEventListener('visibilitychange', onVisibilityChange);
-                if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
-            };
+            let concluido = false;
+            const inicio = Date.now();
 
             const marcarComoDetectado = () => {
-                if (focusLost) return;
-                focusLost = true;
-                limparListeners();
+                if (concluido) return;
+                concluido = true;
+                document.removeEventListener('visibilitychange', onVisibilityChange);
             };
 
-            const onBlur = () => {
-                // Ignorado: no Windows HTTP, o diálogo "Como abrir?" rouba o foco
-                // mesmo quando o Zoom não está instalado
-            };
-
+            // Sinal "rápido": se a aba ficar oculta antes do timeout, já sabemos
+            // que algo tirou o navegador de primeiro plano.
             const onVisibilityChange = () => {
                 if (document.hidden) marcarComoDetectado();
             };
-
-            window.addEventListener('blur', onBlur);
             document.addEventListener('visibilitychange', onVisibilityChange);
 
             if (isIOS()) {
@@ -529,10 +527,6 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 // chamada a partir de um clique (submit do form ou botão "tentar
                 // novamente"), ainda estamos dentro desse gesto, então a navegação
                 // direta funciona para abrir o app quando ele está instalado.
-                // Se o app NÃO estiver instalado, o Safari pode voltar a exibir o
-                // alerta nativo "endereço inválido" — isso é uma limitação do
-                // próprio sistema operacional, não há como suprimi-la nesse caso
-                // sem também bloquear a abertura do app quando ele existe.
                 window.location.href = currentZoomLink;
             } else {
                 // Em outras plataformas (Android, Windows, macOS sem touch), o
@@ -552,12 +546,23 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
 
             detectionTimeout = setTimeout(() => {
-                limparListeners();
-                if (!focusLost) {
+                document.removeEventListener('visibilitychange', onVisibilityChange);
+
+                // Sinal "lento" (o mais confiável): se o callback demorou bem
+                // mais que TEMPO_ESPERA_MS para executar, é porque o navegador
+                // esteve em segundo plano nesse meio tempo — geralmente enquanto
+                // o diálogo de confirmação do SO/navegador estava aberto ou
+                // enquanto o app do Zoom já estava em primeiro plano. Nesses
+                // casos, tratamos como sucesso e NÃO mostramos o modal, mesmo
+                // que o usuário já tenha voltado para a aba.
+                const decorrido = Date.now() - inicio;
+                const provavelSucesso = concluido || decorrido > TEMPO_ESPERA_MS + MARGEM_BACKGROUND_MS;
+
+                if (!provavelSucesso) {
                     detectarDispositivo();
                     modalDownload.style.display = "flex";
                 }
-            }, 2500);
+            }, TEMPO_ESPERA_MS);
         }
 
         // ===== Event Listeners =====
