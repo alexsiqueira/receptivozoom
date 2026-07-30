@@ -244,8 +244,7 @@
             <select name="papel" id="papel" required>
                 <option value="">Selecione</option>
                 <option value="Autor">Autor</option>
-                <option value="Reu">Réu</option>
-                <option value="Preposto">Representante do Réu (preposto)</option>
+                <option value="Reu">Réu (ou preposto)</option>
                 <option value="AdvogadoAutor">Advogado do Autor</option>
                 <option value="AdvogadoReu">Advogado do Réu</option>
                 <option value="Testemunha">Testemunha</option>
@@ -372,7 +371,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 audiencia: audienciaSelect.options[audienciaSelect.selectedIndex] ? audienciaSelect.options[audienciaSelect.selectedIndex].textContent : "",
                 papel: papel.value,
                 nome: nome.value.trim(),
-                documento: (papel.value === "Testemunha" || papel.value === "Preposto") ? documento.value.trim() : null,
+                documento: (papel.value === "Testemunha") ? documento.value.trim() : null,
                 oab: (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") ? oab.value.trim() : null
             };
 
@@ -402,7 +401,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             if (papelVal === "AdvogadoAutor" || papelVal === "AdvogadoReu") {
                 uname += `-${oab.value.trim()}`;
             }
-            if (papelVal === "Testemunha" || papelVal === "Preposto") {
+            if (papelVal === "Testemunha") {
                 uname += `-${documento.value.trim()}`;
             }
             return uname;
@@ -411,7 +410,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         function validar() {
             let valido = nome.value.trim() && papel.value;
 
-            if (papel.value === "Testemunha" || papel.value === "Preposto") {
+            if (papel.value === "Testemunha") {
                 valido = valido && documento.value.trim().length === 14; // CPF com máscara
             }
             if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
@@ -434,7 +433,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             documento.required = false;
             oab.required = false;
 
-            if (papel.value === "Testemunha" || papel.value === "Preposto") {
+            if (papel.value === "Testemunha") {
                 campoDocumento.classList.remove("hidden");
                 documento.required = true;
             }
