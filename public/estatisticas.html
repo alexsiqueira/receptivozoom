@@ -572,7 +572,7 @@
         <!-- Chart 1: Role Distribution -->
         <div class="glass-panel chart-card">
             <div class="chart-header">
-                <div class="chart-title">Distribuição de Participantes (campo "Você é")</div>
+                <div class="chart-title">Distribuição de acesso por Unidade/Vara</div>
             </div>
             <div class="chart-wrapper">
                 <canvas id="chartRoles"></canvas>
@@ -653,8 +653,8 @@
         const itemsPerPage = 10;
 
         // Chart instances
-        let chartRolesInstance = null;
         let chartTimelineInstance = null;
+        let chartUnidadesInstance = null;
 
         // Translation dictionary for Roles
         const roleLabels = {
@@ -1008,78 +1008,60 @@
 
         // Render Charts using Chart.js
         function renderCharts() {
-            // Chart 1: Role Doughnut
-            const roleCounts = {
-                'Autor': 0,
-                'Reu': 0,
-                'AdvogadoAutor': 0,
-                'AdvogadoReu': 0,
-                'Testemunha': 0
-            };
-            
-            // Contabilizar
+            // Chart 1: Unidade/Vara Distribution (Column)
+            const unidadeCounts = {};
             filteredData.forEach(d => {
-                if (roleCounts[d.papel] !== undefined) {
-                    roleCounts[d.papel]++;
-                } else if (d.papel) {
-                    // Trata outros papéis não tabelados
-                    roleCounts[d.papel] = (roleCounts[d.papel] || 0) + 1;
-                }
+                const key = d.unidade || "Não especificado";
+                unidadeCounts[key] = (unidadeCounts[key] || 0) + 1;
             });
 
-            const labels = [];
-            const data = [];
-            for (const key in roleCounts) {
-                if (roleCounts[key] > 0 || ['Autor', 'Reu', 'AdvogadoAutor', 'AdvogadoReu', 'Testemunha'].includes(key)) {
-                    labels.push(roleLabels[key] || key);
-                    data.push(roleCounts[key]);
-                }
+            // Sort by count descending
+            const sortedEntries = Object.entries(unidadeCounts).sort((a, b) => b[1] - a[1]);
+            const labels = sortedEntries.map(s => s[0]);
+            const data = sortedEntries.map(s => s[1]);
+
+            // Generate dynamic colors based on number of units
+            const baseHue = 210;
+            const colors = labels.map((_, i) => {
+                const hue = (baseHue + i * 37) % 360;
+                return `hsla(${hue}, 65%, 55%, 0.8)`;
+            });
+            const borderColors = colors.map(c => c.replace('0.8', '1'));
+
+            if (chartUnidadesInstance) {
+                chartUnidadesInstance.destroy();
             }
 
-            // Cores do TRT12 / Minimalistas Modernas
-            const backgroundColors = [
-                'rgba(59, 130, 246, 0.75)',  // Autor - Blue
-                'rgba(239, 68, 68, 0.75)',   // Réu - Red
-                'rgba(16, 185, 129, 0.75)',  // Advogado Autor - Green
-                'rgba(245, 158, 11, 0.75)',  // Advogado Réu - Amber
-                'rgba(139, 92, 246, 0.75)'   // Testemunha - Purple
-            ];
-            
-            const borderColors = [
-                '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'
-            ];
-
-            if (chartRolesInstance) {
-                chartRolesInstance.destroy();
-            }
-
-            const ctxRoles = document.getElementById('chartRoles').getContext('2d');
-            chartRolesInstance = new Chart(ctxRoles, {
-                type: 'doughnut',
+            const ctxUnidades = document.getElementById('chartRoles').getContext('2d');
+            chartUnidadesInstance = new Chart(ctxUnidades, {
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
+                        label: 'Acessos',
                         data: data,
-                        backgroundColor: backgroundColors,
+                        backgroundColor: colors,
                         borderColor: borderColors,
                         borderWidth: 1.5,
-                        hoverOffset: 10
+                        borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#94a3b8',
-                                font: { family: 'Inter', size: 12 },
-                                padding: 15
-                            }
-                        }
+                        legend: { display: false }
                     },
-                    cutout: '65%'
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', stepSize: 1, precision: 0 }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
                 }
             });
 
