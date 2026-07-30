@@ -275,6 +275,7 @@
             </div>
 
             <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
+            <p id="statusAbertura" class="hidden" style="text-align:center; color:#555; font-size:14px; margin-top:10px;">⏳ Abrindo o aplicativo do Zoom...</p>
             <a href="#" id="btnCopyLink" class="hidden">Em caso de problemas: clique aqui para copiar o link da reunião e cole-o no navegador</a>
         </form>
     </div>
@@ -328,12 +329,15 @@
         const btnRetry = document.getElementById("btnRetry");
         const btnCancelModal = document.getElementById("btnCancelModal");
 
+        const statusAbertura = document.getElementById("statusAbertura");
+
         const linkDesktop = document.getElementById("linkDesktop");
         const linkIOS = document.getElementById("linkIOS");
         const linkAndroid = document.getElementById("linkAndroid");
 
         let currentZoomLink = "";
         let detectionTimeout = null;
+        let detectionPoll = null;
 
         // Fonte de dados externa (codificada)
         const _src = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvMVU1bzg2ZUppdEhNOHBxRjJmcVpKTGRUUmZWdnVpZFBQanVKczdFU0pnc28vZXhwb3J0P2Zvcm1hdD1jc3Y=";
@@ -561,34 +565,46 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
         }
 
+        function isIOS() {
+            const ua = navigator.userAgent;
+            return /iPad|iPhone|iPod/.test(ua) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+        }
+
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
 
-            let focusLost = false;
+            if (isIOS()) {
+                window.location.href = currentZoomLink;
+                return;
+            }
 
-            const limparListeners = () => {
-                window.removeEventListener('blur', onBlur);
-                document.removeEventListener('visibilitychange', onVisibilityChange);
+            const INTERVALO_VERIFICACAO_MS = 200;
+            const TEMPO_MAXIMO_MS = 4500;
+
+            let concluido = false;
+            statusAbertura.classList.remove("hidden");
+
+            const finalizar = (sucesso) => {
+                if (concluido) return;
+                concluido = true;
+                if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
                 if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+                statusAbertura.classList.add("hidden");
+
+                if (!sucesso) {
+                    detectarDispositivo();
+                    modalDownload.style.display = "flex";
+                }
             };
 
-            const marcarComoDetectado = () => {
-                if (focusLost) return;
-                focusLost = true;
-                limparListeners();
-            };
-
-            const onBlur = () => {
-                // Ignorado: no Windows HTTP, o diálogo "Como abrir?" rouba o foco
-                // mesmo quando o Zoom não está instalado
-            };
-
-            const onVisibilityChange = () => {
-                if (document.hidden) marcarComoDetectado();
-            };
-
-            window.addEventListener('blur', onBlur);
-            document.addEventListener('visibilitychange', onVisibilityChange);
+            detectionPoll = setInterval(() => {
+                const semFoco = (typeof document.hasFocus === 'function') && !document.hasFocus();
+                if (document.hidden || semFoco) {
+                    finalizar(true);
+                }
+            }, INTERVALO_VERIFICACAO_MS);
 
             try {
                 const iframe = document.createElement('iframe');
@@ -603,12 +619,8 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
 
             detectionTimeout = setTimeout(() => {
-                limparListeners();
-                if (!focusLost) {
-                    detectarDispositivo();
-                    modalDownload.style.display = "flex";
-                }
-            }, 2500);
+                finalizar(false);
+            }, TEMPO_MAXIMO_MS);
         }
 
         // ===== Event Listeners =====
@@ -621,12 +633,16 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             // Registrar estatísticas do acesso
             registrarAcesso();
 
-            const ua = navigator.userAgent;
-            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
-            const scheme = isMobile ? "zoomus" : "zoommtg";
-
             const nomeUname = montarUname();
-            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+
+            if (isIOS()) {
+                currentZoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
+            } else {
+                const ua = navigator.userAgent;
+                const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+                const scheme = isMobile ? "zoomus" : "zoommtg";
+                currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+            }
 
             tentarEntrarNoZoom();
         });
@@ -640,7 +656,9 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         btnCancelModal.addEventListener("click", () => {
             modalDownload.style.display = "none";
-            if (detectionTimeout) clearTimeout(detectionTimeout);
+            if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+            if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
+            statusAbertura.classList.add("hidden");
         });
 
         btnCopyLink.addEventListener("click", (e) => {
