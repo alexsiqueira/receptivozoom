@@ -578,39 +578,34 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         function testZoomLinkSafari(zoomLink) {
             return new Promise((resolve) => {
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
+                const testWin = window.open(zoomLink, '_blank');
                 
-                let loaded = false;
-                iframe.src = zoomLink;
+                if (!testWin) {
+                    // Se o popup foi bloqueado, assume que não conseguiu abrir o app
+                    resolve(true);
+                    return;
+                }
                 
-                const check = () => {
-                    if (loaded) return;
-                    loaded = true;
-                    
+                setTimeout(() => {
                     let returnsHtml = false;
                     try {
-                        const doc = iframe.contentWindow.document;
-                        if (iframe.contentWindow.location.href === 'about:blank' || iframe.contentWindow.location.href === '') {
+                        const href = testWin.location.href;
+                        if (href === 'about:blank' || href === '') {
                             returnsHtml = false;
                         } else {
                             returnsHtml = true;
                         }
                     } catch (e) {
-                        // DOMException/SecurityError: it loaded the cross-origin page, so it returned HTML
+                        // DOMException/SecurityError: navegou para o link cross-origin (retornou HTML)
                         returnsHtml = true;
                     }
                     
-                    if (iframe.parentNode) {
-                        iframe.parentNode.removeChild(iframe);
-                    }
+                    try {
+                        testWin.close();
+                    } catch (err) {}
+                    
                     resolve(returnsHtml);
-                };
-                
-                iframe.onload = check;
-                iframe.onerror = check;
-                setTimeout(check, 2000);
+                }, 1500);
             });
         }
 
