@@ -576,13 +576,42 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
         }
 
-        function testZoomLinkSafari(zoomLink) {
+        function testZoomLinkSafari(zoomLink, idReuniao, nomeUname) {
             return new Promise((resolve) => {
-                const testWin = window.open(zoomLink, '_blank');
+                let testWin = null;
+                try {
+                    testWin = window.open(zoomLink, '_blank');
+                } catch (e) {
+                    testWin = null;
+                }
                 
                 if (!testWin) {
-                    // Se o popup foi bloqueado, assume que não conseguiu abrir o app
-                    resolve(true);
+                    // Se o popup foi bloqueado pelo iFrame pai, usamos o fallback do esquema customizado
+                    // no iframe oculto combinado com a detecção de perda de foco (blur)
+                    const isMobile = isIOS();
+                    const scheme = isMobile ? "zoomus" : "zoommtg";
+                    const customSchemeLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
+                    
+                    let focusLost = false;
+                    const onBlur = () => {
+                        focusLost = true;
+                    };
+                    window.addEventListener('blur', onBlur);
+                    
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = customSchemeLink;
+                    document.body.appendChild(iframe);
+                    
+                    setTimeout(() => {
+                        window.removeEventListener('blur', onBlur);
+                        if (iframe.parentNode) {
+                            iframe.parentNode.removeChild(iframe);
+                        }
+                        // Se perdeu o foco, assume que o app abriu (não retornou HTML no navegador)
+                        // Se não perdeu o foco, assume que o app não está instalado (retornou HTML no teste)
+                        resolve(!focusLost);
+                    }, 2000);
                     return;
                 }
                 
@@ -679,7 +708,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 statusAbertura.classList.remove("hidden");
                 btnSubmit.disabled = true;
 
-                testZoomLinkSafari(zoomLink).then((returnsHtml) => {
+                testZoomLinkSafari(zoomLink, idReuniao, nomeUname).then((returnsHtml) => {
                     statusAbertura.textContent = "⏳ Abrindo o aplicativo do Zoom...";
                     statusAbertura.classList.add("hidden");
                     validar();
