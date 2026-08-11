@@ -576,6 +576,44 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
         }
 
+        function testZoomLinkSafari(zoomLink) {
+            return new Promise((resolve) => {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                let loaded = false;
+                iframe.src = zoomLink;
+                
+                const check = () => {
+                    if (loaded) return;
+                    loaded = true;
+                    
+                    let returnsHtml = false;
+                    try {
+                        const doc = iframe.contentWindow.document;
+                        if (iframe.contentWindow.location.href === 'about:blank' || iframe.contentWindow.location.href === '') {
+                            returnsHtml = false;
+                        } else {
+                            returnsHtml = true;
+                        }
+                    } catch (e) {
+                        // DOMException/SecurityError: it loaded the cross-origin page, so it returned HTML
+                        returnsHtml = true;
+                    }
+                    
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                    }
+                    resolve(returnsHtml);
+                };
+                
+                iframe.onload = check;
+                iframe.onerror = check;
+                setTimeout(check, 2000);
+            });
+        }
+
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
 
@@ -641,7 +679,23 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
             if (isSafari()) {
                 const zoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
-                window.open(zoomLink, '_blank');
+                
+                statusAbertura.textContent = "⏳ Verificando aplicativo do Zoom...";
+                statusAbertura.classList.remove("hidden");
+                btnSubmit.disabled = true;
+
+                testZoomLinkSafari(zoomLink).then((returnsHtml) => {
+                    statusAbertura.textContent = "⏳ Abrindo o aplicativo do Zoom...";
+                    statusAbertura.classList.add("hidden");
+                    validar();
+
+                    if (returnsHtml) {
+                        detectarDispositivo();
+                        modalDownload.style.display = "flex";
+                    } else {
+                        window.location.href = zoomLink;
+                    }
+                });
                 return;
             }
 
