@@ -576,75 +576,8 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
         }
 
-        function testZoomLinkSafari(zoomLink, idReuniao, nomeUname) {
-            return new Promise((resolve) => {
-                let testWin = null;
-                try {
-                    testWin = window.open(zoomLink, '_blank');
-                } catch (e) {
-                    testWin = null;
-                }
-                
-                if (!testWin) {
-                    // Se o popup foi bloqueado pelo iFrame pai, usamos o fallback do esquema customizado
-                    // no iframe oculto combinado com a detecção de perda de foco (blur)
-                    const isMobile = isIOS();
-                    const scheme = isMobile ? "zoomus" : "zoommtg";
-                    const customSchemeLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
-                    
-                    let focusLost = false;
-                    const onBlur = () => {
-                        focusLost = true;
-                    };
-                    window.addEventListener('blur', onBlur);
-                    
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = customSchemeLink;
-                    document.body.appendChild(iframe);
-                    
-                    setTimeout(() => {
-                        window.removeEventListener('blur', onBlur);
-                        if (iframe.parentNode) {
-                            iframe.parentNode.removeChild(iframe);
-                        }
-                        // Se perdeu o foco, assume que o app abriu (não retornou HTML no navegador)
-                        // Se não perdeu o foco, assume que o app não está instalado (retornou HTML no teste)
-                        resolve(!focusLost);
-                    }, 2000);
-                    return;
-                }
-                
-                setTimeout(() => {
-                    let returnsHtml = false;
-                    try {
-                        const href = testWin.location.href;
-                        if (href === 'about:blank' || href === '') {
-                            returnsHtml = false;
-                        } else {
-                            returnsHtml = true;
-                        }
-                    } catch (e) {
-                        // DOMException/SecurityError: navegou para o link cross-origin (retornou HTML)
-                        returnsHtml = true;
-                    }
-                    
-                    try {
-                        testWin.close();
-                    } catch (err) {}
-                    
-                    resolve(returnsHtml);
-                }, 1500);
-            });
-        }
-
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
-
-            if (isIOS()) {
-                window.location.href = currentZoomLink;
-                return;
-            }
 
             const INTERVALO_VERIFICACAO_MS = 200;
             const TEMPO_MAXIMO_MS = 4500;
@@ -672,16 +605,20 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 }
             }, INTERVALO_VERIFICACAO_MS);
 
-            try {
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                iframe.src = currentZoomLink;
+            if (isIOS()) {
+                window.location.href = currentZoomLink;
+            } else {
+                try {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                    iframe.src = currentZoomLink;
 
-                setTimeout(() => {
-                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-                }, 2000);
-            } catch (err) {
+                    setTimeout(() => {
+                        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                    }, 2000);
+                } catch (err) {
+                }
             }
 
             detectionTimeout = setTimeout(() => {
@@ -700,37 +637,10 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             registrarAcesso();
 
             const nomeUname = montarUname();
-
-            if (isSafari()) {
-                const zoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
-                
-                statusAbertura.textContent = "⏳ Verificando aplicativo do Zoom...";
-                statusAbertura.classList.remove("hidden");
-                btnSubmit.disabled = true;
-
-                testZoomLinkSafari(zoomLink, idReuniao, nomeUname).then((returnsHtml) => {
-                    statusAbertura.textContent = "⏳ Abrindo o aplicativo do Zoom...";
-                    statusAbertura.classList.add("hidden");
-                    validar();
-
-                    if (returnsHtml) {
-                        detectarDispositivo();
-                        modalDownload.style.display = "flex";
-                    } else {
-                        window.location.href = zoomLink;
-                    }
-                });
-                return;
-            }
-
-            if (isIOS()) {
-                currentZoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
-            } else {
-                const ua = navigator.userAgent;
-                const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
-                const scheme = isMobile ? "zoomus" : "zoommtg";
-                currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
-            }
+            const ua = navigator.userAgent;
+            const isMobile = /iPad|iPhone|iPod|Android/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+            const scheme = isMobile ? "zoomus" : "zoommtg";
+            currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
 
             tentarEntrarNoZoom();
         });
