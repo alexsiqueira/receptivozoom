@@ -197,22 +197,7 @@
 
         <!-- Google Login Button Container -->
         <div id="googleLoginWrapper" class="google-btn-wrapper">
-            <div id="g_id_onload"
-                 data-client_id=""
-                 data-context="signin"
-                 data-ux_mode="popup"
-                 data-callback="handleCredentialResponse"
-                 data-auto_prompt="false">
-            </div>
-
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="rectangular"
-                 data-theme="outline"
-                 data-text="signin_with"
-                 data-size="large"
-                 data-logo_alignment="left">
-            </div>
+            <div id="googleLoginButton"></div>
         </div>
 
         <!-- Local Dev Mock Login Fallback -->
@@ -252,9 +237,24 @@
                 const config = await res.json();
                 
                 if (config.googleEnabled && config.googleClientId) {
-                    // Update client ID in HTML
-                    const gIdOnload = document.getElementById('g_id_onload');
-                    gIdOnload.setAttribute('data-client_id', config.googleClientId);
+                    await waitForGsi();
+                    if (!window.google || !google.accounts || !google.accounts.id) {
+                        throw new Error('Google Identity Services não carregou.');
+                    }
+                    // Render the Google button only after the client_id is known
+                    google.accounts.id.initialize({
+                        client_id: config.googleClientId,
+                        callback: handleCredentialResponse,
+                        auto_prompt: false
+                    });
+                    google.accounts.id.renderButton(document.getElementById('googleLoginButton'), {
+                        type: 'standard',
+                        shape: 'rectangular',
+                        theme: 'outline',
+                        text: 'signin_with',
+                        size: 'large',
+                        logo_alignment: 'left'
+                    });
                     googleLoginWrapper.style.display = 'flex';
                     devLoginSection.style.display = 'none';
                 } else {
@@ -267,6 +267,18 @@
                 googleLoginWrapper.style.display = 'none';
                 devLoginSection.style.display = 'block';
             }
+        }
+
+        // Wait for the async-deferred GIS script to load
+        function waitForGsi() {
+            return new Promise(resolve => {
+                if (window.google && google.accounts && google.accounts.id) return resolve();
+                const check = () => {
+                    if (window.google && google.accounts && google.accounts.id) resolve();
+                    else setTimeout(check, 100);
+                };
+                setTimeout(check, 100);
+            });
         }
 
         // Initialize on Load

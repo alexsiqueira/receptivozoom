@@ -1,5 +1,7 @@
 # AGENTS.md — FormZoomAudiencias
 
+Ao criar ou modificar qualquer componente, página ou interface web deste projeto, sempre use a skill frontend-design para garantir consistência visual e qualidade de código.
+
 ## Migration in progress
 The project is migrating from a **static setup** (GitHub Pages, Google Sheets backend) to a **Docker + PostgreSQL** application. Until migration is complete, these three form files must maintain the same functionality:
 

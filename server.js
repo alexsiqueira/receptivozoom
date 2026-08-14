@@ -7,6 +7,13 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Em produção os segredos não podem vir de fallbacks hardcoded (conhecidos no repo).
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.DATABASE_URL)) {
+  console.error('ERRO: JWT_SECRET e DATABASE_URL são obrigatórios em produção.');
+  process.exit(1);
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_token_trt12_zoom';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
@@ -99,13 +106,15 @@ async function initDb() {
       console.log('Seeding meetings complete.');
     }
 
-    // Seed primary admin
-    const checkAdmins = await pool.query('SELECT COUNT(*) FROM admins');
-    if (parseInt(checkAdmins.rows[0].count, 10) === 0) {
-      console.log('Seeding primary administrator (csi@trt12.jus.br)...');
-      await pool.query('INSERT INTO admins (email) VALUES ($1)', ['csi@trt12.jus.br']);
-      console.log('Seeding admins complete.');
+    // Seed primary admins (idempotent: doesn't fail or duplicate on re-init)
+    const seedAdmins = ['csi@trt12.jus.br', 'alex.campos@trt12.jus.br'];
+    for (const email of seedAdmins) {
+      await pool.query(
+        'INSERT INTO admins (email) VALUES ($1) ON CONFLICT (email) DO NOTHING',
+        [email]
+      );
     }
+    console.log('Seeding admins complete.');
   } catch (err) {
     console.error('Error initializing database:', err);
   }

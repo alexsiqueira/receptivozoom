@@ -1,19 +1,15 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
     container_name: zoom_postgres_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: zoom_db
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d zoom_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,11 +18,13 @@ services:
     build: .
     container_name: zoom_web_app
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/zoom_db
-      - PORT=3000
-      - GOOGLE_CLIENT_ID=68734281789-7m9ak2vclsaoji4amn3da4p9826lsalp.apps.googleusercontent.com
+      - DATABASE_URL=${DATABASE_URL}
+      - PORT=${PORT}
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     depends_on:
       db:
         condition: service_healthy

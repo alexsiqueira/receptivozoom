@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Modelo padrão usado pelo agente (ajuste para o provider/modelo que você usa)
+  "model": "anthropic/claude-sonnet-4-20250514",
+
+  // Arquivos de instrução carregados como contexto do projeto.
+  // O AGENTS.md é onde fica a regra "sempre use a skill frontend-design".
+  "instructions": [
+    "{file:./AGENTS.md}"
+  ],
+
+  // Controle de permissões: o que o agente pode fazer sem perguntar
+  "permission": {
+    "skill": {
+      "frontend-design": "allow",   // carrega direto, sem pedir confirmação
+      "experimental-*": "ask",      // skills experimentais pedem aprovação
+      "*": "deny"                   // qualquer outra skill não listada é bloqueada
+    },
+    "edit": "allow",
+    "bash": "ask"
+  },
+
+  // Configuração opcional dos modos padrão (build/plan)
+  "mode": {
+    "build": {
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "plan": {
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    }
+  }
+}
