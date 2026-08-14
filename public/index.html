@@ -490,6 +490,11 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
         }
 
+        function isSafari() {
+            const ua = navigator.userAgent;
+            return /Safari/i.test(ua) && !/Chrome/i.test(ua) && !/Chromium/i.test(ua) && !/Android/i.test(ua);
+        }
+
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
 
@@ -550,6 +555,12 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             registrarAcesso();
 
             const nomeUname = montarUname();
+
+            if (isSafari()) {
+                const zoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
+                window.open(zoomLink, '_blank');
+                return;
+            }
 
             if (isIOS()) {
                 currentZoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
