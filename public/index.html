@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
+ 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,15 +23,15 @@
             --footer-blue: #23517e;
             --radius: 8px;
         }
-
+ 
         * {
             box-sizing: border-box;
         }
-
+ 
         html {
             scroll-behavior: smooth;
         }
-
+ 
         body {
             font-family: Arial, Helvetica, sans-serif;
             background: var(--bg-page);
@@ -42,25 +42,25 @@
             color: var(--text);
             font-size: 16px;
         }
-
+ 
         a {
             color: var(--blue-light);
         }
-
+ 
         .container {
             max-width: 1130px;
             margin: 0 auto;
             padding: 0 16px;
             width: 100%;
         }
-
+ 
         /* ===== Barra de Acessibilidade ===== */
         .accessibility-bar {
             background: var(--navy-dark);
             color: #ffffff;
             font-size: 0.75rem;
         }
-
+ 
         .accessibility-bar .container {
             display: flex;
             flex-wrap: wrap;
@@ -69,29 +69,29 @@
             padding-top: 8px;
             padding-bottom: 8px;
         }
-
+ 
         .accessibility-bar a {
             color: #ffffff;
             text-decoration: none;
             margin-right: 12px;
         }
-
+ 
         .accessibility-bar a:hover {
             text-decoration: underline;
         }
-
+ 
         .accessibility-bar .ab-label {
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
+ 
         /* ===== Cabeçalho ===== */
         .site-header {
             background: #ffffff;
             border-bottom: 4px solid var(--navy-dark);
         }
-
+ 
         .header-main {
             display: flex;
             align-items: center;
@@ -101,47 +101,47 @@
             padding-top: 18px;
             padding-bottom: 18px;
         }
-
+ 
         .branding {
             display: flex;
             align-items: center;
             gap: 14px;
         }
-
+ 
         .branding__icon {
             flex-shrink: 0;
             display: block;
         }
-
+ 
         .branding__texto {
             display: flex;
             flex-direction: column;
             line-height: 1.25;
         }
-
+ 
         .branding__orgao {
             color: var(--blue-primary);
             font-weight: bold;
             font-size: 1.15rem;
         }
-
+ 
         .branding__servico {
             color: var(--green);
             font-weight: bold;
             font-size: 0.95rem;
             margin-top: 2px;
         }
-
+ 
         .branding__servico::before {
             content: "— ";
         }
-
+ 
         .header-selos {
             display: flex;
             gap: 8px;
             align-items: center;
         }
-
+ 
         .selo {
             border: 1px solid var(--blue-primary);
             color: var(--blue-primary);
@@ -153,20 +153,20 @@
             border-radius: 4px;
             max-width: 90px;
         }
-
+ 
         .selo strong {
             display: block;
             font-size: 0.78rem;
             margin-bottom: 2px;
         }
-
+ 
         /* ===== Menu principal ===== */
         .main-menu {
             background: var(--gray-nav);
             border-top: 1px solid #d9d9d9;
             border-bottom: 1px solid #d9d9d9;
         }
-
+ 
         .main-menu ul {
             display: flex;
             flex-wrap: wrap;
@@ -174,7 +174,7 @@
             margin: 0;
             padding: 0;
         }
-
+ 
         .main-menu li a {
             display: block;
             padding: 13px 18px;
@@ -184,55 +184,55 @@
             text-decoration: none;
             border-right: 1px solid #b9b9b9;
         }
-
+ 
         .main-menu li:last-child a {
             border-right: none;
         }
-
+ 
         .main-menu li a:hover,
         .main-menu li a:focus-visible {
             background: var(--navy-hover);
             color: #ffffff;
         }
-
+ 
         .main-menu li a.active {
             background: var(--blue-primary);
             color: #ffffff;
         }
-
+ 
         .main-menu li.menu-login {
             margin-left: auto;
         }
-
+ 
         .main-menu li.menu-login a {
             border-right: none;
             background: var(--green);
             color: #ffffff;
         }
-
+ 
         .main-menu li.menu-login a:hover,
         .main-menu li.menu-login a:focus-visible {
             background: var(--green-dark);
             color: #ffffff;
         }
-
+ 
         /* ===== Conteúdo ===== */
         .page-main {
             flex: 1;
             padding: 40px 0 60px;
         }
-
+ 
         .welcome {
             text-align: center;
             margin-bottom: 36px;
         }
-
+ 
         .welcome h1 {
             color: var(--blue-primary);
             font-size: 1.875rem;
             margin: 0 0 6px;
         }
-
+ 
         .welcome .welcome-subtitle {
             display: inline-block;
             color: var(--green);
@@ -242,14 +242,14 @@
             text-transform: uppercase;
             margin-bottom: 14px;
         }
-
+ 
         .welcome p {
             max-width: 780px;
             margin: 0 auto;
             line-height: 1.6;
             color: var(--text);
         }
-
+ 
         .welcome-divider {
             width: 90px;
             height: 3px;
@@ -257,14 +257,14 @@
             border: none;
             margin: 18px auto 0;
         }
-
+ 
         .steps {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 18px;
             margin-bottom: 36px;
         }
-
+ 
         .step-card {
             background: #ffffff;
             border: 1px solid #dde3ea;
@@ -272,7 +272,7 @@
             padding: 20px;
             border-top: 4px solid var(--blue-light);
         }
-
+ 
         .step-number {
             display: inline-flex;
             align-items: center;
@@ -286,20 +286,20 @@
             font-size: 1rem;
             margin-bottom: 10px;
         }
-
+ 
         .step-card h3 {
             margin: 0 0 6px;
             color: var(--blue-primary);
             font-size: 1rem;
         }
-
+ 
         .step-card p {
             margin: 0;
             font-size: 0.88rem;
             line-height: 1.5;
             color: var(--text-soft);
         }
-
+ 
         /* ===== Formulário ===== */
         .form-card {
             background: #ffffff;
@@ -310,14 +310,14 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             border-top: 6px solid var(--green);
         }
-
+ 
         .form-card-title {
             text-align: center;
             margin: 0 0 20px;
             color: var(--blue-primary);
             font-size: 1.25rem;
         }
-
+ 
         .form-instruction {
             text-align: center;
             font-size: 0.95rem;
@@ -329,7 +329,7 @@
             margin: 0 0 24px;
             line-height: 1.4;
         }
-
+ 
         .lgpd-container {
             margin-top: 20px;
             padding: 12px;
@@ -337,7 +337,7 @@
             border-radius: 6px;
             border-left: 3px solid var(--blue-primary);
         }
-
+ 
         .lgpd-checkbox {
             display: flex;
             align-items: flex-start;
@@ -347,20 +347,20 @@
             line-height: 1.4;
             cursor: pointer;
         }
-
+ 
         .lgpd-checkbox input[type="checkbox"] {
             margin-top: 2px;
             width: auto;
             flex-shrink: 0;
         }
-
+ 
         label {
             font-weight: bold;
             display: block;
             margin-top: 15px;
             color: var(--blue-primary);
         }
-
+ 
         input,
         select {
             width: 100%;
@@ -373,14 +373,14 @@
             color: var(--text);
             background: #ffffff;
         }
-
+ 
         input:focus,
         select:focus {
             outline: 2px solid var(--blue-light);
             outline-offset: 1px;
             border-color: var(--blue-light);
         }
-
+ 
         button {
             margin-top: 25px;
             width: 100%;
@@ -395,26 +395,26 @@
             font-family: inherit;
             transition: background-color 0.15s ease;
         }
-
+ 
         button:hover:not(:disabled) {
             background-color: var(--green-dark);
         }
-
+ 
         button:disabled {
             background-color: #a8a8a8;
             cursor: not-allowed;
         }
-
+ 
         .error {
             color: #d0021b;
             text-align: center;
             margin-bottom: 15px;
         }
-
+ 
         .hidden {
             display: none;
         }
-
+ 
         /* ===== Modal ===== */
         .modal-overlay {
             position: fixed;
@@ -428,11 +428,42 @@
             align-items: center;
             z-index: 1000;
         }
-
+ 
         .modal-overlay.modal-open {
             display: flex;
         }
-
+ 
+        /* Em desktop (Windows/Mac/Linux) o modal aparece como um painel
+           no canto, sem escurecer/bloquear o restante da página. */
+        .modal-overlay.modal-corner {
+            background: transparent;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 24px;
+            pointer-events: none;
+        }
+ 
+        .modal-overlay.modal-corner .modal-content {
+            pointer-events: auto;
+            margin: 0;
+            width: 360px;
+            max-width: calc(100vw - 48px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+            animation: modalSlideIn 0.25s ease-out;
+        }
+ 
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(16px);
+                opacity: 0;
+            }
+ 
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+ 
         .modal-content {
             background: #ffffff;
             padding: 25px;
@@ -443,12 +474,12 @@
             text-align: center;
             border-top: 5px solid var(--blue-light);
         }
-
+ 
         .modal-content h3 {
             margin-top: 0;
             color: var(--blue-primary);
         }
-
+ 
         .link-container {
             margin: 20px 0;
             background: #f8f9fa;
@@ -462,13 +493,13 @@
             max-height: 100px;
             overflow-y: auto;
         }
-
+ 
         .modal-buttons {
             display: flex;
             gap: 10px;
             flex-direction: column;
         }
-
+ 
         .btn-download {
             background-color: var(--blue-light);
             text-decoration: none;
@@ -480,15 +511,15 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
-
+ 
         .btn-download:hover {
             background-color: var(--navy-hover);
         }
-
+ 
         .btn-retry {
             background-color: var(--blue-medium);
         }
-
+ 
         .btn-open {
             background-color: var(--blue-light);
             text-decoration: none;
@@ -500,33 +531,40 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
-
+ 
         .btn-cancel {
             background-color: #6c757d;
         }
-
+ 
         .modal-buttons button {
             margin-top: 0;
         }
-
+ 
         .download-info {
             margin-bottom: 20px;
             font-size: 15px;
             line-height: 1.4;
             color: var(--text-soft);
         }
-
+ 
+        .modal-support {
+            margin-top: 14px;
+            font-size: 12.5px;
+            line-height: 1.4;
+            color: var(--text-soft);
+        }
+ 
         .device-specific {
             display: none;
         }
-
+ 
         #btnCopyLink:not(.hidden) {
             display: block;
             margin-top: 10px;
             text-align: center;
             color: var(--blue-primary);
         }
-
+ 
         .info-note {
             max-width: 660px;
             margin: 20px auto 0;
@@ -538,25 +576,25 @@
             color: #6d5a10;
             line-height: 1.5;
         }
-
+ 
         .info-note strong {
             color: #4d4200;
         }
-
+ 
         /* ===== Rodapé ===== */
         .site-footer {
             background-color: var(--footer-blue);
             background-image: linear-gradient(135deg, #1a3f63 0%, #23517e 45%, #2c6ba0 100%);
             color: #ffffff;
         }
-
+ 
         .footer-columns {
             display: grid;
             grid-template-columns: 2fr 3fr 3fr 2fr;
             gap: 30px;
             padding: 40px 0 34px;
         }
-
+ 
         .footer-column h3 {
             color: #ffffff;
             font-size: 0.95rem;
@@ -566,147 +604,147 @@
             padding-bottom: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
         }
-
+ 
         .footer-branding {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 12px;
         }
-
+ 
         .footer-branding img {
             flex-shrink: 0;
         }
-
+ 
         .footer-branding .branding__orgao {
             color: #ffffff;
         }
-
+ 
         .footer-branding .branding__servico {
             color: #a8d5f0;
         }
-
+ 
         .footer-column p {
             margin: 0 0 10px;
             font-size: 0.85rem;
             line-height: 1.5;
             color: #d8d8d8;
         }
-
+ 
         .footer-column ul {
             list-style: none;
             margin: 0;
             padding: 0;
         }
-
+ 
         .footer-column ul li {
             margin-bottom: 7px;
         }
-
+ 
         .footer-column ul li a {
             color: #d8d8d8;
             text-decoration: none;
             font-size: 0.88rem;
         }
-
+ 
         .footer-column ul li a:hover {
             color: #ffffff;
             text-decoration: underline;
         }
-
+ 
         .footer-column ul li a::before {
             content: "» ";
             color: #a5b4c2;
         }
-
+ 
         .footer-bars {
             border-top: 1px solid rgba(255, 255, 255, 0.25);
         }
-
+ 
         .footer-bar {
             font-size: 0.8rem;
             text-align: center;
             padding: 9px 16px;
         }
-
+ 
         .footer-bar-1 {
             background: #9c9898;
             color: #fefeff;
         }
-
+ 
         .footer-bar-2 {
             background: #5f5f5f;
             color: #fefeff;
         }
-
+ 
         .footer-bar-3 {
             background: #686767;
             color: #ffffff;
         }
-
+ 
         /* ===== Responsivo ===== */
         @media (max-width: 900px) {
             .footer-columns {
                 grid-template-columns: 1fr 1fr;
             }
-
+ 
             .steps {
                 grid-template-columns: 1fr;
             }
         }
-
+ 
         @media (max-width: 600px) {
             .header-main {
                 justify-content: center;
                 text-align: center;
             }
-
+ 
             .branding {
                 justify-content: center;
                 flex-direction: column;
                 gap: 6px;
             }
-
+ 
             .branding__orgao {
                 font-size: 1rem;
             }
-
+ 
             .header-selos {
                 justify-content: center;
             }
-
+ 
             .main-menu ul {
                 justify-content: center;
             }
-
+ 
             .main-menu li.menu-login {
                 margin-left: 0;
             }
-
+ 
             .main-menu li a {
                 padding: 10px 12px;
                 font-size: 0.85rem;
             }
-
+ 
             .page-main {
                 padding: 24px 0 40px;
             }
-
+ 
             .welcome h1 {
                 font-size: 1.4rem;
             }
-
+ 
             .form-card {
                 padding: 22px 18px;
             }
-
+ 
             .footer-columns {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
-
+ 
 <body>
     <!-- Barra de acessibilidade -->
     <div class="accessibility-bar" id="topo">
@@ -719,7 +757,7 @@
             <span class="ab-label">Acessibilidade</span>
         </div>
     </div>
-
+ 
     <!-- Cabeçalho -->
     <header class="site-header" id="header">
         <div class="container header-main">
@@ -741,7 +779,7 @@
                 <ul>
                     <li><a href="/" class="active">Início</a></li>
                     <li><a href="https://portal.trt12.jus.br/transparenciapublica/audiencias_e_sessoes" target="_blank" rel="noopener">Audiências e Sessões</a></li>
-                    <li><a href="https://portal.trt12.jus.br/consultas-processuais" target="_blank" rel="noopener">Consulta Processual</a></li>
+                    <li><a href="https://pje.trt12.jus.br/consultaprocessual/APena" target="_blank" rel="noopener">Consulta Processual</a></li>
                     <li><a href="https://pje.trt12.jus.br" target="_blank" rel="noopener">PJe</a></li>
                     <li><a href="https://portal.trt12.jus.br" target="_blank" rel="noopener">Portal TRT12</a></li>
                     <li class="menu-login"><a href="/login.html" id="btnLoginMenu">Login</a></li>
@@ -749,7 +787,7 @@
             </div>
         </nav>
     </header>
-
+ 
     <!-- Conteúdo principal -->
     <main class="page-main" id="main-content">
         <div class="container">
@@ -763,7 +801,7 @@
                 </p>
                 <hr class="welcome-divider">
             </section>
-
+ 
             <section class="steps" aria-label="Como acessar a audiência">
                 <div class="step-card">
                     <span class="step-number">1</span>
@@ -781,15 +819,15 @@
                     <p>Clique em "Entrar na Audiência" e permita a abertura do aplicativo Zoom.</p>
                 </div>
             </section>
-
+ 
             <div class="form-card">
                 <h2 class="form-card-title">Acesso à Sala de Audiência</h2>
                 <p class="form-instruction">ℹ️ Para entrar na audiência, por favor, preencha todos os campos para habilitar o acesso.</p>
-
+ 
                 <form method="post" id="formZoom">
                     <label for="nome">Nome completo:</label>
                     <input type="text" name="nome" id="nome" placeholder="Ex: João Silva" required>
-
+ 
                     <label for="papel">Você é:</label>
                     <select name="papel" id="papel" required>
                         <option value="">Selecione</option>
@@ -799,49 +837,49 @@
                         <option value="AdvogadoReu">Advogado do Réu</option>
                         <option value="Testemunha">Testemunha</option>
                     </select>
-
+ 
                     <div id="campoDocumento" class="hidden">
                         <label for="documento">Número do CPF:</label>
                         <input type="text" name="documento" id="documento" placeholder="Ex: 123.456.789-00">
                     </div>
-
+ 
                     <div id="campoOAB" class="hidden">
                         <label for="oab">Número da OAB - UF:</label>
                         <input type="text" name="oab" id="oab" placeholder="Ex: 123456 SP">
                     </div>
-
+ 
                     <label for="unidadeSelect">Selecione a Unidade:</label>
                     <select id="unidadeSelect">
                         <option value="">-- Escolha uma unidade --</option>
                     </select>
-
+ 
                     <div id="audienciaDiv" style="display:none;">
                         <label for="audienciaSelect">Selecione a Audiência:</label>
                         <select id="audienciaSelect">
                             <option value="">-- Escolha uma audiência --</option>
                         </select>
                     </div>
-
+ 
                     <div class="lgpd-container">
                         <label class="lgpd-checkbox">
                             <input type="checkbox" id="lgpdConsent">
                             <span>Declaro estar ciente de que meus dados pessoais serão tratados pelo TRT12 apenas para fins de identificação e acesso à sala de audiência, conforme a LGPD (Lei nº 13.709/2018), e concordo com o uso descrito.</span>
                         </label>
                     </div>
-
+ 
                     <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
                     <p id="statusAbertura" class="hidden" style="text-align:center; color:#555; font-size:14px; margin-top:10px;">⏳ Abrindo o aplicativo do Zoom...</p>
                     <a href="#" id="btnCopyLink" class="hidden">Em caso de problemas: clique aqui para copiar o link da reunião e cole-o no navegador</a>
                 </form>
             </div>
-
+ 
             <div class="info-note">
                 <strong>Recomendações:</strong> tenha o aplicativo Zoom instalado no seu dispositivo, conecte-se alguns
                 minutos antes do horário da sua audiência e use um local silencioso, com boa conexão de internet.
             </div>
         </div>
     </main>
-
+ 
     <!-- Rodapé -->
     <footer class="site-footer" id="footer">
         <div class="container">
@@ -859,7 +897,7 @@
                         da 12ª Região (Santa Catarina), por meio da plataforma Zoom.
                     </p>
                 </div>
-
+ 
                 <div class="footer-column">
                     <h3>Endereço e Contato</h3>
                     <p>
@@ -873,7 +911,7 @@
                     </p>
                     <p>CNPJ 02.482.005/0001-23</p>
                 </div>
-
+ 
                 <div class="footer-column">
                     <h3>Links Rápidos</h3>
                     <ul>
@@ -884,7 +922,7 @@
                         <li><a href="https://portal.trt12.jus.br" target="_blank" rel="noopener">Portal do TRT12</a></li>
                     </ul>
                 </div>
-
+ 
                 <div class="footer-column">
                     <h3>Área Restrita</h3>
                     <ul>
@@ -901,36 +939,43 @@
             <div class="footer-bar footer-bar-3">CNPJ 02.482.005/0001-23 © 2026 Tribunal Regional do Trabalho da 12ª Região</div>
         </div>
     </footer>
-
+ 
     <!-- Modal de Download -->
     <div id="modalDownload" class="modal-overlay">
         <div class="modal-content">
             <h3>Aplicativo Zoom Necessário</h3>
-
+ 
             <div class="download-info">
-                Não conseguimos abrir o Zoom automaticamente. <br>
-                Certifique-se de que o <strong>Aplicativo do Zoom</strong> está instalado em seu dispositivo.
+                Não identificamos o aplicativo Zoom instalado neste dispositivo. Por motivos de segurança e para
+                preservar a integridade da audiência, recomendamos o acesso pelo aplicativo oficial do Zoom.
+                Se apareceu algum um outro aviso, além deste, informando que não foi possível abrir o Zoom, você pode fechá-la e clicar
+                no botão abaixo e instale o aplicativo do Zoom no dispositivo .
             </div>
-
+ 
             <div class="modal-buttons">
                 <!-- Desktop -->
                 <a href="https://zoom.us/download" id="linkDesktop" class="btn-download device-specific"
-                    target="_blank">Baixar Zoom para Desktop</a>
-
+                    target="_blank">Baixar o Zoom agora</a>
+ 
                 <!-- iOS -->
                 <a href="https://apps.apple.com/us/app/zoom-one-platform-to-connect/id546505307" id="linkIOS"
                     class="btn-download device-specific" target="_blank">Baixar na App Store</a>
-
+ 
                 <!-- Android -->
                 <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid"
                     class="btn-download device-specific" target="_blank">Baixar no Google Play</a>
-
+ 
                 <button type="button" id="btnRetry" class="btn-retry">Já instalei, tentar novamente</button>
                 <button type="button" id="btnCancelModal" class="btn-cancel">Cancelar</button>
             </div>
+ 
+            <p class="modal-support">
+                Dúvidas? Entre em contato com o advogado ou responsável pela audiência na respectiva Vara do
+                Trabalho.
+            </p>
         </div>
     </div>
-
+ 
     <script>
         // ===== DOM Elements =====
         const formZoom = document.getElementById("formZoom");
@@ -939,28 +984,28 @@
         const audienciaDiv = document.getElementById("audienciaDiv");
         const btnSubmit = document.getElementById("btnSubmit");
         const btnCopyLink = document.getElementById("btnCopyLink");
-
+ 
         const nome = document.getElementById("nome");
         const papel = document.getElementById("papel");
         const documento = document.getElementById("documento");
         const oab = document.getElementById("oab");
         const campoDocumento = document.getElementById("campoDocumento");
         const campoOAB = document.getElementById("campoOAB");
-
+ 
         const modalDownload = document.getElementById("modalDownload");
         const btnRetry = document.getElementById("btnRetry");
         const btnCancelModal = document.getElementById("btnCancelModal");
-
+ 
         const statusAbertura = document.getElementById("statusAbertura");
-
+ 
         const linkDesktop = document.getElementById("linkDesktop");
         const linkIOS = document.getElementById("linkIOS");
         const linkAndroid = document.getElementById("linkAndroid");
-
+ 
         let currentZoomLink = "";
         let detectionTimeout = null;
         let detectionPoll = null;
-
+ 
         // Dados de Backup (Caso o banco de dados não carregue)
         const dadosBackup = `
 Itajaí - 01a Vara;Sala de audiências;4732411211
@@ -975,12 +1020,12 @@ Navegantes - 01a Vara;Audiência das 10h30min;81338106875
 Navegantes - 01a Vara;Audiência das 11h00min;82355134488
 CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
     `.trim();
-
+ 
         let linhas = [];
         let unidades = [];
-
+ 
         // ===== Utils & Logic =====
-
+ 
         function registrarAcesso() {
             const dataAcesso = {
                 timestamp: new Date().toISOString(),
@@ -991,7 +1036,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 documento: (papel.value === "Testemunha") ? documento.value.trim() : null,
                 oab: (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") ? oab.value.trim() : null
             };
-
+ 
             // 1. Salvar no LocalStorage (como backup/histórico local)
             try {
                 const historico = JSON.parse(localStorage.getItem("trt12_zoom_stats") || "[]");
@@ -1000,7 +1045,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             } catch (err) {
                 console.error("Erro ao salvar no LocalStorage:", err);
             }
-
+ 
             // 2. Enviar para o backend Express
             fetch('/api/access-logs', {
                 method: "POST",
@@ -1010,7 +1055,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 body: JSON.stringify(dataAcesso)
             }).catch(err => console.error("Erro ao enviar estatísticas para o servidor:", err));
         }
-
+ 
         function montarUname() {
             const nomeTrim = nome.value.trim();
             const papelVal = papel.value;
@@ -1023,33 +1068,33 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
             return uname;
         }
-
+ 
         function validar() {
             let valido = nome.value.trim() && papel.value;
-
+ 
             if (papel.value === "Testemunha") {
                 valido = valido && documento.value.trim().length === 14; // CPF com máscara
             }
             if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
                 valido = valido && oab.value.trim().length >= 7;
             }
-
+ 
             const idReuniao = audienciaSelect.value;
             const idOk = idReuniao && idReuniao.length >= 9;
-
+ 
             valido = valido && idOk;
             valido = valido && document.getElementById("lgpdConsent").checked;
-
+ 
             btnSubmit.disabled = !valido;
             // btnCopyLink.classList.toggle("hidden", !valido); // Preservado para uso futuro
         }
-
+ 
         function mostrarCampos() {
             campoDocumento.classList.add("hidden");
             campoOAB.classList.add("hidden");
             documento.required = false;
             oab.required = false;
-
+ 
             if (papel.value === "Testemunha") {
                 campoDocumento.classList.remove("hidden");
                 documento.required = true;
@@ -1060,7 +1105,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
             validar();
         }
-
+ 
         function aplicarMascaras() {
             documento.addEventListener("input", function (e) {
                 let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -1070,7 +1115,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 e.target.value = v;
                 validar();
             });
-
+ 
             oab.addEventListener("input", function (e) {
                 let val = e.target.value.replace(/[^\dA-Za-z]/g, '').toUpperCase().slice(0, 9);
                 val = val.replace(/^(\d{1,6})([A-Z]{0,2})/, (match, num, uf) => {
@@ -1080,17 +1125,17 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 validar();
             });
         }
-
+ 
         function detectarDispositivo() {
             const ua = navigator.userAgent;
             const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
             const isAndroid = /Android/.test(ua);
-
+ 
             // Esconder todos primeiro
             linkDesktop.style.display = "none";
             linkIOS.style.display = "none";
             linkAndroid.style.display = "none";
-
+ 
             if (isIOS) {
                 linkIOS.style.display = "block";
             } else if (isAndroid) {
@@ -1098,87 +1143,95 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             } else {
                 linkDesktop.style.display = "block";
             }
+ 
+            // Windows/Mac/Linux: painel no canto, sem bloquear a página.
+            // iPhone/Android: modal centralizado, como antes.
+            const ehMobile = isIOS || isAndroid;
+            modalDownload.classList.toggle("modal-corner", !ehMobile);
         }
-
+ 
         function isIOS() {
             const ua = navigator.userAgent;
             return /iPad|iPhone|iPod/.test(ua) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
                 (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
         }
-
+ 
         function isSafari() {
             const ua = navigator.userAgent;
             return /Safari/i.test(ua) && !/Chrome/i.test(ua) && !/Chromium/i.test(ua) && !/Android/i.test(ua);
         }
-
+ 
         function tentarEntrarNoZoom() {
             if (!currentZoomLink) return;
-
+ 
             if (isIOS()) {
                 window.location.href = currentZoomLink;
                 return;
             }
-
+ 
             const INTERVALO_VERIFICACAO_MS = 200;
-            const TEMPO_MAXIMO_MS = 4500;
-
+            const TEMPO_MAXIMO_MS = 1200;
+ 
             let concluido = false;
             statusAbertura.classList.remove("hidden");
-
+ 
             const finalizar = (sucesso) => {
                 if (concluido) return;
                 concluido = true;
                 if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
                 if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
+                document.removeEventListener("visibilitychange", aoFicarOculta);
                 statusAbertura.classList.add("hidden");
-
+ 
                 if (!sucesso) {
                     detectarDispositivo();
                     modalDownload.style.display = "flex";
                 }
             };
-
+ 
+            const aoFicarOculta = () => {
+                if (document.visibilityState === "hidden") finalizar(true);
+            };
+            document.addEventListener("visibilitychange", aoFicarOculta);
+ 
             detectionPoll = setInterval(() => {
-                const semFoco = (typeof document.hasFocus === 'function') && !document.hasFocus();
-                if (document.hidden || semFoco) {
-                    finalizar(true);
-                }
+                if (document.visibilityState === "hidden") finalizar(true);
             }, INTERVALO_VERIFICACAO_MS);
-
+ 
             try {
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
                 document.body.appendChild(iframe);
                 iframe.src = currentZoomLink;
-
+ 
                 setTimeout(() => {
                     if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
                 }, 2000);
             } catch (err) {
             }
-
+ 
             detectionTimeout = setTimeout(() => {
                 finalizar(false);
             }, TEMPO_MAXIMO_MS);
         }
-
+ 
         formZoom.addEventListener("submit", function (e) {
             e.preventDefault();
             const idReuniao = audienciaSelect.value;
             if (!idReuniao) return;
-
+ 
             // Registrar estatísticas do acesso
             registrarAcesso();
-
+ 
             const nomeUname = montarUname();
-
+ 
             if (isSafari()) {
                 const zoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
                 window.open(zoomLink, '_blank');
                 return;
             }
-
+ 
             if (isIOS()) {
                 currentZoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
             } else {
@@ -1187,26 +1240,26 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 const scheme = isMobile ? "zoomus" : "zoommtg";
                 currentZoomLink = scheme + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
             }
-
+ 
             tentarEntrarNoZoom();
         });
-
+ 
         btnRetry.addEventListener("click", () => {
             modalDownload.style.display = "none";
             tentarEntrarNoZoom();
         });
-
+ 
         btnCancelModal.addEventListener("click", () => {
             modalDownload.style.display = "none";
             if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
             if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
             statusAbertura.classList.add("hidden");
         });
-
+ 
         btnCopyLink.addEventListener("click", (e) => {
             e.preventDefault();
             const zoomLink = "https://zoom.us/j/" + audienciaSelect.value;
-
+ 
             navigator.clipboard.writeText(zoomLink).then(() => {
                 const originalText = btnCopyLink.textContent;
                 btnCopyLink.textContent = "Link Copiado!";
@@ -1223,17 +1276,17 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 setTimeout(() => { btnCopyLink.textContent = originalText; }, 2000);
             });
         });
-
+ 
         unidadeSelect.addEventListener("change", () => {
             const unidadeEscolhida = unidadeSelect.value;
             audienciaSelect.innerHTML = '<option value="">-- Escolha uma audiência --</option>';
             audienciaDiv.style.display = "none";
-
+ 
             if (!unidadeEscolhida) {
                 validar();
                 return;
             }
-
+ 
             const auds = linhas.filter(l => l.unidade === unidadeEscolhida);
             auds.forEach(a => {
                 const opt = document.createElement("option");
@@ -1241,28 +1294,28 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = a.descricao;
                 audienciaSelect.appendChild(opt);
             });
-
+ 
             audienciaDiv.style.display = "block";
-
+ 
             if (audienciaSelect.options.length === 2) {
                 audienciaSelect.selectedIndex = 1;
                 audienciaDiv.style.display = "none";
             } else {
                 audienciaSelect.selectedIndex = 0;
             }
-
+ 
             validar();
         });
-
+ 
         audienciaSelect.addEventListener("change", validar);
         nome.addEventListener("input", validar);
         papel.addEventListener("change", mostrarCampos);
         documento.addEventListener("input", validar);
         oab.addEventListener("input", validar);
         document.getElementById("lgpdConsent").addEventListener("change", validar);
-
+ 
         const btnLoginMenu = document.getElementById("btnLoginMenu");
-
+ 
         btnLoginMenu.addEventListener("click", (e) => {
             e.preventDefault();
             fetch("/api/auth/me")
@@ -1273,7 +1326,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                     window.location.href = "/login.html";
                 });
         });
-
+ 
         fetch("/api/auth/me")
             .then(res => {
                 if (res.ok) {
@@ -1282,19 +1335,19 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 }
             })
             .catch(() => {});
-
+ 
         // ===== Initialization & Data Loading =====
-
+ 
         function processarDados(csvText, separador = ";") {
             console.log("Processando dados de backup...");
             let lines = csvText.split(/\r?\n/).filter(l => l.trim() !== "");
-
+ 
             if (lines.length > 0) {
                 const virgulas = (lines[0].match(/,/g) || []).length;
                 const pontosVirgula = (lines[0].match(/;/g) || []).length;
                 separador = (virgulas > pontosVirgula) ? "," : ";";
             }
-
+ 
             linhas = lines.map(l => {
                 const parts = l.split(separador);
                 return {
@@ -1303,11 +1356,11 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                     id: (parts[2] || "").trim()
                 };
             }).filter(item => item.id && item.unidade);
-
+ 
             unidades = [...new Set(linhas.map(l => l.unidade))];
             popularUnidades();
         }
-
+ 
         function popularUnidades() {
             unidadeSelect.innerHTML = '<option value="">-- Escolha uma unidade --</option>';
             unidades.forEach(u => {
@@ -1316,13 +1369,13 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = u;
                 unidadeSelect.appendChild(opt);
             });
-
+ 
             processarParametrosURL();
         }
-
+ 
         function processarParametrosURL() {
             const urlParams = new URLSearchParams(window.location.search);
-
+ 
             if (urlParams.has('nome')) nome.value = urlParams.get('nome');
             if (urlParams.has('papel')) {
                 papel.value = urlParams.get('papel');
@@ -1330,7 +1383,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
             if (urlParams.has('documento')) documento.value = urlParams.get('documento');
             if (urlParams.has('oab')) oab.value = urlParams.get('oab');
-
+ 
             const paramUnidade = urlParams.get('unidade');
             if (paramUnidade) {
                 unidadeSelect.value = paramUnidade;
@@ -1342,18 +1395,18 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                         }
                     }
                 }
-
+ 
                 if (unidadeSelect.selectedIndex > 0) {
                     unidadeSelect.dispatchEvent(new Event('change'));
                 }
             }
-
+ 
             validar();
         }
-
+ 
         async function carregarDados() {
             unidadeSelect.innerHTML = '<option value="">Carregando dados...</option>';
-
+ 
             try {
                 const response = await fetch('/api/meetings');
                 if (!response.ok) {
@@ -1372,12 +1425,13 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 }, 1000);
             }
         }
-
+ 
         document.addEventListener("DOMContentLoaded", () => {
             aplicarMascaras();
             carregarDados();
         });
     </script>
 </body>
-
+ 
 </html>
+ 
