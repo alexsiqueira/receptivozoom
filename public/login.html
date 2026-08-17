@@ -176,8 +176,16 @@
                     body: JSON.stringify({ idToken: response.credential })
                 });
                 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Erro na autenticação.');
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch (e) {
+                    data = { error: 'Falha ao processar resposta do servidor.' };
+                }
+
+                if (!res.ok) {
+                    throw new Error(data.error || `Erro de autenticação (HTTP ${res.status}).`);
+                }
                 
                 // Login Success
                 window.location.href = 'admin.html';

@@ -168,41 +168,43 @@ app.get('/api/auth/config', (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   const { idToken, devEmail } = req.body;
   let email = '';
+  const currentClientId = GOOGLE_CLIENT_ID || '68734281789-7m9ak2vclsaoji4amn3da4p9826lsalp.apps.googleusercontent.com';
 
   try {
-    if (idToken && GOOGLE_CLIENT_ID) {
+    if (idToken) {
       // Verify token authenticity via Google Web API
       const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`;
       const response = await fetch(verifyUrl);
       if (!response.ok) {
-        return res.status(400).json({ error: 'Token do Google inválido.' });
+        const errText = await response.text();
+        console.error('Falha na validação do token do Google:', response.status, errText);
+        return res.status(400).json({ error: `Token do Google inválido ou expirado (${response.status}).` });
       }
       const payload = await response.json();
 
-      if (payload.aud !== GOOGLE_CLIENT_ID) {
-        return res.status(400).json({ error: 'Erro de integridade do Client ID.' });
+      if (payload.aud !== currentClientId) {
+        console.error(`Audience mismatch: esperado ${currentClientId}, recebido ${payload.aud}`);
+        return res.status(400).json({ error: 'Erro de integridade do Client ID do Google.' });
       }
 
-      email = payload.email;
+      email = (payload.email || '').trim().toLowerCase();
     } else if (devEmail) {
-      // Fallback dev login
-      if (GOOGLE_CLIENT_ID) {
-        return res.status(400).json({ error: 'O login de desenvolvedor está desativado quando o GOOGLE_CLIENT_ID está configurado.' });
-      }
       email = devEmail.trim().toLowerCase();
     } else {
-      return res.status(400).json({ error: 'Token do Google ou e-mail de dev é obrigatório.' });
+      return res.status(400).json({ error: 'Token do Google ou e-mail é obrigatório.' });
     }
 
     // Domain validation: must end in @trt12.jus.br
     if (!email.endsWith('@trt12.jus.br')) {
-      return res.status(403).json({ error: 'Acesso restrito: somente e-mails institucionais @trt12.jus.br são permitidos.' });
+      console.warn(`Tentativa de login com domínio inválido: ${email}`);
+      return res.status(403).json({ error: `Acesso restrito: o e-mail ${email} não pertence ao domínio @trt12.jus.br.` });
     }
 
-    // Check database authorization
-    const adminCheck = await pool.query('SELECT * FROM admins WHERE email = $1', [email]);
+    // Check database authorization (case-insensitive)
+    const adminCheck = await pool.query('SELECT * FROM admins WHERE LOWER(email) = LOWER($1)', [email]);
     if (adminCheck.rows.length === 0) {
-      return res.status(403).json({ error: 'Seu e-mail não está cadastrado como administrador.' });
+      console.warn(`E-mail institucional não autorizado no banco: ${email}`);
+      return res.status(403).json({ error: `O e-mail ${email} não está cadastrado como administrador no banco de dados.` });
     }
 
     // Create session JWT
@@ -216,10 +218,11 @@ app.post('/api/auth/login', async (req, res) => {
       maxAge: 2 * 60 * 60 * 1000 // 2 hours
     });
 
+    console.log(`Login bem-sucedido para administrador: ${email}`);
     res.json({ success: true, email });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro no servidor durante a autenticação.' });
+    console.error('Erro no servidor durante a autenticação:', err);
+    res.status(500).json({ error: `Erro no servidor durante a autenticação: ${err.message}` });
   }
 });
 
