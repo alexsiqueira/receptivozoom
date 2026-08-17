@@ -135,7 +135,22 @@
 
         <!-- Google Login Button Container -->
         <div id="googleLoginWrapper" class="google-btn-wrapper">
-            <div id="googleLoginButton"></div>
+            <div id="g_id_onload"
+                 data-client_id="68734281789-7m9ak2vclsaoji4amn3da4p9826lsalp.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
         </div>
 
         <p class="footer-note">Segurança da Informação - TRT12</p>
@@ -143,7 +158,6 @@
 
     <script>
         const alertBox = document.getElementById('alertBox');
-        const googleLoginWrapper = document.getElementById('googleLoginWrapper');
 
         // Check query parameters for system status redirects
         const urlParams = new URLSearchParams(window.location.search);
@@ -153,56 +167,8 @@
             showAlert('Sua conta não tem permissão para acessar o painel.');
         }
 
-        // Initialize Authentication Modes
-        async function checkAuthConfig() {
-            try {
-                const res = await fetch('/api/auth/config');
-                const config = await res.json();
-                
-                if (config.googleEnabled && config.googleClientId) {
-                    await waitForGsi();
-                    if (!window.google || !google.accounts || !google.accounts.id) {
-                        throw new Error('Google Identity Services não carregou.');
-                    }
-                    google.accounts.id.initialize({
-                        client_id: config.googleClientId,
-                        callback: handleCredentialResponse,
-                        auto_prompt: false
-                    });
-                    google.accounts.id.renderButton(document.getElementById('googleLoginButton'), {
-                        type: 'standard',
-                        shape: 'rectangular',
-                        theme: 'outline',
-                        text: 'signin_with',
-                        size: 'large',
-                        logo_alignment: 'left'
-                    });
-                } else {
-                    showAlert('O login via Google não está configurado no servidor.');
-                }
-            } catch (err) {
-                console.error("Error loading auth configurations:", err);
-                showAlert('Não foi possível carregar a autenticação do Google.');
-            }
-        }
-
-        // Wait for the async-deferred GIS script to load
-        function waitForGsi() {
-            return new Promise(resolve => {
-                if (window.google && google.accounts && google.accounts.id) return resolve();
-                const check = () => {
-                    if (window.google && google.accounts && google.accounts.id) resolve();
-                    else setTimeout(check, 100);
-                };
-                setTimeout(check, 100);
-            });
-        }
-
-        // Initialize on Load
-        document.addEventListener('DOMContentLoaded', checkAuthConfig);
-
         // Google Authentication Callback
-        async function handleCredentialResponse(response) {
+        window.handleCredentialResponse = async function(response) {
             try {
                 const res = await fetch('/api/auth/login', {
                     method: 'POST',
@@ -218,7 +184,7 @@
             } catch (err) {
                 showAlert(err.message);
             }
-        }
+        };
 
         // Show error/alert messages
         function showAlert(message) {
