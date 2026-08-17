@@ -1658,15 +1658,15 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         oab.addEventListener("input", validar);
         lgpdConsent.addEventListener("change", validar);
 
-        // Verificação de Auth para o Menu
+        // Menu Login Auth
         btnLoginMenu.addEventListener("click", (e) => {
             e.preventDefault();
-            fetch("api/auth/me")
+            fetch("/api/auth/me")
                 .then(res => { window.location.href = res.ok ? "admin.html" : "login.html"; })
                 .catch(() => { window.location.href = "login.html"; });
         });
 
-        fetch("api/auth/me")
+        fetch("/api/auth/me")
             .then(res => {
                 if (res.ok) {
                     btnLoginMenu.textContent = "Painel Administrativo";
@@ -1686,13 +1686,13 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             linhas = lines.map(l => {
                 const parts = l.split(separador);
                 return {
-                    unidade: (parts[0] || "").trim(),
-                    descricao: (parts[1] || "").trim(),
-                    id: (parts[2] || "").trim()
+                    unidade: (parts[0] || "").trim().replace(/^["']|["']$/g, ''),
+                    descricao: (parts[1] || "").trim().replace(/^["']|["']$/g, ''),
+                    id: (parts[2] || "").trim().replace(/^["']|["']$/g, '')
                 };
             }).filter(item => item.id && item.unidade);
 
-            unidades = [...new Set(linhas.map(l => l.unidade))];
+            unidades = [...new Set(linhas.map(l => l.unidade))].sort((a, b) => a.localeCompare('pt-BR'));
             popularUnidades();
         }
 
@@ -1704,6 +1704,10 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = u;
                 unidadeSelect.appendChild(opt);
             });
+
+            if (unitFilter && unitFilter.value.trim() !== "") {
+                unitFilter.dispatchEvent(new Event('input'));
+            }
 
             processarParametrosURL();
         }
@@ -1753,10 +1757,19 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         async function carregarDados() {
             unidadeSelect.innerHTML = '<option value="">Carregando unidades...</option>';
             try {
-                const response = await fetch('api/meetings');
+                const response = await fetch('/api/meetings');
                 if (!response.ok) throw new Error("Status " + response.status);
-                linhas = await response.json();
-                unidades = [...new Set(linhas.map(l => l.unidade))];
+                const data = await response.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error("Nenhuma unidade encontrada no banco.");
+                }
+                linhas = data.map(item => ({
+                    unidade: (item.unidade || "").trim(),
+                    descricao: (item.descricao || "").trim(),
+                    id: (item.id || item.zoom_id || "").toString().trim()
+                })).filter(item => item.id && item.unidade);
+
+                unidades = [...new Set(linhas.map(l => l.unidade))].sort((a, b) => a.localeCompare('pt-BR'));
                 popularUnidades();
             } catch (error) {
                 console.warn("Falha na API, utilizando backup estático:", error.message);

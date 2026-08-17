@@ -239,7 +239,7 @@ app.get('/api/auth/me', requireAdmin, (req, res) => {
 
 app.get('/api/meetings', async (req, res) => {
   try {
-    const result = await pool.query('SELECT unidade, descricao, zoom_id as id FROM meetings ORDER BY unidade ASC, id ASC');
+    const result = await pool.query('SELECT id as db_id, unidade, descricao, zoom_id as id, zoom_id FROM meetings ORDER BY unidade ASC, descricao ASC, id ASC');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching meetings:', err);

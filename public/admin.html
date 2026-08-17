@@ -621,7 +621,7 @@
 
         async function checkAuth() {
             try {
-                const res = await fetch('api/auth/me');
+                const res = await fetch('/api/auth/me');
                 if (!res.ok) {
                     throw new Error('Não autenticado');
                 }
@@ -637,7 +637,7 @@
         // Logout
         document.getElementById('btnLogout').addEventListener('click', async () => {
             try {
-                await fetch('api/auth/logout', { method: 'POST' });
+                await fetch('/api/auth/logout', { method: 'POST' });
                 window.location.href = 'login.html';
             } catch (err) {
                 showToast('Erro ao sair do sistema.', true);
@@ -671,7 +671,7 @@
         // Fetch meetings
         async function loadMeetings() {
             try {
-                const res = await fetch('api/admin/meetings');
+                const res = await fetch('/api/admin/meetings');
                 if (res.status === 401 || res.status === 403) return window.location.href = 'login.html';
                 if (!res.ok) throw new Error('Falha ao buscar reuniões.');
                 meetings = await res.json();
@@ -685,7 +685,7 @@
         // Fetch admins list
         async function loadAdmins() {
             try {
-                const res = await fetch('api/admin/users');
+                const res = await fetch('/api/admin/users');
                 if (res.status === 401 || res.status === 403) return window.location.href = 'login.html';
                 if (!res.ok) throw new Error('Falha ao buscar administradores.');
                 admins = await res.json();
@@ -791,7 +791,7 @@
                 zoom_id: zoomIdInput.value.trim()
             };
 
-            const url = id ? `api/admin/meetings/${id}` : 'api/admin/meetings';
+            const url = id ? `/api/admin/meetings/${id}` : '/api/admin/meetings';
             const method = id ? 'PUT' : 'POST';
 
             try {
@@ -850,7 +850,7 @@
             }
 
             try {
-                const res = await fetch('api/admin/users', {
+                const res = await fetch('/api/admin/users', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
@@ -902,9 +902,9 @@
             try {
                 let url = '';
                 if (deleteType === 'meeting') {
-                    url = `api/admin/meetings/${selectedMeetingId}`;
+                    url = `/api/admin/meetings/${selectedMeetingId}`;
                 } else if (deleteType === 'admin') {
-                    url = `api/admin/users/${selectedAdminId}`;
+                    url = `/api/admin/users/${selectedAdminId}`;
                 }
 
                 const res = await fetch(url, { method: 'DELETE' });
