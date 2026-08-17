@@ -439,5 +439,10 @@ app.get('*', (req, res) => {
 // Start Server
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
+  if (GOOGLE_CLIENT_ID) {
+    console.log(`Google Sign-In ativo (Client ID: ${GOOGLE_CLIENT_ID.substring(0, 12)}...)`);
+  } else {
+    console.warn('AVISO: GOOGLE_CLIENT_ID não encontrado nas variáveis de ambiente.');
+  }
   await initDb();
 });
