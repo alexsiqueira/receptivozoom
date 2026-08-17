@@ -479,12 +479,15 @@ router.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
 // Serve public folder static files
 router.use(express.static(path.join(__dirname, 'public')));
 
-// Serve frontend fallback
+// Serve frontend fallback dentro de /audiencias
 router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Redirecionamento canônico para o prefixo /audiencias/
+// Servir a aplicação completa sob o prefixo /audiencias
+app.use('/audiencias', router);
+
+// Redirecionamento da raiz e rotas externas para /audiencias/
 app.get('/', (req, res) => {
   res.redirect('/audiencias/');
 });
@@ -493,9 +496,9 @@ app.get('/audiencias', (req, res) => {
   res.redirect('/audiencias/');
 });
 
-// Registrar o router nos prefixos /audiencias e na raiz /
-app.use('/audiencias', router);
-app.use('/', router);
+app.get('*', (req, res) => {
+  res.redirect('/audiencias/');
+});
 
 // Start Server
 app.listen(PORT, async () => {
