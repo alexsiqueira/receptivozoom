@@ -476,28 +476,17 @@ router.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
   }
 });
 
-// Serve public folder static files
-router.use(express.static(path.join(__dirname, 'public')));
+// Servir arquivos estáticos (HTML, CSS, JS, imagens) da pasta public em /audiencias e na raiz /
+app.use('/audiencias', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve frontend fallback dentro de /audiencias
-router.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Servir a aplicação completa sob o prefixo /audiencias
+// Servir endpoints de APIs e autenticação em /audiencias e na raiz /
 app.use('/audiencias', router);
+app.use('/', router);
 
-// Redirecionamento da raiz e rotas externas para /audiencias/
-app.get('/', (req, res) => {
-  res.redirect('/audiencias/');
-});
-
-app.get('/audiencias', (req, res) => {
-  res.redirect('/audiencias/');
-});
-
-app.get('*', (req, res) => {
-  res.redirect('/audiencias/');
+// Fallback de roteamento (SPA / páginas não encontradas)
+app.get(['/audiencias/*', '*'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start Server

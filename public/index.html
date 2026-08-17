@@ -1760,15 +1760,12 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             
             let data = null;
             try {
-                let response = await fetch(`${basePath}/api/meetings`);
-                if (!response.ok && basePath) {
-                    response = await fetch('/api/meetings');
-                }
+                const response = await fetch(`${basePath}/api/meetings`);
                 if (response.ok) {
                     data = await response.json();
                     console.log("[Portal Zoom] Resposta recebida da API:", data);
                 } else {
-                    console.warn("[Portal Zoom] Resposta não-OK da API:", response.status);
+                    console.warn("[Portal Zoom] Resposta HTTP da API:", response.status);
                 }
             } catch (error) {
                 console.warn("[Portal Zoom] Falha na chamada da API:", error.message);
