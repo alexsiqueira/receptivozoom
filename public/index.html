@@ -1640,38 +1640,40 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         document.querySelectorAll('a[href="estatisticas.html"]').forEach(a => a.href = `${BASE_PATH}/estatisticas.html`);
         document.querySelectorAll('a[href="login.html"]').forEach(a => a.href = `${BASE_PATH}/login.html`);
 
-        btnLoginMenu.addEventListener("click", (e) => {
-            e.preventDefault();
+        if (btnLoginMenu) {
+            btnLoginMenu.addEventListener("click", (e) => {
+                e.preventDefault();
+                fetch(`${BASE_PATH}/api/auth/me`)
+                    .then(res => {
+                        if (res.ok) {
+                            return res.json().then(data => {
+                                if (data && data.email) {
+                                    window.location.href = `${BASE_PATH}/admin.html`;
+                                } else {
+                                    window.location.href = `${BASE_PATH}/login.html`;
+                                }
+                            }).catch(() => {
+                                window.location.href = `${BASE_PATH}/login.html`;
+                            });
+                        } else {
+                            window.location.href = `${BASE_PATH}/login.html`;
+                        }
+                    })
+                    .catch(() => { window.location.href = `${BASE_PATH}/login.html`; });
+            });
+
             fetch(`${BASE_PATH}/api/auth/me`)
                 .then(res => {
                     if (res.ok) {
                         return res.json().then(data => {
                             if (data && data.email) {
-                                window.location.href = `${BASE_PATH}/admin.html`;
-                            } else {
-                                window.location.href = `${BASE_PATH}/login.html`;
+                                btnLoginMenu.textContent = "Painel Administrativo";
                             }
-                        }).catch(() => {
-                            window.location.href = `${BASE_PATH}/login.html`;
-                        });
-                    } else {
-                        window.location.href = `${BASE_PATH}/login.html`;
+                        }).catch(() => {});
                     }
                 })
-                .catch(() => { window.location.href = `${BASE_PATH}/login.html`; });
-        });
-
-        fetch(`${BASE_PATH}/api/auth/me`)
-            .then(res => {
-                if (res.ok) {
-                    return res.json().then(data => {
-                        if (data && data.email) {
-                            btnLoginMenu.textContent = "Painel Administrativo";
-                        }
-                    }).catch(() => {});
-                }
-            })
-            .catch(() => {});
+                .catch(() => {});
+        }
 
         // Carregamento de Dados
         function processarDados(csvText, separador = ";") {
