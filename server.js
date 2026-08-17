@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !proces
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.jwt_secret || 'super_secret_jwt_token_trt12_zoom';
-const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || process.env.google_client_id || '').trim();
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || process.env.google_client_id || '68734281789-7m9ak2vclsaoji4amn3da4p9826lsalp.apps.googleusercontent.com').trim();
 
 // PostgreSQL Connection Pool
 const pool = new Pool({
