@@ -125,7 +125,7 @@ async function requireAdmin(req, res, next) {
   const token = req.cookies.token;
   if (!token) {
     if (req.accepts('html') && !req.xhr) {
-      return res.redirect('/login.html');
+      return res.redirect('login.html');
     }
     return res.status(401).json({ error: 'Acesso negado: faça login primeiro.' });
   }
@@ -138,7 +138,7 @@ async function requireAdmin(req, res, next) {
     if (adminCheck.rows.length === 0) {
       res.clearCookie('token');
       if (req.accepts('html') && !req.xhr) {
-        return res.redirect('/login.html?error=no_permission');
+        return res.redirect('login.html?error=no_permission');
       }
       return res.status(403).json({ error: 'Acesso negado: usuário não é mais administrador.' });
     }
@@ -148,7 +148,7 @@ async function requireAdmin(req, res, next) {
   } catch (err) {
     res.clearCookie('token');
     if (req.accepts('html') && !req.xhr) {
-      return res.redirect('/login.html?error=session_expired');
+      return res.redirect('login.html?error=session_expired');
     }
     return res.status(401).json({ error: 'Sessão inválida ou expirada.' });
   }

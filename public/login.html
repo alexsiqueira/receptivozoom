@@ -233,7 +233,7 @@
         // Initialize Authentication Modes
         async function checkAuthConfig() {
             try {
-                const res = await fetch('/api/auth/config');
+                const res = await fetch('api/auth/config');
                 const config = await res.json();
                 
                 if (config.googleEnabled && config.googleClientId) {
@@ -287,7 +287,7 @@
         // Google Authentication Callback
         async function handleCredentialResponse(response) {
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch('api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ idToken: response.credential })
@@ -297,7 +297,7 @@
                 if (!res.ok) throw new Error(data.error || 'Erro na autenticação.');
                 
                 // Login Success
-                window.location.href = '/admin.html';
+                window.location.href = 'admin.html';
             } catch (err) {
                 showAlert(err.message);
             }
@@ -309,7 +309,7 @@
             const devEmail = devEmailInput.value.trim();
             
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch('api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ devEmail })
@@ -319,7 +319,7 @@
                 if (!res.ok) throw new Error(data.error || 'Erro na autenticação.');
                 
                 // Login Success
-                window.location.href = '/admin.html';
+                window.location.href = 'admin.html';
             } catch (err) {
                 showAlert(err.message);
             }

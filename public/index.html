@@ -779,12 +779,12 @@
         <nav class="main-menu" id="menu-principal" aria-label="Menu principal">
             <div class="container">
                 <ul>
-                    <li><a href="/" class="active">Início</a></li>
+                    <li><a href="./" class="active">Início</a></li>
                     <li><a href="https://portal.trt12.jus.br/transparenciapublica/audiencias_e_sessoes" target="_blank" rel="noopener">Audiências e Sessões</a></li>
                     <li><a href="https://pje.trt12.jus.br/consultaprocessual/APena" target="_blank" rel="noopener">Consulta Processual</a></li>
                     <li><a href="https://pje.trt12.jus.br" target="_blank" rel="noopener">PJe</a></li>
                     <li><a href="https://portal.trt12.jus.br" target="_blank" rel="noopener">Portal TRT12</a></li>
-                    <li class="menu-login"><a href="/login.html" id="btnLoginMenu">Login</a></li>
+                    <li class="menu-login"><a href="login.html" id="btnLoginMenu">Login</a></li>
                 </ul>
             </div>
         </nav>
@@ -928,9 +928,9 @@
                 <div class="footer-column">
                     <h3>Área Restrita</h3>
                     <ul>
-                        <li><a href="/login.html">Acesso Restrito</a></li>
-                        <li><a href="/estatisticas.html">Estatísticas</a></li>
-                        <li><a href="/admin.html">Administração</a></li>
+                        <li><a href="login.html">Acesso Restrito</a></li>
+                        <li><a href="estatisticas.html">Estatísticas</a></li>
+                        <li><a href="admin.html">Administração</a></li>
                     </ul>
                 </div>
             </div>
@@ -1052,7 +1052,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
  
             // 2. Enviar para o backend Express
-            fetch('/api/access-logs', {
+            fetch('api/access-logs', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -1340,16 +1340,16 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
  
         btnLoginMenu.addEventListener("click", (e) => {
             e.preventDefault();
-            fetch("/api/auth/me")
+            fetch("api/auth/me")
                 .then(res => {
-                    window.location.href = res.ok ? "/admin.html" : "/login.html";
+                    window.location.href = res.ok ? "admin.html" : "login.html";
                 })
                 .catch(() => {
-                    window.location.href = "/login.html";
+                    window.location.href = "login.html";
                 });
         });
  
-        fetch("/api/auth/me")
+        fetch("api/auth/me")
             .then(res => {
                 if (res.ok) {
                     btnLoginMenu.textContent = "Painel Administrativo";
@@ -1430,7 +1430,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             unidadeSelect.innerHTML = '<option value="">Carregando dados...</option>';
  
             try {
-                const response = await fetch('/api/meetings');
+                const response = await fetch('api/meetings');
                 if (!response.ok) {
                     throw new Error("Erro HTTP: " + response.status);
                 }
