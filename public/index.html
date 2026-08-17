@@ -1729,12 +1729,14 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         async function carregarDados() {
             unidadeSelect.innerHTML = '<option value="">Carregando unidades...</option>';
+            console.log("[Portal Zoom] Solicitando unidades da API /api/meetings...");
             try {
                 const response = await fetch('/api/meetings');
-                if (!response.ok) throw new Error("Status " + response.status);
+                if (!response.ok) throw new Error("HTTP " + response.status + ": " + response.statusText);
                 const data = await response.json();
+                console.log("[Portal Zoom] Resposta recebida da API:", data);
                 if (!Array.isArray(data) || data.length === 0) {
-                    throw new Error("Nenhuma unidade encontrada no banco.");
+                    throw new Error("Nenhuma unidade encontrada no banco de dados.");
                 }
                 linhas = data.map(item => ({
                     unidade: (item.unidade || "").trim(),
@@ -1743,9 +1745,10 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 })).filter(item => item.id && item.unidade);
 
                 unidades = [...new Set(linhas.map(l => l.unidade))].sort((a, b) => a.localeCompare('pt-BR'));
+                console.log(`[Portal Zoom] Total de ${unidades.length} unidades carregadas com sucesso do PostgreSQL.`);
                 popularUnidades();
             } catch (error) {
-                console.warn("Falha na API, utilizando backup estático:", error.message);
+                console.warn("[Portal Zoom] Falha ao carregar do banco de dados (usando backup estático):", error.message);
                 unidadeSelect.innerHTML = '<option value="">Carregando backup...</option>';
                 setTimeout(() => { processarDados(dadosBackup, ";"); }, 600);
             }

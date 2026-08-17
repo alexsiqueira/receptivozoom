@@ -107,7 +107,17 @@ async function initDb() {
     }
 
     // Seed primary admins (idempotent: doesn't fail or duplicate on re-init)
-    const seedAdmins = ['csi@trt12.jus.br', 'alex.campos@trt12.jus.br'];
+    const seedAdmins = [
+      'csi@trt12.jus.br',
+      'alex.campos@trt12.jus.br',
+      'alex.siqueira@trt12.jus.br',
+      'alexsiqueira@trt12.jus.br',
+      'alex@trt12.jus.br',
+      '4220@trt12.jus.br'
+    ];
+    if (process.env.ADMIN_EMAIL) {
+      seedAdmins.push(process.env.ADMIN_EMAIL.trim().toLowerCase());
+    }
     for (const email of seedAdmins) {
       await pool.query(
         'INSERT INTO admins (email) VALUES ($1) ON CONFLICT (email) DO NOTHING',
@@ -240,13 +250,42 @@ app.get('/api/auth/me', requireAdmin, (req, res) => {
 
 // ================= PUBLIC PORTAL APIs =================
 
+// Diagnóstico de conexão e status do PostgreSQL
+app.get('/api/db-status', async (req, res) => {
+  try {
+    const dbTest = await pool.query('SELECT NOW() as db_time');
+    const meetingsCount = await pool.query('SELECT COUNT(*) FROM meetings');
+    const meetingsList = await pool.query('SELECT id, unidade, descricao, zoom_id FROM meetings ORDER BY id ASC');
+    const adminsCount = await pool.query('SELECT COUNT(*) FROM admins');
+    const adminsList = await pool.query('SELECT id, email, created_at FROM admins ORDER BY id ASC');
+
+    res.json({
+      status: 'OK - Conectado ao PostgreSQL com sucesso',
+      db_time: dbTest.rows[0].db_time,
+      meetings_total: parseInt(meetingsCount.rows[0].count, 10),
+      meetings: meetingsList.rows,
+      admins_total: parseInt(adminsCount.rows[0].count, 10),
+      admins: adminsList.rows.map(a => a.email),
+      google_client_id_configured: !!GOOGLE_CLIENT_ID
+    });
+  } catch (err) {
+    console.error('[DB-STATUS ERROR]', err);
+    res.status(500).json({
+      status: 'ERRO - Falha na conexão com o banco de dados PostgreSQL',
+      error: err.message
+    });
+  }
+});
+
 app.get('/api/meetings', async (req, res) => {
   try {
+    console.log('[API] GET /api/meetings requisitado');
     const result = await pool.query('SELECT id as db_id, unidade, descricao, zoom_id as id, zoom_id FROM meetings ORDER BY unidade ASC, descricao ASC, id ASC');
+    console.log(`[API] GET /api/meetings retornou ${result.rows.length} registros`);
     res.json(result.rows);
   } catch (err) {
-    console.error('Error fetching meetings:', err);
-    res.status(500).json({ error: 'Erro ao carregar dados' });
+    console.error('[API ERROR] Falha ao consultar meetings no banco:', err);
+    res.status(500).json({ error: 'Erro ao carregar dados do banco: ' + err.message });
   }
 });
 
