@@ -1129,8 +1129,8 @@
                             </div>
 
                             <a href="#" id="btnCopyLink" class="btn-secondary-link hidden">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span id="btnCopyLinkText">Copiar link direto da reunião</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                <span id="btnCopyLinkText">Copiar link do formulário preenchido</span>
                             </a>
                         </form>
                     </div>
@@ -1364,7 +1364,6 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
             if (formValido) {
                 validationHint.innerHTML = '<span style="color:var(--accent-700)">✓ Todos os campos preenchidos. Pronto para entrar!</span>';
-                btnCopyLink.classList.remove("hidden");
             } else {
                 let pendencias = [];
                 if (!nomeOk) pendencias.push("nome");
@@ -1375,6 +1374,11 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 if (!lgpdOk) pendencias.push("LGPD");
 
                 validationHint.innerHTML = `<span>Pendente: ${pendencias.slice(0, 2).join(", ")}${pendencias.length > 2 ? '...' : ''}</span>`;
+            }
+
+            if (unidadeSelect.value) {
+                btnCopyLink.classList.remove("hidden");
+            } else {
                 btnCopyLink.classList.add("hidden");
             }
         }
@@ -1547,23 +1551,34 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         btnCancelModal.addEventListener("click", fecharModalDownload);
 
-        // Copiar Link
+        // Copiar Link Preenchido do Formulário
         btnCopyLink.addEventListener("click", (e) => {
             e.preventDefault();
-            const zoomLink = "https://zoom.us/j/" + audienciaSelect.value;
+            const url = new URL(window.location.href);
+            url.search = "";
 
-            navigator.clipboard.writeText(zoomLink).then(() => {
+            if (unidadeSelect.value) url.searchParams.set("unidade", unidadeSelect.value);
+            if (audienciaSelect.value) url.searchParams.set("audiencia", audienciaSelect.value);
+            if (papel.value) url.searchParams.set("papel", papel.value);
+            if (nome.value.trim()) url.searchParams.set("nome", nome.value.trim());
+            if (papel.value === "Testemunha" && documento.value.trim()) url.searchParams.set("documento", documento.value.trim());
+            if ((papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") && oab.value.trim()) url.searchParams.set("oab", oab.value.trim());
+
+            const linkToCopy = url.toString();
+
+            const onSuccess = () => {
                 btnCopyLinkText.textContent = "✓ Link Copiado!";
-                setTimeout(() => { btnCopyLinkText.textContent = "Copiar link direto da reunião"; }, 2500);
-            }).catch(() => {
+                setTimeout(() => { btnCopyLinkText.textContent = "Copiar link do formulário preenchido"; }, 2500);
+            };
+
+            navigator.clipboard.writeText(linkToCopy).then(onSuccess).catch(() => {
                 const tempInput = document.createElement("input");
-                tempInput.value = zoomLink;
+                tempInput.value = linkToCopy;
                 document.body.appendChild(tempInput);
                 tempInput.select();
                 document.execCommand("copy");
                 document.body.removeChild(tempInput);
-                btnCopyLinkText.textContent = "✓ Link Copiado!";
-                setTimeout(() => { btnCopyLinkText.textContent = "Copiar link direto da reunião"; }, 2500);
+                onSuccess();
             });
         });
 
@@ -1688,6 +1703,20 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 }
                 if (unidadeSelect.selectedIndex > 0) {
                     unidadeSelect.dispatchEvent(new Event('change'));
+                }
+            }
+
+            const paramAudiencia = urlParams.get('audiencia') || urlParams.get('reuniao') || urlParams.get('id');
+            if (paramAudiencia) {
+                audienciaSelect.value = paramAudiencia;
+                if (audienciaSelect.selectedIndex <= 0) {
+                    for (let i = 0; i < audienciaSelect.options.length; i++) {
+                        if (audienciaSelect.options[i].textContent.trim().toLowerCase() === paramAudiencia.trim().toLowerCase() ||
+                            audienciaSelect.options[i].value.trim() === paramAudiencia.trim()) {
+                            audienciaSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
                 }
             }
             validar();
