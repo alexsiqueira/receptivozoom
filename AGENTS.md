@@ -14,9 +14,9 @@ The project is migrating from a **static setup** (GitHub Pages, Google Sheets ba
 All three are functionally equivalent: user selects unidade/audiência → Zoom redirect. Any change to the form's behavior must be replicated across all three.
 
 ## Quick start
-- `npm start` — run server.js on port 3000
+- `npm start` — run server.js on port 5000
 - `npm run dev` — nodemon (auto-restart on changes)
-- `docker compose up` — full stack (postgres + web) on port 3000
+- `docker compose up` — full stack (postgres + web) on port 5000
 
 ## Architecture
 - **Monolithic Node.js/Express** app (`server.js`). No frameworks beyond Express.

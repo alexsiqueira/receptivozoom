@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Em produção os segredos não podem vir de fallbacks hardcoded (conhecidos no repo).
 if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.DATABASE_URL)) {

@@ -18,7 +18,7 @@ services:
     build: .
     container_name: zoom_web_app
     ports:
-      - "3000:3000"
+      - "127.0.0.1:5000:5000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - PORT=${PORT}
