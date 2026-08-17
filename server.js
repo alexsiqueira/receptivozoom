@@ -133,8 +133,7 @@ async function initDb() {
 // Authentication Middleware
 async function requireAdmin(req, res, next) {
   const token = req.cookies.token;
-  const isAudiencias = req.baseUrl.includes('audiencias') || req.originalUrl.includes('audiencias');
-  const loginUrl = isAudiencias ? '/audiencias/login.html' : '/login.html';
+  const loginUrl = '/audiencias/login.html';
 
   if (!token) {
     if (req.accepts('html') && !req.xhr) {
@@ -149,7 +148,7 @@ async function requireAdmin(req, res, next) {
     // Check if the user is still in the admin list
     const adminCheck = await pool.query('SELECT * FROM admins WHERE email = $1', [decoded.email]);
     if (adminCheck.rows.length === 0) {
-      res.clearCookie('token');
+      res.clearCookie('token', { path: '/' });
       if (req.accepts('html') && !req.xhr) {
         return res.redirect(`${loginUrl}?error=no_permission`);
       }
@@ -159,7 +158,7 @@ async function requireAdmin(req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
-    res.clearCookie('token');
+    res.clearCookie('token', { path: '/' });
     if (req.accepts('html') && !req.xhr) {
       return res.redirect(`${loginUrl}?error=session_expired`);
     }
@@ -482,6 +481,15 @@ router.use(express.static(path.join(__dirname, 'public')));
 // Serve frontend fallback
 router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Redirecionamento canônico para o prefixo /audiencias/
+app.get('/', (req, res) => {
+  res.redirect('/audiencias/');
+});
+
+app.get('/audiencias', (req, res) => {
+  res.redirect('/audiencias/');
 });
 
 // Registrar o router nos prefixos /audiencias e na raiz /

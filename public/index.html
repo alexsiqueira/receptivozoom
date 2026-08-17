@@ -1633,7 +1633,12 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         lgpdConsent.addEventListener("change", validar);
 
         // Menu Login Auth
-        const BASE_PATH = window.location.pathname.startsWith('/audiencias') ? '/audiencias' : '';
+        const BASE_PATH = (window.location.pathname.startsWith('/audiencias') || window.location.pathname.includes('/audiencias')) ? '/audiencias' : '';
+
+        // Ajustar links internos para respeitar o BASE_PATH (/audiencias/)
+        document.querySelectorAll('a[href="admin.html"]').forEach(a => a.href = `${BASE_PATH}/admin.html`);
+        document.querySelectorAll('a[href="estatisticas.html"]').forEach(a => a.href = `${BASE_PATH}/estatisticas.html`);
+        document.querySelectorAll('a[href="login.html"]').forEach(a => a.href = `${BASE_PATH}/login.html`);
 
         btnLoginMenu.addEventListener("click", (e) => {
             e.preventDefault();
@@ -1732,28 +1737,38 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         async function carregarDados() {
             unidadeSelect.innerHTML = '<option value="">Carregando unidades...</option>';
-            console.log(`[Portal Zoom] Solicitando unidades da API ${BASE_PATH}/api/meetings...`);
+            const basePath = (window.location.pathname.startsWith('/audiencias') || window.location.pathname.includes('/audiencias')) ? '/audiencias' : '';
+            console.log(`[Portal Zoom] Solicitando unidades da API ${basePath}/api/meetings...`);
+            
+            let data = null;
             try {
-                const response = await fetch(`${BASE_PATH}/api/meetings`);
-                if (!response.ok) throw new Error("HTTP " + response.status + ": " + response.statusText);
-                const data = await response.json();
-                console.log("[Portal Zoom] Resposta recebida da API:", data);
-                if (!Array.isArray(data) || data.length === 0) {
-                    throw new Error("Nenhuma unidade encontrada no banco de dados.");
+                let response = await fetch(`${basePath}/api/meetings`);
+                if (!response.ok && basePath) {
+                    response = await fetch('/api/meetings');
                 }
+                if (response.ok) {
+                    data = await response.json();
+                    console.log("[Portal Zoom] Resposta recebida da API:", data);
+                } else {
+                    console.warn("[Portal Zoom] Resposta não-OK da API:", response.status);
+                }
+            } catch (error) {
+                console.warn("[Portal Zoom] Falha na chamada da API:", error.message);
+            }
+
+            if (Array.isArray(data) && data.length > 0) {
                 linhas = data.map(item => ({
                     unidade: (item.unidade || "").trim(),
                     descricao: (item.descricao || "").trim(),
-                    id: (item.id || item.zoom_id || "").toString().trim()
+                    id: (item.zoom_id || item.id || "").toString().trim()
                 })).filter(item => item.id && item.unidade);
 
                 unidades = [...new Set(linhas.map(l => l.unidade))].sort((a, b) => a.localeCompare('pt-BR'));
                 console.log(`[Portal Zoom] Total de ${unidades.length} unidades carregadas com sucesso do PostgreSQL.`);
                 popularUnidades();
-            } catch (error) {
-                console.warn("[Portal Zoom] Falha ao carregar do banco de dados (usando backup estático):", error.message);
-                unidadeSelect.innerHTML = '<option value="">Carregando backup...</option>';
-                setTimeout(() => { processarDados(dadosBackup, ";"); }, 600);
+            } else {
+                console.warn("[Portal Zoom] Carregando dados do backup estático...");
+                processarDados(dadosBackup, ";");
             }
         }
 
