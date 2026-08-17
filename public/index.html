@@ -1325,7 +1325,8 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 console.error("Erro ao salvar no LocalStorage:", err);
             }
 
-            fetch('/api/access-logs', {
+            const BASE_PATH = window.location.pathname.startsWith('/audiencias') ? '/audiencias' : '';
+            fetch(`${BASE_PATH}/api/access-logs`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(dataAcesso)
@@ -1632,14 +1633,16 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
         lgpdConsent.addEventListener("change", validar);
 
         // Menu Login Auth
+        const BASE_PATH = window.location.pathname.startsWith('/audiencias') ? '/audiencias' : '';
+
         btnLoginMenu.addEventListener("click", (e) => {
             e.preventDefault();
-            fetch("/api/auth/me")
-                .then(res => { window.location.href = res.ok ? "admin.html" : "login.html"; })
-                .catch(() => { window.location.href = "login.html"; });
+            fetch(`${BASE_PATH}/api/auth/me`)
+                .then(res => { window.location.href = res.ok ? `${BASE_PATH}/admin.html` : `${BASE_PATH}/login.html`; })
+                .catch(() => { window.location.href = `${BASE_PATH}/login.html`; });
         });
 
-        fetch("/api/auth/me")
+        fetch(`${BASE_PATH}/api/auth/me`)
             .then(res => {
                 if (res.ok) {
                     btnLoginMenu.textContent = "Painel Administrativo";
@@ -1729,9 +1732,9 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
 
         async function carregarDados() {
             unidadeSelect.innerHTML = '<option value="">Carregando unidades...</option>';
-            console.log("[Portal Zoom] Solicitando unidades da API /api/meetings...");
+            console.log(`[Portal Zoom] Solicitando unidades da API ${BASE_PATH}/api/meetings...`);
             try {
-                const response = await fetch('/api/meetings');
+                const response = await fetch(`${BASE_PATH}/api/meetings`);
                 if (!response.ok) throw new Error("HTTP " + response.status + ": " + response.statusText);
                 const data = await response.json();
                 console.log("[Portal Zoom] Resposta recebida da API:", data);

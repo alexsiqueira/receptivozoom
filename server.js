@@ -133,9 +133,12 @@ async function initDb() {
 // Authentication Middleware
 async function requireAdmin(req, res, next) {
   const token = req.cookies.token;
+  const isAudiencias = req.baseUrl.includes('audiencias') || req.originalUrl.includes('audiencias');
+  const loginUrl = isAudiencias ? '/audiencias/login.html' : '/login.html';
+
   if (!token) {
     if (req.accepts('html') && !req.xhr) {
-      return res.redirect('login.html');
+      return res.redirect(loginUrl);
     }
     return res.status(401).json({ error: 'Acesso negado: faça login primeiro.' });
   }
@@ -148,7 +151,7 @@ async function requireAdmin(req, res, next) {
     if (adminCheck.rows.length === 0) {
       res.clearCookie('token');
       if (req.accepts('html') && !req.xhr) {
-        return res.redirect('login.html?error=no_permission');
+        return res.redirect(`${loginUrl}?error=no_permission`);
       }
       return res.status(403).json({ error: 'Acesso negado: usuário não é mais administrador.' });
     }
@@ -158,16 +161,19 @@ async function requireAdmin(req, res, next) {
   } catch (err) {
     res.clearCookie('token');
     if (req.accepts('html') && !req.xhr) {
-      return res.redirect('login.html?error=session_expired');
+      return res.redirect(`${loginUrl}?error=session_expired`);
     }
     return res.status(401).json({ error: 'Sessão inválida ou expirada.' });
   }
 }
 
+// Router com todas as rotas da aplicação (suporta /audiencias e /)
+const router = express.Router();
+
 // ================= AUTH ENDPOINTS =================
 
 // Public: Get auth config to see if Google login is enabled
-app.get('/api/auth/config', (req, res) => {
+router.get('/api/auth/config', (req, res) => {
   res.json({
     googleEnabled: !!GOOGLE_CLIENT_ID,
     googleClientId: GOOGLE_CLIENT_ID
@@ -175,7 +181,7 @@ app.get('/api/auth/config', (req, res) => {
 });
 
 // Public: Authenticate via Google ID Token or Dev Fallback
-app.post('/api/auth/login', async (req, res) => {
+router.post('/api/auth/login', async (req, res) => {
   const { idToken, devEmail } = req.body;
   let email = '';
   const currentClientId = GOOGLE_CLIENT_ID || '68734281789-7m9ak2vclsaoji4amn3da4p9826lsalp.apps.googleusercontent.com';
@@ -225,6 +231,7 @@ app.post('/api/auth/login', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: 2 * 60 * 60 * 1000 // 2 hours
     });
 
@@ -237,13 +244,13 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // Public: Logout
-app.post('/api/auth/logout', (req, res) => {
-  res.clearCookie('token');
+router.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('token', { path: '/' });
   res.json({ success: true });
 });
 
 // Protected: Get current logged-in user profile
-app.get('/api/auth/me', requireAdmin, (req, res) => {
+router.get('/api/auth/me', requireAdmin, (req, res) => {
   res.json({ email: req.user.email });
 });
 
@@ -251,7 +258,7 @@ app.get('/api/auth/me', requireAdmin, (req, res) => {
 // ================= PUBLIC PORTAL APIs =================
 
 // Diagnóstico de conexão e status do PostgreSQL
-app.get('/api/db-status', async (req, res) => {
+router.get('/api/db-status', async (req, res) => {
   try {
     const dbTest = await pool.query('SELECT NOW() as db_time');
     const meetingsCount = await pool.query('SELECT COUNT(*) FROM meetings');
@@ -277,7 +284,7 @@ app.get('/api/db-status', async (req, res) => {
   }
 });
 
-app.get('/api/meetings', async (req, res) => {
+router.get('/api/meetings', async (req, res) => {
   try {
     console.log('[API] GET /api/meetings requisitado');
     const result = await pool.query('SELECT id as db_id, unidade, descricao, zoom_id as id, zoom_id FROM meetings ORDER BY unidade ASC, descricao ASC, id ASC');
@@ -289,7 +296,7 @@ app.get('/api/meetings', async (req, res) => {
   }
 });
 
-app.post('/api/access-logs', async (req, res) => {
+router.post('/api/access-logs', async (req, res) => {
   const { timestamp, unidade, audiencia, papel, nome, documento, oab } = req.body;
   try {
     await pool.query(
@@ -316,12 +323,12 @@ app.post('/api/access-logs', async (req, res) => {
 // ================= PROTECTED ADMIN APIs =================
 
 // Admin Route to serve files (protect admin.html directly)
-app.get('/admin.html', requireAdmin, (req, res) => {
+router.get('/admin.html', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 // Logs Endpoint
-app.get('/api/access-logs', requireAdmin, async (req, res) => {
+router.get('/api/access-logs', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query('SELECT timestamp, unidade, audiencia, papel, nome, documento, oab FROM access_logs ORDER BY timestamp DESC');
     res.json(result.rows);
@@ -332,7 +339,7 @@ app.get('/api/access-logs', requireAdmin, async (req, res) => {
 });
 
 // CRUD: List meetings
-app.get('/api/admin/meetings', requireAdmin, async (req, res) => {
+router.get('/api/admin/meetings', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, unidade, descricao, zoom_id FROM meetings ORDER BY id DESC');
     res.json(result.rows);
@@ -343,7 +350,7 @@ app.get('/api/admin/meetings', requireAdmin, async (req, res) => {
 });
 
 // CRUD: Create meeting
-app.post('/api/admin/meetings', requireAdmin, async (req, res) => {
+router.post('/api/admin/meetings', requireAdmin, async (req, res) => {
   const { unidade, descricao, zoom_id } = req.body;
   if (!unidade || !descricao || !zoom_id) {
     return res.status(400).json({ error: 'Campos obrigatórios: unidade, descricao, zoom_id' });
@@ -361,7 +368,7 @@ app.post('/api/admin/meetings', requireAdmin, async (req, res) => {
 });
 
 // CRUD: Update meeting
-app.put('/api/admin/meetings/:id', requireAdmin, async (req, res) => {
+router.put('/api/admin/meetings/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { unidade, descricao, zoom_id } = req.body;
   if (!unidade || !descricao || !zoom_id) {
@@ -383,7 +390,7 @@ app.put('/api/admin/meetings/:id', requireAdmin, async (req, res) => {
 });
 
 // CRUD: Delete meeting
-app.delete('/api/admin/meetings/:id', requireAdmin, async (req, res) => {
+router.delete('/api/admin/meetings/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('DELETE FROM meetings WHERE id = $1', [id]);
@@ -400,7 +407,7 @@ app.delete('/api/admin/meetings/:id', requireAdmin, async (req, res) => {
 // ================= ADMIN USER MANAGEMENT APIs =================
 
 // List admin users
-app.get('/api/admin/users', requireAdmin, async (req, res) => {
+router.get('/api/admin/users', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, email, created_at FROM admins ORDER BY id ASC');
     res.json(result.rows);
@@ -411,7 +418,7 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
 });
 
 // Add admin user
-app.post('/api/admin/users', requireAdmin, async (req, res) => {
+router.post('/api/admin/users', requireAdmin, async (req, res) => {
   let { email } = req.body;
   if (!email) {
     return res.status(400).json({ error: 'O campo e-mail é obrigatório.' });
@@ -439,7 +446,7 @@ app.post('/api/admin/users', requireAdmin, async (req, res) => {
 });
 
 // Remove admin user
-app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
+router.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -469,14 +476,17 @@ app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// Serve public folder static files
+router.use(express.static(path.join(__dirname, 'public')));
 
-// Serve public folder files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve frontend routing fallback
-app.get('*', (req, res) => {
+// Serve frontend fallback
+router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// Registrar o router nos prefixos /audiencias e na raiz /
+app.use('/audiencias', router);
+app.use('/', router);
 
 // Start Server
 app.listen(PORT, async () => {

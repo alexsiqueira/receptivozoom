@@ -158,6 +158,7 @@
 
     <script>
         const alertBox = document.getElementById('alertBox');
+        const BASE_PATH = window.location.pathname.startsWith('/audiencias') ? '/audiencias' : '';
 
         // Check query parameters for system status redirects
         const urlParams = new URLSearchParams(window.location.search);
@@ -170,7 +171,7 @@
         // Google Authentication Callback
         window.handleCredentialResponse = async function(response) {
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch(`${BASE_PATH}/api/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ idToken: response.credential })
@@ -188,7 +189,7 @@
                 }
                 
                 // Login Success
-                window.location.href = 'admin.html';
+                window.location.href = `${BASE_PATH}/admin.html`;
             } catch (err) {
                 showAlert(err.message);
             }
