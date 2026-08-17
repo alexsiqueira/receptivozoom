@@ -106,69 +106,7 @@
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
-        }
-
-        /* Dev login Fallback section */
-        .dev-login-section {
-            border-top: 1px solid var(--border);
-            margin-top: 25px;
-            padding-top: 25px;
-            display: none;
-        }
-
-        .dev-login-section h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px 12px;
-            background-color: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary);
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
+            min-height: 44px;
         }
 
         .footer-note {
@@ -200,27 +138,12 @@
             <div id="googleLoginButton"></div>
         </div>
 
-        <!-- Local Dev Mock Login Fallback -->
-        <div class="dev-login-section" id="devLoginSection">
-            <h3>Login de Desenvolvedor (Mock)</h3>
-            <form id="devLoginForm">
-                <div class="form-group">
-                    <label for="devEmail">E-mail @trt12.jus.br</label>
-                    <input type="email" id="devEmail" placeholder="csi@trt12.jus.br" required>
-                </div>
-                <button type="submit" class="btn-submit">Entrar no Painel</button>
-            </form>
-        </div>
-
         <p class="footer-note">Segurança da Informação - TRT12</p>
     </div>
 
     <script>
         const alertBox = document.getElementById('alertBox');
-        const devLoginSection = document.getElementById('devLoginSection');
         const googleLoginWrapper = document.getElementById('googleLoginWrapper');
-        const devLoginForm = document.getElementById('devLoginForm');
-        const devEmailInput = document.getElementById('devEmail');
 
         // Check query parameters for system status redirects
         const urlParams = new URLSearchParams(window.location.search);
@@ -241,7 +164,6 @@
                     if (!window.google || !google.accounts || !google.accounts.id) {
                         throw new Error('Google Identity Services não carregou.');
                     }
-                    // Render the Google button only after the client_id is known
                     google.accounts.id.initialize({
                         client_id: config.googleClientId,
                         callback: handleCredentialResponse,
@@ -255,17 +177,12 @@
                         size: 'large',
                         logo_alignment: 'left'
                     });
-                    googleLoginWrapper.style.display = 'flex';
-                    devLoginSection.style.display = 'none';
                 } else {
-                    // Google NOT configured, show Dev Mock
-                    googleLoginWrapper.style.display = 'none';
-                    devLoginSection.style.display = 'block';
+                    showAlert('O login via Google não está configurado no servidor.');
                 }
             } catch (err) {
-                console.error("Error loading auth configurations. Defaulting to local dev.", err);
-                googleLoginWrapper.style.display = 'none';
-                devLoginSection.style.display = 'block';
+                console.error("Error loading auth configurations:", err);
+                showAlert('Não foi possível carregar a autenticação do Google.');
             }
         }
 
@@ -302,28 +219,6 @@
                 showAlert(err.message);
             }
         }
-
-        // Dev Mock Form Submit Handler
-        devLoginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const devEmail = devEmailInput.value.trim();
-            
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ devEmail })
-                });
-                
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Erro na autenticação.');
-                
-                // Login Success
-                window.location.href = 'admin.html';
-            } catch (err) {
-                showAlert(err.message);
-            }
-        });
 
         // Show error/alert messages
         function showAlert(message) {
