@@ -1,781 +1,1018 @@
 <!DOCTYPE html>
-<html lang="pt-br">
- 
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sala de Audiências Virtuais - TRT 12ª Região</title>
+    <title>Sala de Audiências Virtuais (Horizontal) — TRT 12ª Região</title>
+    <meta name="description" content="Acesso direto e seguro às salas de audiências virtuais do Tribunal Regional do Trabalho da 12ª Região (Santa Catarina).">
+
+    <!-- Tipografia Moderna (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --navy-dark: #103e66;
-            --navy-hover: #01426a;
-            --blue-primary: #003366;
-            --blue-medium: #285683;
-            --blue-light: #0b6da4;
-            --blue-xlight: #ddf1ff;
-            --green: #007b5f;
-            --green-dark: #005f49;
-            --green-light: #5cb85c;
-            --green-light-dark: #449d44;
-            --gray-nav: #eeeeee;
-            --text: #333333;
-            --text-soft: #555555;
-            --border: #cccccc;
-            --bg-page: #eef1f5;
-            --footer-blue: #23517e;
-            --radius: 8px;
+            /* Cores Institucionais TRT12 */
+            --primary-950: #04101e;
+            --primary-900: #06192e;
+            --primary-800: #0a2540;
+            --primary-700: #003366;
+            --primary-600: #0c4a8a;
+            --primary-100: #e0edfb;
+            --primary-50: #f0f7ff;
+
+            --accent-700: #047857;
+            --accent-600: #059669;
+            --accent-500: #10b981;
+            --accent-100: #d1fae5;
+            --accent-50: #ecfdf5;
+
+            --neutral-900: #0f172a;
+            --neutral-800: #1e293b;
+            --neutral-700: #334155;
+            --neutral-600: #475569;
+            --neutral-500: #64748b;
+            --neutral-400: #94a3b8;
+            --neutral-300: #cbd5e1;
+            --neutral-200: #e2e8f0;
+            --neutral-100: #f1f5f9;
+            --neutral-50: #f8fafc;
+            --white: #ffffff;
+
+            --danger-text: #b91c1c;
+
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+            --shadow-modal: 0 20px 35px -5px rgba(0, 0, 0, 0.25), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
- 
-        * {
+
+        *, *::before, *::after {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
- 
+
         html {
             scroll-behavior: smooth;
         }
- 
+
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg-page);
-            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--neutral-50);
+            color: var(--neutral-800);
+            line-height: 1.45;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            color: var(--text);
-            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
- 
-        a {
-            color: var(--blue-light);
-        }
- 
-        .container {
-            max-width: 1130px;
-            margin: 0 auto;
-            padding: 0 16px;
-            width: 100%;
-        }
- 
-        /* ===== Barra de Acessibilidade ===== */
-        .accessibility-bar {
-            background: var(--navy-dark);
-            color: #ffffff;
-            font-size: 0.75rem;
-        }
- 
-        .accessibility-bar .container {
+
+        /* Banner de Comparação */
+        .preview-ribbon {
+            background: linear-gradient(90deg, #1e293b, #0f172a);
+            color: #f8fafc;
+            padding: 5px 16px;
+            font-size: 0.78125rem;
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
             justify-content: space-between;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
- 
-        .accessibility-bar a {
-            color: #ffffff;
-            text-decoration: none;
-            margin-right: 12px;
-        }
- 
-        .accessibility-bar a:hover {
-            text-decoration: underline;
-        }
- 
-        .accessibility-bar .ab-label {
-            font-weight: bold;
+
+        .preview-ribbon-badge {
+            background: var(--accent-600);
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin-right: 8px;
         }
- 
-        /* ===== Cabeçalho ===== */
+
+        .preview-ribbon-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .preview-ribbon a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .preview-ribbon a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* Barra de Acessibilidade Compacta */
+        .accessibility-bar {
+            background: var(--primary-950);
+            color: var(--neutral-400);
+            font-size: 0.75rem;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .accessibility-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .skip-links {
+            display: flex;
+            gap: 14px;
+            list-style: none;
+        }
+
+        .skip-links a {
+            color: var(--neutral-300);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .skip-links a:hover,
+        .skip-links a:focus-visible {
+            color: var(--white);
+            text-decoration: underline;
+        }
+
+        /* Cabeçalho Compacto */
         .site-header {
-            background: #ffffff;
-            border-bottom: 4px solid var(--navy-dark);
+            background: var(--white);
+            border-bottom: 1px solid var(--neutral-200);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 40;
         }
- 
+
         .header-main {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
+            padding: 10px 0;
             gap: 16px;
-            padding-top: 18px;
-            padding-bottom: 18px;
         }
- 
+
         .branding {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            text-decoration: none;
         }
- 
-        .branding__icon {
+
+        .branding__logo-wrap {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-50);
+            border-radius: var(--radius-sm);
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--primary-100);
             flex-shrink: 0;
-            display: block;
         }
- 
+
+        .branding__logo-wrap img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
         .branding__texto {
             display: flex;
             flex-direction: column;
-            line-height: 1.25;
         }
- 
+
         .branding__orgao {
-            color: var(--blue-primary);
-            font-weight: bold;
-            font-size: 1.15rem;
-        }
- 
-        .branding__servico {
-            color: var(--green);
-            font-weight: bold;
-            font-size: 0.95rem;
-            margin-top: 2px;
-        }
- 
-        .branding__servico::before {
-            content: "— ";
-        }
- 
-        .header-selos {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
- 
-        .selo {
-            border: 1px solid var(--blue-primary);
-            color: var(--blue-primary);
-            font-size: 0.62rem;
-            font-weight: bold;
-            text-align: center;
-            padding: 6px 8px;
+            color: var(--primary-800);
+            font-size: 0.9375rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
             line-height: 1.2;
-            border-radius: 4px;
-            max-width: 90px;
         }
- 
-        .selo strong {
-            display: block;
-            font-size: 0.78rem;
-            margin-bottom: 2px;
+
+        .branding__servico {
+            color: var(--accent-700);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
- 
-        /* ===== Menu principal ===== */
+
+        .branding__servico::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: var(--accent-600);
+        }
+
+        .header-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            border: 1px solid var(--neutral-200);
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.6875rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-chip strong {
+            color: var(--primary-700);
+        }
+
+        /* Menu Principal Compacto */
         .main-menu {
-            background: var(--gray-nav);
-            border-top: 1px solid #d9d9d9;
-            border-bottom: 1px solid #d9d9d9;
+            background: var(--neutral-100);
+            border-top: 1px solid var(--neutral-200);
         }
- 
+
         .main-menu ul {
             display: flex;
-            flex-wrap: wrap;
             list-style: none;
-            margin: 0;
-            padding: 0;
+            align-items: center;
+            flex-wrap: wrap;
         }
- 
+
         .main-menu li a {
-            display: block;
-            padding: 13px 18px;
-            color: #000000;
-            font-weight: bold;
-            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            padding: 8px 14px;
+            color: var(--neutral-700);
+            font-size: 0.8125rem;
+            font-weight: 600;
             text-decoration: none;
-            border-right: 1px solid #b9b9b9;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
         }
- 
-        .main-menu li:last-child a {
-            border-right: none;
-        }
- 
+
         .main-menu li a:hover,
         .main-menu li a:focus-visible {
-            background: var(--navy-hover);
-            color: #ffffff;
+            color: var(--primary-700);
+            background: rgba(0, 51, 102, 0.04);
         }
- 
+
         .main-menu li a.active {
-            background: var(--blue-primary);
-            color: #ffffff;
+            color: var(--primary-700);
+            border-bottom-color: var(--primary-700);
+            background: var(--white);
         }
- 
+
         .main-menu li.menu-login {
             margin-left: auto;
         }
- 
+
         .main-menu li.menu-login a {
-            border-right: none;
-            background: var(--green);
-            color: #ffffff;
+            background: var(--accent-600);
+            color: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 5px 12px;
+            margin: 3px 0;
+            border-bottom: none;
+            font-size: 0.78125rem;
         }
- 
-        .main-menu li.menu-login a:hover,
-        .main-menu li.menu-login a:focus-visible {
-            background: var(--green-dark);
-            color: #ffffff;
+
+        .main-menu li.menu-login a:hover {
+            background: var(--accent-700);
         }
- 
-        /* ===== Conteúdo ===== */
+
+        /* Área Principal com Layout Horizontal (Split-Screen) */
         .page-main {
             flex: 1;
-            padding: 40px 0 60px;
-        }
- 
-        .welcome {
-            text-align: center;
-            margin-bottom: 36px;
-        }
- 
-        .welcome h1 {
-            color: var(--blue-primary);
-            font-size: 1.875rem;
-            margin: 0 0 6px;
-        }
- 
-        .welcome .welcome-subtitle {
-            display: inline-block;
-            color: var(--green);
-            font-weight: bold;
-            font-size: 0.9rem;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-            margin-bottom: 14px;
-        }
- 
-        .welcome p {
-            max-width: 780px;
-            margin: 0 auto;
-            line-height: 1.6;
-            color: var(--text);
-        }
- 
-        .welcome-divider {
-            width: 90px;
-            height: 3px;
-            background: var(--green);
-            border: none;
-            margin: 18px auto 0;
-        }
- 
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-bottom: 36px;
-        }
- 
-        .step-card {
-            background: #ffffff;
-            border: 1px solid #dde3ea;
-            border-radius: var(--radius);
-            padding: 20px;
-            border-top: 4px solid var(--blue-light);
-        }
- 
-        .step-number {
-            display: inline-flex;
+            padding: 20px 0 28px;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--blue-primary);
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 10px;
         }
- 
-        .step-card h3 {
-            margin: 0 0 6px;
-            color: var(--blue-primary);
-            font-size: 1rem;
+
+        .split-layout {
+            display: grid;
+            grid-template-columns: minmax(420px, 520px) 1fr;
+            gap: 28px;
+            align-items: stretch;
+            width: 100%;
         }
- 
-        .step-card p {
-            margin: 0;
-            font-size: 0.88rem;
-            line-height: 1.5;
-            color: var(--text-soft);
+
+        /* ===== Coluna Esquerda: Formulário de Acesso ===== */
+        .form-panel {
+            background: var(--white);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            padding: 24px 28px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
- 
-        /* ===== Formulário ===== */
-        .form-card {
-            background: #ffffff;
-            max-width: 660px;
-            margin: 0 auto;
-            padding: 32px 34px;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            border-top: 6px solid var(--green);
+
+        .form-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-700), var(--accent-600));
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
- 
-        .form-card-title {
-            text-align: center;
-            margin: 0 0 20px;
-            color: var(--blue-primary);
+
+        .form-panel-header {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--neutral-100);
+        }
+
+        .form-panel-header h2 {
+            color: var(--primary-800);
             font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
- 
-        .form-instruction {
-            text-align: center;
-            font-size: 0.95rem;
-            color: var(--text-soft);
-            background: var(--blue-xlight);
-            border: 1px solid #c3e4fb;
-            border-radius: 6px;
-            padding: 12px;
-            margin: 0 0 24px;
-            line-height: 1.4;
+
+        .form-panel-header h2 svg {
+            color: var(--primary-600);
+            flex-shrink: 0;
         }
- 
-        .lgpd-container {
-            margin-top: 20px;
-            padding: 12px;
-            background: #f4f8fc;
-            border-radius: 6px;
-            border-left: 3px solid var(--blue-primary);
+
+        .form-panel-header p {
+            color: var(--neutral-500);
+            font-size: 0.8125rem;
+            margin-top: 2px;
         }
- 
-        .lgpd-checkbox {
+
+        /* Formulário Compacto */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--neutral-800);
+            margin-bottom: 4px;
+        }
+
+        .form-label .required-mark {
+            color: var(--danger-text);
+            margin-left: 2px;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 38px;
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            color: var(--neutral-900);
+            background-color: var(--white);
+            border: 1.5px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            outline: none;
+            appearance: none;
+        }
+
+        select.form-control {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+            padding-right: 36px;
+        }
+
+        .form-control:hover {
+            border-color: var(--neutral-400);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-600);
+            box-shadow: 0 0 0 3px rgba(12, 74, 138, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--neutral-400);
+        }
+
+        /* Transição Animada para Campos Condicionais */
+        .conditional-field {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.25s cubic-bezier(0, 1, 0, 1), opacity 0.2s ease;
+            margin-bottom: 0;
+        }
+
+        .conditional-field.is-visible {
+            max-height: 90px;
+            opacity: 1;
+            margin-bottom: 12px;
+            overflow: visible;
+        }
+
+        /* Filtro Rápido de Unidade */
+        .unit-filter-input {
+            width: 100%;
+            height: 30px;
+            padding: 4px 10px 4px 28px;
+            font-size: 0.75rem;
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-sm);
+            background: var(--neutral-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E") no-repeat 8px center;
+            color: var(--neutral-700);
+            outline: none;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+
+        .unit-filter-input:focus {
+            background-color: var(--white);
+            border-color: var(--primary-600);
+        }
+
+        /* Checkbox LGPD Compacto */
+        .lgpd-card {
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            margin: 14px 0 16px;
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            font-size: 13px;
-            color: var(--text-soft);
-            line-height: 1.4;
             cursor: pointer;
-        }
- 
-        .lgpd-checkbox input[type="checkbox"] {
-            margin-top: 2px;
-            width: auto;
-            flex-shrink: 0;
-        }
- 
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-            color: var(--blue-primary);
-        }
- 
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 15px;
-            font-family: inherit;
-            color: var(--text);
-            background: #ffffff;
-        }
- 
-        input:focus,
-        select:focus {
-            outline: 2px solid var(--blue-light);
-            outline-offset: 1px;
-            border-color: var(--blue-light);
-        }
- 
-        button {
-            margin-top: 25px;
-            width: 100%;
-            padding: 13px;
-            background-color: var(--green);
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            font-family: inherit;
-            transition: background-color 0.15s ease;
-        }
- 
-        button:hover:not(:disabled) {
-            background-color: var(--green-dark);
-        }
- 
-        button:disabled {
-            background-color: #a8a8a8;
-            cursor: not-allowed;
-        }
- 
-        .error {
-            color: #d0021b;
-            text-align: center;
-            margin-bottom: 15px;
-        }
- 
-        .hidden {
-            display: none;
-        }
- 
-        /* ===== Modal ===== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
- 
-        .modal-overlay.modal-open {
-            display: flex;
-        }
- 
-        /* Em desktop (Windows/Mac/Linux) o modal aparece como um painel
-           no canto, sem escurecer/bloquear o restante da página. */
-        .modal-overlay.modal-corner {
-            background: transparent;
-            align-items: flex-end;
-            justify-content: flex-end;
-            padding: 24px;
-            pointer-events: none;
-        }
- 
-        .modal-overlay.modal-corner .modal-content {
-            pointer-events: auto;
-            margin: 0;
-            width: 360px;
-            max-width: calc(100vw - 48px);
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
-            animation: modalSlideIn 0.25s ease-out;
-        }
- 
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(16px);
-                opacity: 0;
-            }
- 
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
- 
-        .modal-content {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: var(--radius);
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            border-top: 5px solid var(--blue-light);
-        }
- 
-        .modal-content h3 {
-            margin-top: 0;
-            color: var(--blue-primary);
-        }
- 
-        .link-container {
-            margin: 20px 0;
-            background: #f8f9fa;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 14px;
-            text-align: left;
-            max-height: 100px;
-            overflow-y: auto;
-        }
- 
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-        }
- 
-        .btn-download {
-            background-color: var(--green-light);
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            padding: 12px;
-            color: #ffffff;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            transition: var(--transition);
         }
 
-        .btn-download:hover {
-            background-color: var(--green-light-dark);
+        .lgpd-card:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-100);
         }
- 
-        .btn-retry {
-            background-color: var(--blue-medium);
-        }
- 
-        .btn-open {
-            background-color: var(--blue-light);
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            padding: 12px;
-            color: #ffffff;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
- 
-        .btn-cancel {
-            background-color: #6c757d;
-        }
- 
-        .modal-buttons button {
-            margin-top: 0;
-        }
- 
-        .download-info {
-            margin-bottom: 20px;
-            font-size: 15px;
-            line-height: 1.4;
-            color: var(--text-soft);
-        }
- 
-        .modal-support {
-            margin-top: 14px;
-            font-size: 12.5px;
-            line-height: 1.4;
-            color: var(--text-soft);
-        }
- 
-        .device-specific {
-            display: none;
-        }
- 
-        #btnCopyLink:not(.hidden) {
-            display: block;
-            margin-top: 10px;
-            text-align: center;
-            color: var(--blue-primary);
-        }
- 
-        .info-note {
-            max-width: 660px;
-            margin: 20px auto 0;
-            background: #fff8e1;
-            border: 1px solid #f0d977;
-            border-radius: var(--radius);
-            padding: 14px 18px;
-            font-size: 0.88rem;
-            color: #6d5a10;
-            line-height: 1.5;
-        }
- 
-        .info-note strong {
-            color: #4d4200;
-        }
- 
-        /* ===== Rodapé ===== */
-        .site-footer {
-            background-color: var(--footer-blue);
-            background-image: linear-gradient(135deg, #1a3f63 0%, #23517e 45%, #2c6ba0 100%);
-            color: #ffffff;
-        }
- 
-        .footer-columns {
-            display: grid;
-            grid-template-columns: 2fr 3fr 3fr 2fr;
-            gap: 30px;
-            padding: 40px 0 34px;
-        }
- 
-        .footer-column h3 {
-            color: #ffffff;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0 0 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-        }
- 
-        .footer-branding {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
- 
-        .footer-branding img {
+
+        .lgpd-checkbox-input {
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+            accent-color: var(--accent-600);
+            cursor: pointer;
             flex-shrink: 0;
         }
- 
-        .footer-branding .branding__orgao {
-            color: #ffffff;
+
+        .lgpd-text {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+            line-height: 1.4;
+            user-select: none;
         }
- 
-        .footer-branding .branding__servico {
-            color: #a8d5f0;
+
+        .lgpd-text strong {
+            color: var(--neutral-800);
         }
- 
-        .footer-column p {
-            margin: 0 0 10px;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            color: #d8d8d8;
+
+        /* Botão de Submissão */
+        .btn-submit {
+            width: 100%;
+            height: 44px;
+            background: var(--accent-600);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9375rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(5, 150, 105, 0.25);
+            transition: var(--transition);
         }
- 
-        .footer-column ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
+
+        .btn-submit:hover:not(:disabled) {
+            background: var(--accent-700);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(5, 150, 105, 0.35);
         }
- 
-        .footer-column ul li {
-            margin-bottom: 7px;
+
+        .btn-submit:active:not(:disabled) {
+            transform: translateY(0);
         }
- 
-        .footer-column ul li a {
-            color: #d8d8d8;
+
+        .btn-submit:disabled {
+            background: var(--neutral-300);
+            color: var(--neutral-500);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Feedback de Validação */
+        .validation-hint {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+            text-align: center;
+        }
+
+        /* Copiar Link Alternativo */
+        .btn-secondary-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            margin-top: 10px;
+            padding: 7px;
+            background: transparent;
+            border: 1px dashed var(--neutral-300);
+            border-radius: var(--radius-sm);
+            color: var(--primary-700);
+            font-size: 0.78125rem;
+            font-weight: 600;
             text-decoration: none;
-            font-size: 0.88rem;
+            transition: var(--transition);
         }
- 
-        .footer-column ul li a:hover {
-            color: #ffffff;
+
+        .btn-secondary-link:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-600);
+        }
+
+        /* ===== Coluna Direita: Informações & Instruções ===== */
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            justify-content: space-between;
+        }
+
+        /* Hero / Boas-Vindas Lateral */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-900) 100%);
+            color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::after {
+            content: "";
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-banner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #6ee7b7;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .hero-banner h1 {
+            font-size: 1.375rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            margin-bottom: 6px;
+        }
+
+        .hero-banner p {
+            font-size: 0.84375rem;
+            color: var(--neutral-300);
+            line-height: 1.45;
+        }
+
+        /* Trilha de 3 Passos Horizontal */
+        .steps-card {
+            background: var(--white);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .steps-card-title {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .steps-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .step-box {
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .step-box:hover {
+            border-color: var(--primary-100);
+            background: var(--primary-50);
+        }
+
+        .step-box-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-box-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-700);
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.6875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-box-header h3 {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+        }
+
+        .step-box p {
+            font-size: 0.71875rem;
+            color: var(--neutral-600);
+            line-height: 1.35;
+        }
+
+        /* Grade de Dicas e Suporte */
+        .bottom-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .info-card-sm {
+            background: var(--white);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-card-sm h4 {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--primary-800);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-card-sm ul {
+            list-style: none;
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+            line-height: 1.5;
+        }
+
+        .info-card-sm ul li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 3px;
+        }
+
+        .info-card-sm ul li::before {
+            content: "•";
+            position: absolute;
+            left: 2px;
+            color: var(--accent-600);
+            font-weight: bold;
+        }
+
+        /* Rodapé Compacto */
+        .site-footer {
+            background: var(--primary-900);
+            color: var(--neutral-300);
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-inner-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            font-size: 0.78125rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-links-inline {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+        }
+
+        .footer-links-inline a {
+            color: var(--neutral-300);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links-inline a:hover {
+            color: var(--white);
             text-decoration: underline;
         }
- 
-        .footer-column ul li a::before {
-            content: "» ";
-            color: #a5b4c2;
+
+        /* Modal Zoom */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
- 
-        .footer-bars {
-            border-top: 1px solid rgba(255, 255, 255, 0.25);
+
+        .modal-backdrop.is-open {
+            display: flex;
+            opacity: 1;
         }
- 
-        .footer-bar {
-            font-size: 0.8rem;
+
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 26px;
+            box-shadow: var(--shadow-modal);
             text-align: center;
-            padding: 9px 16px;
+            transform: scale(0.96);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
- 
-        .footer-bar-1 {
-            background: #9c9898;
-            color: #fefeff;
+
+        .modal-backdrop.is-open .modal-box {
+            transform: scale(1);
         }
- 
-        .footer-bar-2 {
-            background: #5f5f5f;
-            color: #fefeff;
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-50);
+            color: var(--primary-600);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
         }
- 
-        .footer-bar-3 {
-            background: #686767;
-            color: #ffffff;
+
+        .modal-title {
+            color: var(--primary-800);
+            font-size: 1.1875rem;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
- 
-        /* ===== Responsivo ===== */
-        @media (max-width: 900px) {
-            .footer-columns {
-                grid-template-columns: 1fr 1fr;
+
+        .modal-desc {
+            font-size: 0.8125rem;
+            color: var(--neutral-600);
+            line-height: 1.45;
+            margin-bottom: 18px;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-modal-primary {
+            background: var(--primary-700);
+            color: var(--white);
+            height: 40px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-modal-primary:hover {
+            background: var(--primary-800);
+        }
+
+        .btn-modal-download {
+            background: var(--neutral-100);
+            color: var(--neutral-800);
+            height: 40px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.8125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: 1px solid var(--neutral-200);
+            transition: var(--transition);
+        }
+
+        .btn-modal-download:hover {
+            background: var(--neutral-200);
+        }
+
+        .btn-modal-close {
+            background: transparent;
+            color: var(--neutral-500);
+            height: 34px;
+            border: none;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .btn-modal-close:hover {
+            color: var(--neutral-800);
+        }
+
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .page-main {
+                padding: 16px 0 24px;
             }
- 
-            .steps {
+
+            .split-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .steps-list {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-info-grid {
                 grid-template-columns: 1fr;
             }
         }
- 
-        @media (max-width: 600px) {
+
+        @media (max-width: 640px) {
             .header-main {
-                justify-content: center;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .header-badges {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 18px 16px;
+            }
+
+            .footer-inner-compact {
+                flex-direction: column;
                 text-align: center;
             }
- 
-            .branding {
+
+            .footer-links-inline {
+                flex-wrap: wrap;
                 justify-content: center;
-                flex-direction: column;
-                gap: 6px;
+                gap: 10px;
             }
- 
-            .branding__orgao {
-                font-size: 1rem;
-            }
- 
-            .header-selos {
-                justify-content: center;
-            }
- 
-            .main-menu ul {
-                justify-content: center;
-            }
- 
-            .main-menu li.menu-login {
-                margin-left: 0;
-            }
- 
-            .main-menu li a {
-                padding: 10px 12px;
-                font-size: 0.85rem;
-            }
- 
-            .page-main {
-                padding: 24px 0 40px;
-            }
- 
-            .welcome h1 {
-                font-size: 1.4rem;
-            }
- 
-            .form-card {
-                padding: 22px 18px;
-            }
- 
-            .footer-columns {
-                grid-template-columns: 1fr;
-            }
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
- 
+
 <body>
-    <!-- Barra de acessibilidade -->
-    <div class="accessibility-bar" id="topo">
-        <div class="container">
-            <nav aria-label="Atalhos de acessibilidade">
-                <a href="#main-content" accesskey="c">Ir para conteúdo&nbsp;&nbsp;|</a>
-                <a href="#menu-principal" accesskey="m">Ir para menu&nbsp;&nbsp;|</a>
-                <a href="#footer" accesskey="r">Ir para rodapé</a>
-            </nav>
-            <span class="ab-label">Acessibilidade</span>
+    <!-- Barra de Comparação -->
+    <div class="preview-ribbon">
+        <div>
+            <span class="preview-ribbon-badge">Proposta Horizontal</span>
+            <span>Layout em 2 colunas otimizado para evitar rolagem vertical no desktop.</span>
+        </div>
+        <div class="preview-ribbon-links">
+            <a href="index-proposta.html">Ver Proposta Vertical</a>
+            <a href="index.html">Ver Original</a>
         </div>
     </div>
- 
-    <!-- Cabeçalho -->
+
+    <!-- Barra de Acessibilidade -->
+    <div class="accessibility-bar" id="topo">
+        <div class="container accessibility-inner">
+            <nav aria-label="Atalhos de acessibilidade">
+                <ul class="skip-links">
+                    <li><a href="#main-content" accesskey="c">Ir para conteúdo [Alt+C]</a></li>
+                    <li><a href="#menu-principal" accesskey="m">Ir para menu [Alt+M]</a></li>
+                    <li><a href="#footer" accesskey="r">Ir para rodapé [Alt+R]</a></li>
+                </ul>
+            </nav>
+            <span style="font-weight:600; text-transform:uppercase; letter-spacing:0.5px; font-size:0.6875rem;">Acessibilidade e Inclusão</span>
+        </div>
+    </div>
+
+    <!-- Cabeçalho Compacto -->
     <header class="site-header" id="header">
         <div class="container header-main">
-            <div class="branding">
-                <img src="assets/logo_jt.png" alt="Logo da Justiça do Trabalho" class="branding__icon" width="46" height="46">
+            <a href="./" class="branding" aria-label="Página Inicial TRT12">
+                <div class="branding__logo-wrap">
+                    <img src="assets/logo_jt.png" alt="Logo da Justiça do Trabalho" width="32" height="32">
+                </div>
                 <div class="branding__texto">
                     <span class="branding__orgao">Tribunal Regional do Trabalho da 12ª Região</span>
                     <span class="branding__servico">Sala de Audiências Virtuais</span>
                 </div>
-            </div>
-            <div class="header-selos" aria-hidden="true">
-                <span class="selo"><strong>Linguagem</strong>Simples</span>
-                <span class="selo"><strong>CNJ</strong>Nível Ouro</span>
-                <span class="selo"><strong>100%</strong>PJe</span>
+            </a>
+
+            <div class="header-badges" aria-label="Certificações">
+                <span class="badge-chip"><strong>Linguagem</strong> Simples</span>
+                <span class="badge-chip"><strong>CNJ</strong> Nível Ouro</span>
+                <span class="badge-chip"><strong>100%</strong> PJe</span>
             </div>
         </div>
+
         <nav class="main-menu" id="menu-principal" aria-label="Menu principal">
             <div class="container">
                 <ul>
@@ -784,224 +1021,262 @@
                     <li><a href="https://pje.trt12.jus.br/consultaprocessual/APena" target="_blank" rel="noopener">Consulta Processual</a></li>
                     <li><a href="https://pje.trt12.jus.br" target="_blank" rel="noopener">PJe</a></li>
                     <li><a href="https://portal.trt12.jus.br" target="_blank" rel="noopener">Portal TRT12</a></li>
-                    <li class="menu-login"><a href="login.html" id="btnLoginMenu">Login</a></li>
+                    <li class="menu-login"><a href="login.html" id="btnLoginMenu">Acesso Restrito</a></li>
                 </ul>
             </div>
         </nav>
     </header>
- 
-    <!-- Conteúdo principal -->
+
+    <!-- Área Principal em 2 Colunas -->
     <main class="page-main" id="main-content">
         <div class="container">
-            <section class="welcome">
-                <h1>Bem-vindo(a) à Sala de Audiências Virtuais</h1>
-                <span class="welcome-subtitle">Acesso oficial às audiências por videoconferência</span>
-                <p>
-                    Este é o canal do Tribunal Regional do Trabalho da 12ª Região para acesso às audiências
-                    realizadas pela plataforma Zoom. Advogados(as), partes, testemunhas e demais participantes
-                    podem entrar na sala de audiência designada em seu processo de forma simples, rápida e segura.
-                </p>
-                <hr class="welcome-divider">
-            </section>
- 
-            <!--<section class="steps" aria-label="Como acessar a audiência">
-                <div class="step-card">
-                    <span class="step-number">1</span>
-                    <h3>Informe seus dados</h3>
-                    <p>Preencha seu nome completo, indique o seu papel na audiência e, quando necessário, o número do CPF ou da OAB.</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-number">2</span>
-                    <h3>Escolha a sala</h3>
-                    <p>Selecione a unidade judiciária e a audiência para a qual você foi convocado(a).</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-number">3</span>
-                    <h3>Entre na audiência</h3>
-                    <p>Clique em "Entrar na Audiência" e permita a abertura do aplicativo Zoom.</p>
-                </div>
-            </section>-->
- 
-            <div class="form-card">
-                <h2 class="form-card-title">Acesso à Sala de Audiência</h2>
-                <p class="form-instruction">ℹ️ Para entrar na audiência, por favor, preencha todos os campos para habilitar o acesso.</p>
- 
-                <form method="post" id="formZoom">
-                    <label for="nome">Nome completo:</label>
-                    <input type="text" name="nome" id="nome" placeholder="Ex: João Silva" required>
- 
-                    <label for="papel">Você é:</label>
-                    <select name="papel" id="papel" required>
-                        <option value="">Selecione</option>
-                        <option value="Autor">Autor</option>
-                        <option value="Reu">Réu (ou preposto)</option>
-                        <option value="AdvogadoAutor">Advogado do Autor</option>
-                        <option value="AdvogadoReu">Advogado do Réu</option>
-                        <option value="Testemunha">Testemunha</option>
-                    </select>
- 
-                    <div id="campoDocumento" class="hidden">
-                        <label for="documento">Número do CPF:</label>
-                        <input type="text" name="documento" id="documento" placeholder="Ex: 123.456.789-00">
+            <div class="split-layout">
+
+                <!-- COLUNA ESQUERDA: Formulário de Acesso -->
+                <section class="form-panel" aria-labelledby="formTitle">
+                    <div>
+                        <div class="form-panel-header">
+                            <h2 id="formTitle">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                Identificação de Acesso
+                            </h2>
+                            <p>Preencha os campos abaixo para ingressar na sala da sua audiência:</p>
+                        </div>
+
+                        <form method="post" id="formZoom" novalidate>
+                            <!-- Nome Completo -->
+                            <div class="form-group">
+                                <label class="form-label" for="nome">
+                                    <span>Nome Completo <span class="required-mark">*</span></span>
+                                </label>
+                                <input type="text" name="nome" id="nome" class="form-control" placeholder="Ex: João da Silva" required autocomplete="name">
+                            </div>
+
+                            <!-- Papel na Audiência -->
+                            <div class="form-group">
+                                <label class="form-label" for="papel">
+                                    <span>Você é <span class="required-mark">*</span></span>
+                                </label>
+                                <select name="papel" id="papel" class="form-control" required>
+                                    <option value="">-- Selecione seu papel --</option>
+                                    <option value="Autor">Autor</option>
+                                    <option value="Reu">Réu (ou preposto)</option>
+                                    <option value="AdvogadoAutor">Advogado do Autor</option>
+                                    <option value="AdvogadoReu">Advogado do Réu</option>
+                                    <option value="Testemunha">Testemunha</option>
+                                </select>
+                            </div>
+
+                            <!-- CPF Condicional -->
+                            <div id="campoDocumento" class="conditional-field">
+                                <div class="form-group">
+                                    <label class="form-label" for="documento">
+                                        <span>Número do CPF <span class="required-mark">*</span></span>
+                                    </label>
+                                    <input type="text" name="documento" id="documento" class="form-control" placeholder="000.000.000-00" inputmode="numeric">
+                                </div>
+                            </div>
+
+                            <!-- OAB Condicional -->
+                            <div id="campoOAB" class="conditional-field">
+                                <div class="form-group">
+                                    <label class="form-label" for="oab">
+                                        <span>Número da OAB e UF <span class="required-mark">*</span></span>
+                                    </label>
+                                    <input type="text" name="oab" id="oab" class="form-control" placeholder="Ex: 123456 SC">
+                                </div>
+                            </div>
+
+                            <!-- Unidade / Vara -->
+                            <div class="form-group">
+                                <label class="form-label" for="unidadeSelect">
+                                    <span>Vara / Unidade Judiciária <span class="required-mark">*</span></span>
+                                </label>
+                                <input type="text" id="unitFilter" class="unit-filter-input" placeholder="Filtrar vara por cidade (ex: Itajaí, Joinville...)">
+                                <select id="unidadeSelect" class="form-control" required>
+                                    <option value="">-- Escolha uma unidade --</option>
+                                </select>
+                            </div>
+
+                            <!-- Audiência / Horário -->
+                            <div id="audienciaDiv" class="conditional-field">
+                                <div class="form-group">
+                                    <label class="form-label" for="audienciaSelect">
+                                        <span>Horário / Sala <span class="required-mark">*</span></span>
+                                    </label>
+                                    <select id="audienciaSelect" class="form-control">
+                                        <option value="">-- Escolha uma audiência --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- LGPD -->
+                            <label class="lgpd-card" for="lgpdConsent">
+                                <input type="checkbox" id="lgpdConsent" class="lgpd-checkbox-input">
+                                <span class="lgpd-text">
+                                    <strong>Termo LGPD:</strong> Concordo com o tratamento dos dados exclusivamente para identificação na audiência.
+                                </span>
+                            </label>
+
+                            <!-- Botão de Ação -->
+                            <button type="submit" id="btnSubmit" class="btn-submit" disabled>
+                                <span>Entrar na Audiência</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
+
+                            <div id="validationHint" class="validation-hint">
+                                <span>Preencha os campos obrigatórios para liberar o acesso</span>
+                            </div>
+
+                            <a href="#" id="btnCopyLink" class="btn-secondary-link hidden">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span id="btnCopyLinkText">Copiar link direto da reunião</span>
+                            </a>
+                        </form>
                     </div>
- 
-                    <div id="campoOAB" class="hidden">
-                        <label for="oab">Número da OAB - UF:</label>
-                        <input type="text" name="oab" id="oab" placeholder="Ex: 123456 SP">
+                </section>
+
+                <!-- COLUNA DIREITA: Informações, Passos e Dicas -->
+                <section class="info-panel" aria-label="Orientações e suporte da audiência">
+                    <!-- Hero Banner Compacto -->
+                    <div class="hero-banner">
+                        <div class="hero-banner-badge">Videoconferência Oficial Zoom</div>
+                        <h1>Acesse sua Audiência Virtual</h1>
+                        <p>
+                            Canal do TRT da 12ª Região (Santa Catarina) para participação segura de advogados(as), partes e testemunhas por videoconferência.
+                        </p>
                     </div>
- 
-                    <label for="unidadeSelect">Selecione a Unidade:</label>
-                    <select id="unidadeSelect">
-                        <option value="">-- Escolha uma unidade --</option>
-                    </select>
- 
-                    <div id="audienciaDiv" style="display:none;">
-                        <label for="audienciaSelect">Selecione a Audiência:</label>
-                        <select id="audienciaSelect">
-                            <option value="">-- Escolha uma audiência --</option>
-                        </select>
+
+                    <!-- Trilha dos 3 Passos -->
+                    <div class="steps-card">
+                        <div class="steps-card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                            Como funciona o acesso (3 passos)
+                        </div>
+                        <div class="steps-list">
+                            <div class="step-box">
+                                <div class="step-box-header">
+                                    <div class="step-box-num">1</div>
+                                    <h3>Identifique-se</h3>
+                                </div>
+                                <p>Preencha seu nome e papel no processo.</p>
+                            </div>
+                            <div class="step-box">
+                                <div class="step-box-header">
+                                    <div class="step-box-num">2</div>
+                                    <h3>Escolha a Sala</h3>
+                                </div>
+                                <p>Selecione a sua Vara de Trabalho.</p>
+                            </div>
+                            <div class="step-box">
+                                <div class="step-box-header">
+                                    <div class="step-box-num">3</div>
+                                    <h3>Entre no Zoom</h3>
+                                </div>
+                                <p>Clique em entrar para abrir o aplicativo.</p>
+                            </div>
+                        </div>
                     </div>
- 
-                    <div class="lgpd-container">
-                        <label class="lgpd-checkbox">
-                            <input type="checkbox" id="lgpdConsent">
-                            <span>Declaro estar ciente de que meus dados pessoais serão tratados pelo TRT12 apenas para fins de identificação e acesso à sala de audiência, conforme a LGPD (Lei nº 13.709/2018), e concordo com o uso descrito.</span>
-                        </label>
+
+                    <!-- Grade Inferior de Dicas & Atendimento -->
+                    <div class="bottom-info-grid">
+                        <div class="info-card-sm">
+                            <h4>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                Dicas para a Audiência
+                            </h4>
+                            <ul>
+                                <li>Conecte-se com 5 min de antecedência.</li>
+                                <li>Utilize local calmo e boa iluminação.</li>
+                                <li>Tenha o aplicativo Zoom instalado.</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card-sm">
+                            <h4>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                Atendimento TRT12
+                            </h4>
+                            <ul>
+                                <li>Seg. a sexta, das 12h às 18h</li>
+                                <li>Telefone Central: <strong>(48) 3216-4000</strong></li>
+                                <li>Florianópolis / SC</li>
+                            </ul>
+                        </div>
                     </div>
- 
-                    <button type="submit" id="btnSubmit" disabled>Entrar na Audiência</button>
-                    <p id="statusAbertura" class="hidden" style="text-align:center; color:#555; font-size:14px; margin-top:10px;">⏳ Abrindo o aplicativo do Zoom...</p>
-                    <a href="#" id="btnCopyLink" class="hidden">Em caso de problemas: clique aqui para copiar o link da reunião e cole-o no navegador</a>
-                </form>
-            </div>
- 
-            <div class="info-note">
-                <strong>Recomendações:</strong> tenha o aplicativo Zoom instalado no seu dispositivo, conecte-se alguns
-                minutos antes do horário da sua audiência e use um local silencioso, com boa conexão de internet.
+                </section>
+
             </div>
         </div>
     </main>
- 
-    <!-- Rodapé -->
+
+    <!-- Rodapé Compacto -->
     <footer class="site-footer" id="footer">
         <div class="container">
-            <div class="footer-columns">
-                <div class="footer-column">
-                    <div class="footer-branding">
-                        <img src="assets/logo_jt.png" alt="Logo da Justiça do Trabalho" width="40" height="40">
-                        <div class="branding__texto">
-                            <span class="branding__orgao">Tribunal Regional do Trabalho da 12ª Região</span>
-                            <span class="branding__servico">Sala de Audiências Virtuais</span>
-                        </div>
-                    </div>
-                    <p>
-                        Portal de acesso às audiências por videoconferência realizadas pela Justiça do Trabalho
-                        da 12ª Região (Santa Catarina), por meio da plataforma Zoom.
-                    </p>
+            <div class="footer-inner-compact">
+                <div>
+                    <strong>TRT 12ª Região (SC)</strong> • CNPJ 02.482.005/0001-23 • © 2026 Justiça do Trabalho
                 </div>
- 
-                <div class="footer-column">
-                    <h3>Endereço e Contato</h3>
-                    <p>
-                        <strong>Tribunal Regional do Trabalho da 12ª Região</strong><br>
-                        Rua Esteves Júnior, 395, Centro<br>
-                        Florianópolis/SC - CEP 88015-905
-                    </p>
-                    <p>
-                        Atendimento: segunda a sexta, das 12h às 18h<br>
-                        Telefone: (48) 3216-4000
-                    </p>
-                    <p>CNPJ 02.482.005/0001-23</p>
-                </div>
- 
-                <div class="footer-column">
-                    <h3>Links Rápidos</h3>
-                    <ul>
-                        <li><a href="/">Sala de Audiências Virtuais</a></li>
-                        <li><a href="https://portal.trt12.jus.br/transparenciapublica/audiencias_e_sessoes" target="_blank" rel="noopener">Audiências e Sessões</a></li>
-                        <li><a href="https://portal.trt12.jus.br/consultas-processuais" target="_blank" rel="noopener">Consulta Processual</a></li>
-                        <li><a href="https://pje.trt12.jus.br" target="_blank" rel="noopener">PJe</a></li>
-                        <li><a href="https://portal.trt12.jus.br" target="_blank" rel="noopener">Portal do TRT12</a></li>
-                    </ul>
-                </div>
- 
-                <div class="footer-column">
-                    <h3>Área Restrita</h3>
-                    <ul>
-                        <li><a href="login.html">Acesso Restrito</a></li>
-                        <li><a href="estatisticas.html">Estatísticas</a></li>
-                        <li><a href="admin.html">Administração</a></li>
-                    </ul>
-                </div>
+                <ul class="footer-links-inline">
+                    <li><a href="https://portal.trt12.jus.br" target="_blank" rel="noopener">Portal TRT12</a></li>
+                    <li><a href="https://pje.trt12.jus.br" target="_blank" rel="noopener">PJe</a></li>
+                    <li><a href="estatisticas.html">Estatísticas</a></li>
+                    <li><a href="admin.html">Administração</a></li>
+                </ul>
             </div>
-        </div>
-        <div class="footer-bars">
-            <div class="footer-bar footer-bar-1">Rua Esteves Júnior, 395, Centro - Florianópolis/SC - CEP 88015-905</div>
-            <div class="footer-bar footer-bar-2">Telefone: (48) 3216-4000</div>
-            <div class="footer-bar footer-bar-3">CNPJ 02.482.005/0001-23 © 2026 Tribunal Regional do Trabalho da 12ª Região</div>
         </div>
     </footer>
- 
-    <!-- Modal de Download -->
-    <div id="modalDownload" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Aplicativo Zoom Necessário</h3>
 
-            <div class="download-info">
-                Para entrar na sala, o aplicativo do Zoom precisa estar instalado. Caso ele não esteja instalado, baixe-o e, depois de
-                instalar, clique em "Já Instalei, tentar abrir o Zoom".
+    <!-- Modal Suporte / Abertura Zoom -->
+    <div id="modalDownload" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
             </div>
-
-            <div class="modal-buttons">
-                <!-- Desktop -->
-                <a href="https://zoom.us/download" id="linkDesktop" class="btn-download device-specific"
-                    target="_blank">Baixar o Zoom agora</a>
-
-                <!-- iOS -->
-                <a href="https://apps.apple.com/us/app/zoom-one-platform-to-connect/id546505307" id="linkIOS"
-                    class="btn-download device-specific" target="_blank">Baixar na App Store</a>
-
-                <!-- Android -->
-                <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid"
-                    class="btn-download device-specific" target="_blank">Baixar no Google Play</a>
-
-                <button type="button" id="btnRetry" class="btn-retry">Já instalei, tentar abrir o Zoom</button>
-                <button type="button" id="btnCancelModal" class="btn-cancel">Cancelar</button>
-            </div>
-
-            <p class="modal-support">
-                Dúvidas? Entre em contato com o advogado ou responsável pela audiência na respectiva Vara do
-                Trabalho.
+            <h3 id="modalTitle" class="modal-title">Abrindo o Zoom...</h3>
+            <p class="modal-desc">
+                Se o aplicativo não abrir automaticamente no seu computador ou celular, utilize uma das opções abaixo:
             </p>
+
+            <div class="modal-actions">
+                <button type="button" id="btnRetry" class="btn-modal-primary">Tentar abrir o Zoom novamente</button>
+                <a href="https://zoom.us/download" id="linkDesktop" class="btn-modal-download" target="_blank" rel="noopener">Baixar aplicativo Zoom para Computador</a>
+                <a href="https://apps.apple.com/us/app/zoom-one-platform-to-connect/id546505307" id="linkIOS" class="btn-modal-download hidden" target="_blank" rel="noopener">Baixar na App Store (iPhone/iPad)</a>
+                <a href="https://play.google.com/store/apps/details?id=us.zoom.videomeetings" id="linkAndroid" class="btn-modal-download hidden" target="_blank" rel="noopener">Baixar no Google Play (Android)</a>
+                <button type="button" id="btnCancelModal" class="btn-modal-close">Fechar</button>
+            </div>
         </div>
     </div>
- 
+
+    <!-- Scripts de Integração e Lógica Completa -->
     <script>
-        // ===== DOM Elements =====
+        // ===== Elementos DOM =====
         const formZoom = document.getElementById("formZoom");
         const unidadeSelect = document.getElementById("unidadeSelect");
+        const unitFilter = document.getElementById("unitFilter");
         const audienciaSelect = document.getElementById("audienciaSelect");
         const audienciaDiv = document.getElementById("audienciaDiv");
         const btnSubmit = document.getElementById("btnSubmit");
+        const validationHint = document.getElementById("validationHint");
         const btnCopyLink = document.getElementById("btnCopyLink");
- 
+        const btnCopyLinkText = document.getElementById("btnCopyLinkText");
+
         const nome = document.getElementById("nome");
         const papel = document.getElementById("papel");
         const documento = document.getElementById("documento");
         const oab = document.getElementById("oab");
         const campoDocumento = document.getElementById("campoDocumento");
         const campoOAB = document.getElementById("campoOAB");
- 
+        const lgpdConsent = document.getElementById("lgpdConsent");
+
         const modalDownload = document.getElementById("modalDownload");
         const btnRetry = document.getElementById("btnRetry");
         const btnCancelModal = document.getElementById("btnCancelModal");
- 
-        const statusAbertura = document.getElementById("statusAbertura");
- 
         const linkDesktop = document.getElementById("linkDesktop");
         const linkIOS = document.getElementById("linkIOS");
         const linkAndroid = document.getElementById("linkAndroid");
- 
+        const btnLoginMenu = document.getElementById("btnLoginMenu");
+
         let currentZoomLink = "";
         let detectionTimeout = null;
         let detectionPoll = null;
@@ -1010,8 +1285,8 @@
         const INTERVALO_VERIFICACAO_MS = 200;
         const TEMPO_MAXIMO_MS = 2000;
         const GRACE_MS = 1500;
- 
-        // Dados de Backup (Caso o banco de dados não carregue)
+
+        // Base de Backup
         const dadosBackup = `
 Itajaí - 01a Vara;Sala de audiências;4732411211
 Itajaí - 02a Vara;Sala de audiências;86234313077
@@ -1024,13 +1299,12 @@ Navegantes - 01a Vara;Audiência das 10h00min;84062567431
 Navegantes - 01a Vara;Audiência das 10h30min;81338106875
 Navegantes - 01a Vara;Audiência das 11h00min;82355134488
 CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
-    `.trim();
- 
+        `.trim();
+
         let linhas = [];
         let unidades = [];
- 
-        // ===== Utils & Logic =====
- 
+
+        // Registro de Acesso
         function registrarAcesso() {
             const dataAcesso = {
                 timestamp: new Date().toISOString(),
@@ -1041,8 +1315,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 documento: (papel.value === "Testemunha") ? documento.value.trim() : null,
                 oab: (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") ? oab.value.trim() : null
             };
- 
-            // 1. Salvar no LocalStorage (como backup/histórico local)
+
             try {
                 const historico = JSON.parse(localStorage.getItem("trt12_zoom_stats") || "[]");
                 historico.push(dataAcesso);
@@ -1050,17 +1323,14 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             } catch (err) {
                 console.error("Erro ao salvar no LocalStorage:", err);
             }
- 
-            // 2. Enviar para o backend Express
+
             fetch('api/access-logs', {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(dataAcesso)
-            }).catch(err => console.error("Erro ao enviar estatísticas para o servidor:", err));
+            }).catch(err => console.error("Erro ao enviar estatísticas:", err));
         }
- 
+
         function montarUname() {
             const nomeTrim = nome.value.trim();
             const papelVal = papel.value;
@@ -1073,44 +1343,59 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
             return uname;
         }
- 
+
         function validar() {
-            let valido = nome.value.trim() && papel.value;
- 
+            const nomeOk = nome.value.trim().length >= 3;
+            const papelOk = Boolean(papel.value);
+            let docOk = true;
+
             if (papel.value === "Testemunha") {
-                valido = valido && documento.value.trim().length === 14; // CPF com máscara
+                docOk = documento.value.trim().length === 14;
+            } else if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
+                docOk = oab.value.trim().length >= 7;
             }
-            if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
-                valido = valido && oab.value.trim().length >= 7;
-            }
- 
+
             const idReuniao = audienciaSelect.value;
-            const idOk = idReuniao && idReuniao.length >= 9;
- 
-            valido = valido && idOk;
-            valido = valido && document.getElementById("lgpdConsent").checked;
- 
-            btnSubmit.disabled = !valido;
-            // btnCopyLink.classList.toggle("hidden", !valido); // Preservado para uso futuro
+            const reuniaoOk = Boolean(idReuniao && idReuniao.length >= 9);
+            const lgpdOk = lgpdConsent.checked;
+
+            const formValido = nomeOk && papelOk && docOk && reuniaoOk && lgpdOk;
+            btnSubmit.disabled = !formValido;
+
+            if (formValido) {
+                validationHint.innerHTML = '<span style="color:var(--accent-700)">✓ Todos os campos preenchidos. Pronto para entrar!</span>';
+                btnCopyLink.classList.remove("hidden");
+            } else {
+                let pendencias = [];
+                if (!nomeOk) pendencias.push("nome");
+                if (!papelOk) pendencias.push("papel");
+                if (papel.value === "Testemunha" && !docOk) pendencias.push("CPF completo");
+                if ((papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") && !docOk) pendencias.push("OAB");
+                if (!reuniaoOk) pendencias.push("unidade");
+                if (!lgpdOk) pendencias.push("LGPD");
+
+                validationHint.innerHTML = `<span>Pendente: ${pendencias.slice(0, 2).join(", ")}${pendencias.length > 2 ? '...' : ''}</span>`;
+                btnCopyLink.classList.add("hidden");
+            }
         }
- 
+
         function mostrarCampos() {
-            campoDocumento.classList.add("hidden");
-            campoOAB.classList.add("hidden");
+            campoDocumento.classList.remove("is-visible");
+            campoOAB.classList.remove("is-visible");
             documento.required = false;
             oab.required = false;
- 
+
             if (papel.value === "Testemunha") {
-                campoDocumento.classList.remove("hidden");
+                campoDocumento.classList.add("is-visible");
                 documento.required = true;
             }
             if (papel.value === "AdvogadoAutor" || papel.value === "AdvogadoReu") {
-                campoOAB.classList.remove("hidden");
+                campoOAB.classList.add("is-visible");
                 oab.required = true;
             }
             validar();
         }
- 
+
         function aplicarMascaras() {
             documento.addEventListener("input", function (e) {
                 let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -1120,7 +1405,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 e.target.value = v;
                 validar();
             });
- 
+
             oab.addEventListener("input", function (e) {
                 let val = e.target.value.replace(/[^\dA-Za-z]/g, '').toUpperCase().slice(0, 9);
                 val = val.replace(/^(\d{1,6})([A-Z]{0,2})/, (match, num, uf) => {
@@ -1130,53 +1415,49 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 validar();
             });
         }
- 
+
         function detectarDispositivo() {
             const ua = navigator.userAgent;
-            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+            const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
             const isAndroid = /Android/.test(ua);
- 
-            // Esconder todos primeiro
-            linkDesktop.style.display = "none";
-            linkIOS.style.display = "none";
-            linkAndroid.style.display = "none";
- 
+
+            linkDesktop.classList.add("hidden");
+            linkIOS.classList.add("hidden");
+            linkAndroid.classList.add("hidden");
+
             if (isIOS) {
-                linkIOS.style.display = "block";
+                linkIOS.classList.remove("hidden");
             } else if (isAndroid) {
-                linkAndroid.style.display = "block";
+                linkAndroid.classList.remove("hidden");
             } else {
-                linkDesktop.style.display = "block";
+                linkDesktop.classList.remove("hidden");
             }
- 
-            // Windows/Mac/Linux: painel no canto, sem bloquear a página.
-            // iPhone/Android: modal centralizado, como antes.
-            const ehMobile = isIOS || isAndroid;
-            modalDownload.classList.toggle("modal-corner", !ehMobile);
         }
- 
+
         function isIOS() {
             const ua = navigator.userAgent;
-            return /iPad|iPhone|iPod/.test(ua) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
-                (navigator.userAgentData?.platform === 'macOS' && navigator.maxTouchPoints > 1);
+            return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         }
- 
+
         function isSafari() {
             const ua = navigator.userAgent;
             return /Safari/i.test(ua) && !/Chrome/i.test(ua) && !/Chromium/i.test(ua) && !/Android/i.test(ua);
         }
- 
+
         function mostrarModalDownload() {
             detectarDispositivo();
-            modalDownload.style.display = "flex";
+            modalDownload.classList.add("is-open");
+        }
+
+        function fecharModalDownload() {
+            modalDownload.classList.remove("is-open");
+            limparDetecao();
         }
 
         function limparDetecao() {
             if (detectionPoll) { clearInterval(detectionPoll); detectionPoll = null; }
             if (detectionTimeout) { clearTimeout(detectionTimeout); detectionTimeout = null; }
             window.removeEventListener("blur", aoPerderFoco);
-            statusAbertura.classList.add("hidden");
         }
 
         function aoPerderFoco() {
@@ -1199,7 +1480,6 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
 
             conclusaoAcao = false;
-            statusAbertura.classList.remove("hidden");
             window.addEventListener("blur", aoPerderFoco);
 
             detectionPoll = setInterval(() => {
@@ -1218,13 +1498,9 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                     iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                     iframe.src = currentZoomLink;
-
-                    setTimeout(() => {
-                        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-                    }, 2000);
+                    setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 2000);
                 }
-            } catch (err) {
-            }
+            } catch (err) {}
 
             detectionTimeout = setTimeout(() => {
                 if (conclusaoAcao) return;
@@ -1233,23 +1509,21 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 mostrarModalDownload();
             }, TEMPO_MAXIMO_MS);
         }
- 
+
         formZoom.addEventListener("submit", function (e) {
             e.preventDefault();
             const idReuniao = audienciaSelect.value;
             if (!idReuniao) return;
- 
-            // Registrar estatísticas do acesso
+
             registrarAcesso();
- 
             const nomeUname = montarUname();
- 
+
             if (isSafari()) {
                 const zoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
                 window.open(zoomLink, '_blank');
                 return;
             }
- 
+
             if (isIOS()) {
                 currentZoomLink = "https://zoom.us/j/" + idReuniao + "?uname=" + encodeURIComponent(nomeUname);
                 tentarEntrarNoZoom();
@@ -1259,33 +1533,28 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             const ehAndroid = /Android/i.test(navigator.userAgent);
             currentZoomLink = (ehAndroid ? "zoomus" : "zoommtg") + "://zoom.us/join?confno=" + idReuniao + "&uname=" + encodeURIComponent(nomeUname);
 
-            // Desktop (Windows/Mac/Linux): mostra o modal antes de tentar abrir o Zoom,
-            // evitando o diálogo "Obter aplicativo" do sistema quando o app não está instalado.
             if (ehAndroid) {
                 tentarEntrarNoZoom();
             } else {
                 mostrarModalDownload();
             }
         });
- 
+
         btnRetry.addEventListener("click", () => {
-            modalDownload.style.display = "none";
+            modalDownload.classList.remove("is-open");
             tentarEntrarNoZoom();
         });
- 
-        btnCancelModal.addEventListener("click", () => {
-            modalDownload.style.display = "none";
-            limparDetecao();
-        });
- 
+
+        btnCancelModal.addEventListener("click", fecharModalDownload);
+
+        // Copiar Link
         btnCopyLink.addEventListener("click", (e) => {
             e.preventDefault();
             const zoomLink = "https://zoom.us/j/" + audienciaSelect.value;
- 
+
             navigator.clipboard.writeText(zoomLink).then(() => {
-                const originalText = btnCopyLink.textContent;
-                btnCopyLink.textContent = "Link Copiado!";
-                setTimeout(() => { btnCopyLink.textContent = originalText; }, 2000);
+                btnCopyLinkText.textContent = "✓ Link Copiado!";
+                setTimeout(() => { btnCopyLinkText.textContent = "Copiar link direto da reunião"; }, 2500);
             }).catch(() => {
                 const tempInput = document.createElement("input");
                 tempInput.value = zoomLink;
@@ -1293,22 +1562,32 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 tempInput.select();
                 document.execCommand("copy");
                 document.body.removeChild(tempInput);
-                const originalText = btnCopyLink.textContent;
-                btnCopyLink.textContent = "Link Copiado!";
-                setTimeout(() => { btnCopyLink.textContent = originalText; }, 2000);
+                btnCopyLinkText.textContent = "✓ Link Copiado!";
+                setTimeout(() => { btnCopyLinkText.textContent = "Copiar link direto da reunião"; }, 2500);
             });
         });
- 
+
+        // Filtro de Unidades
+        unitFilter.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const options = unidadeSelect.options;
+
+            for (let i = 1; i < options.length; i++) {
+                const text = options[i].textContent.toLowerCase();
+                options[i].hidden = !text.includes(query);
+            }
+        });
+
         unidadeSelect.addEventListener("change", () => {
             const unidadeEscolhida = unidadeSelect.value;
             audienciaSelect.innerHTML = '<option value="">-- Escolha uma audiência --</option>';
-            audienciaDiv.style.display = "none";
- 
+            audienciaDiv.classList.remove("is-visible");
+
             if (!unidadeEscolhida) {
                 validar();
                 return;
             }
- 
+
             const auds = linhas.filter(l => l.unidade === unidadeEscolhida);
             auds.forEach(a => {
                 const opt = document.createElement("option");
@@ -1316,60 +1595,51 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = a.descricao;
                 audienciaSelect.appendChild(opt);
             });
- 
-            audienciaDiv.style.display = "block";
- 
+
+            audienciaDiv.classList.add("is-visible");
+
             if (audienciaSelect.options.length === 2) {
                 audienciaSelect.selectedIndex = 1;
-                audienciaDiv.style.display = "none";
+                audienciaDiv.classList.remove("is-visible");
             } else {
                 audienciaSelect.selectedIndex = 0;
             }
- 
+
             validar();
         });
- 
+
         audienciaSelect.addEventListener("change", validar);
         nome.addEventListener("input", validar);
         papel.addEventListener("change", mostrarCampos);
         documento.addEventListener("input", validar);
         oab.addEventListener("input", validar);
-        document.getElementById("lgpdConsent").addEventListener("change", validar);
- 
-        const btnLoginMenu = document.getElementById("btnLoginMenu");
- 
+        lgpdConsent.addEventListener("change", validar);
+
+        // Menu Login Auth
         btnLoginMenu.addEventListener("click", (e) => {
             e.preventDefault();
             fetch("api/auth/me")
-                .then(res => {
-                    window.location.href = res.ok ? "admin.html" : "login.html";
-                })
-                .catch(() => {
-                    window.location.href = "login.html";
-                });
+                .then(res => { window.location.href = res.ok ? "admin.html" : "login.html"; })
+                .catch(() => { window.location.href = "login.html"; });
         });
- 
+
         fetch("api/auth/me")
             .then(res => {
                 if (res.ok) {
                     btnLoginMenu.textContent = "Painel Administrativo";
-                    btnLoginMenu.title = "Acessar o painel administrativo";
                 }
             })
             .catch(() => {});
- 
-        // ===== Initialization & Data Loading =====
- 
+
+        // Carregamento de Dados
         function processarDados(csvText, separador = ";") {
-            console.log("Processando dados de backup...");
             let lines = csvText.split(/\r?\n/).filter(l => l.trim() !== "");
- 
             if (lines.length > 0) {
                 const virgulas = (lines[0].match(/,/g) || []).length;
                 const pontosVirgula = (lines[0].match(/;/g) || []).length;
                 separador = (virgulas > pontosVirgula) ? "," : ";";
             }
- 
+
             linhas = lines.map(l => {
                 const parts = l.split(separador);
                 return {
@@ -1378,11 +1648,11 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                     id: (parts[2] || "").trim()
                 };
             }).filter(item => item.id && item.unidade);
- 
+
             unidades = [...new Set(linhas.map(l => l.unidade))];
             popularUnidades();
         }
- 
+
         function popularUnidades() {
             unidadeSelect.innerHTML = '<option value="">-- Escolha uma unidade --</option>';
             unidades.forEach(u => {
@@ -1391,13 +1661,12 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                 opt.textContent = u;
                 unidadeSelect.appendChild(opt);
             });
- 
+
             processarParametrosURL();
         }
- 
+
         function processarParametrosURL() {
             const urlParams = new URLSearchParams(window.location.search);
- 
             if (urlParams.has('nome')) nome.value = urlParams.get('nome');
             if (urlParams.has('papel')) {
                 papel.value = urlParams.get('papel');
@@ -1405,7 +1674,7 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
             }
             if (urlParams.has('documento')) documento.value = urlParams.get('documento');
             if (urlParams.has('oab')) oab.value = urlParams.get('oab');
- 
+
             const paramUnidade = urlParams.get('unidade');
             if (paramUnidade) {
                 unidadeSelect.value = paramUnidade;
@@ -1417,43 +1686,33 @@ CEJUSC - Itajaí e Navegantes;Sala de Audiências;4732411294
                         }
                     }
                 }
- 
                 if (unidadeSelect.selectedIndex > 0) {
                     unidadeSelect.dispatchEvent(new Event('change'));
                 }
             }
- 
             validar();
         }
- 
+
         async function carregarDados() {
-            unidadeSelect.innerHTML = '<option value="">Carregando dados...</option>';
- 
+            unidadeSelect.innerHTML = '<option value="">Carregando unidades...</option>';
             try {
                 const response = await fetch('api/meetings');
-                if (!response.ok) {
-                    throw new Error("Erro HTTP: " + response.status);
-                }
+                if (!response.ok) throw new Error("Status " + response.status);
                 linhas = await response.json();
-                console.log("Total de registros carregados do banco:", linhas.length);
                 unidades = [...new Set(linhas.map(l => l.unidade))];
                 popularUnidades();
-                console.log("Dados carregados com sucesso.");
             } catch (error) {
-                console.error("Falha ao carregar fonte de dados do banco. Usando backup:", error.message);
-                unidadeSelect.innerHTML = '<option value="">Erro ao carregar (usando backup)</option>';
-                setTimeout(() => {
-                    processarDados(dadosBackup, ";");
-                }, 1000);
+                console.warn("Falha na API, utilizando backup estático:", error.message);
+                unidadeSelect.innerHTML = '<option value="">Carregando backup...</option>';
+                setTimeout(() => { processarDados(dadosBackup, ";"); }, 600);
             }
         }
- 
+
         document.addEventListener("DOMContentLoaded", () => {
             aplicarMascaras();
             carregarDados();
         });
     </script>
 </body>
- 
+
 </html>
- 
