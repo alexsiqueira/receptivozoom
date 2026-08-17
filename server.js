@@ -133,13 +133,14 @@ async function initDb() {
 // Authentication Middleware
 async function requireAdmin(req, res, next) {
   const token = req.cookies.token;
+  const isApiRequest = req.originalUrl.includes('/api/') || req.path.startsWith('/api/');
   const loginUrl = '/audiencias/login.html';
 
   if (!token) {
-    if (req.accepts('html') && !req.xhr) {
-      return res.redirect(loginUrl);
+    if (isApiRequest) {
+      return res.status(401).json({ error: 'Acesso negado: faça login primeiro.' });
     }
-    return res.status(401).json({ error: 'Acesso negado: faça login primeiro.' });
+    return res.redirect(loginUrl);
   }
 
   try {
@@ -149,20 +150,20 @@ async function requireAdmin(req, res, next) {
     const adminCheck = await pool.query('SELECT * FROM admins WHERE email = $1', [decoded.email]);
     if (adminCheck.rows.length === 0) {
       res.clearCookie('token', { path: '/' });
-      if (req.accepts('html') && !req.xhr) {
-        return res.redirect(`${loginUrl}?error=no_permission`);
+      if (isApiRequest) {
+        return res.status(403).json({ error: 'Acesso negado: usuário não é mais administrador.' });
       }
-      return res.status(403).json({ error: 'Acesso negado: usuário não é mais administrador.' });
+      return res.redirect(`${loginUrl}?error=no_permission`);
     }
 
     req.user = decoded;
     next();
   } catch (err) {
     res.clearCookie('token', { path: '/' });
-    if (req.accepts('html') && !req.xhr) {
-      return res.redirect(`${loginUrl}?error=session_expired`);
+    if (isApiRequest) {
+      return res.status(401).json({ error: 'Sessão inválida ou expirada.' });
     }
-    return res.status(401).json({ error: 'Sessão inválida ou expirada.' });
+    return res.redirect(`${loginUrl}?error=session_expired`);
   }
 }
 
